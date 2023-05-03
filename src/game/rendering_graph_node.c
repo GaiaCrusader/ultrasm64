@@ -615,14 +615,15 @@ void geo_process_scale(const struct GraphNodeScale *node) {
  */
 void geo_process_billboard(struct GraphNodeBillboard *node) {
     Vec3f translation;
+    Vec3f scale = { 1.0f, 1.0f, 1.0f };
 
     vec3s_to_vec3f(translation, node->translation);
-    mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], translation, gVec3fOne, gCurGraphNodeCamera->roll);
     if (gCurGraphNodeHeldObject != NULL) {
-        mtxf_scale_vec3f(gMatStack[gMatStackIndex], gMatStack[gMatStackIndex], gCurGraphNodeHeldObject->objNode->header.gfx.scaleLerp);
+        vec3f_copy(scale, gCurGraphNodeHeldObject->objNode->header.gfx.scaleLerp);
     } else if (gCurGraphNodeObject != NULL) {
-        mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex + 1], gCurGraphNodeObject->scaleLerp);
+        vec3f_copy(scale, gCurGraphNodeObject->scaleLerp);
     }
+    mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], translation, scale, gCurGraphNodeCamera->roll);
     inc_mat_stack();
     append_dl_and_return(((struct GraphNodeDisplayList *) node));
 }
