@@ -847,17 +847,15 @@ void thread9_graphics(UNUSED void *arg) {
                 } else {
                     gMoveSpeed = 1; // Half
                 }
-            } else if (deltaTime > OS_USEC_TO_CYCLES(66666)) { // < 15fps
-                if (gGlobalTimer - lastRenderedFrame == 1) {
-                    gMoveSpeed = 2; // Full and a half
-                } else {
-                    gMoveSpeed = 0; // Full
-                }
             } else {
                 gMoveSpeed = 0;
             }
             lastRenderedFrame = gGlobalTimer;
 
+
+            if (gTargetCam) {
+                update_graph_node_camera(gTargetCam);
+            }
             swap_screen();
             select_gfx_pool();
             init_rcp();

@@ -3262,13 +3262,13 @@ void zoom_out_if_paused_and_outside(struct GraphNodeCamera *camera) {
         if (sFramesPaused >= 2) {
             if (sZoomOutAreaMasks[areaMaskIndex] & areaBit) {
 
-                camera->focus[0] = gCamera->areaCenX;
-                camera->focus[1] = (sMarioCamState->pos[1] + gCamera->areaCenY) / 2;
-                camera->focus[2] = gCamera->areaCenZ;
-                vec3f_get_dist_and_angle(camera->focus, sMarioCamState->pos, &dist, &pitch, &yaw);
-                vec3f_set_dist_and_angle(sMarioCamState->pos, camera->pos, 6000.f, 0x1000, yaw);
+                camera->focusLerp[0] = gCamera->areaCenX;
+                camera->focusLerp[1] = (sMarioCamState->pos[1] + gCamera->areaCenY) / 2;
+                camera->focusLerp[2] = gCamera->areaCenZ;
+                vec3f_get_dist_and_angle(camera->focusLerp, sMarioCamState->pos, &dist, &pitch, &yaw);
+                vec3f_set_dist_and_angle(sMarioCamState->pos, camera->posLerp, 6000.f, 0x1000, yaw);
                 if (gCurrLevelNum != LEVEL_THI) {
-                    find_in_bounds_yaw_wdw_bob_thi(camera->pos, camera->focus, 0);
+                    find_in_bounds_yaw_wdw_bob_thi(camera->posLerp, camera->focusLerp, 0);
                 }
             }
         } else {
@@ -3303,6 +3303,8 @@ void create_camera(struct GraphNodeCamera *gc, struct AllocOnlyPool *pool) {
     vec3f_copy(c->focus, gc->focus);
 }
 
+struct GraphNodeCamera *gTargetCam;
+
 Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
     struct GraphNodeCamera *gc = (struct GraphNodeCamera *) g;
 
@@ -3311,7 +3313,8 @@ Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
             create_camera(gc, context);
             break;
         case GEO_CONTEXT_RENDER:
-            update_graph_node_camera(gc);
+            gTargetCam = gc;
+            //update_graph_node_camera(gc);
             break;
     }
     return NULL;

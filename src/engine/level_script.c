@@ -349,6 +349,7 @@ static void level_cmd_clear_level(void) {
         main_pool_pop_state();
     }
     unmap_tlbs();
+    gTargetCam = NULL;
 
     sCurrentCmd = CMD_NEXT;
 }
