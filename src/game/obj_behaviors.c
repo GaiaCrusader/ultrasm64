@@ -403,6 +403,8 @@ s16 object_step(void) {
             ((collisionFlags & OBJ_COL_FLAG_HIT_WALL) ^ OBJ_COL_FLAG_HIT_WALL);
     }
 
+    o->oFloorHeight = floorY;
+
     obj_update_pos_vel_xz();
     if ((s32) o->oPosY == (s32) floorY) {
         collisionFlags += OBJ_COL_FLAG_GROUNDED;

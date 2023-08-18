@@ -132,6 +132,8 @@ void generic_bobomb_free_loop(void) {
             break;
     }
 
+    o->header.gfx.matrixID[0] = MATRIX_NULL;
+    o->header.gfx.matrixID[1] = MATRIX_NULL;
     bobomb_check_interactions();
 
     if (o->oBobombFuseTimer > 150) {
@@ -277,6 +279,8 @@ void bobomb_buddy_act_idle(void) {
     o->oBobombBuddyPosZCopy = o->oPosZ;
 
     object_step();
+    o->header.gfx.matrixID[0] = MATRIX_NULL;
+    o->header.gfx.matrixID[1] = MATRIX_NULL;
 
     if (animFrame == 5 || animFrame == 16) {
         cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);

@@ -576,12 +576,6 @@ struct Object *spawn_object_rel_with_rot(struct Object *parent, u32 model, const
     return newObj;
 }
 
-struct Object *spawn_obj_with_transform_flags(struct Object *sp20, s32 model, const BehaviorScript *sp28) {
-    struct Object *sp1C = spawn_object(sp20, model, sp28);
-    sp1C->oFlags |= OBJ_FLAG_0020 | OBJ_FLAG_SET_THROW_MATRIX_FROM_TRANSFORM;
-    return sp1C;
-}
-
 struct Object *spawn_water_droplet(struct Object *parent, struct WaterDropletParams *params) {
     f32 randomScale;
     struct Object *newObj = spawn_object(parent, params->model, params->behavior);
@@ -2021,31 +2015,10 @@ void obj_build_transform_relative_to_parent(struct Object *obj) {
     cur_obj_scale(1.0f);
 }
 
-void obj_create_transform_from_self(struct Object *obj) {
-    obj->oFlags &= ~OBJ_FLAG_TRANSFORM_RELATIVE_TO_PARENT;
-    obj->oFlags |= OBJ_FLAG_SET_THROW_MATRIX_FROM_TRANSFORM;
-
-    obj->transform[3][0] = obj->oPosX;
-    obj->transform[3][1] = obj->oPosY;
-    obj->transform[3][2] = obj->oPosZ;
-}
-
-void cur_obj_rotate_move_angle_using_vel(void) {
-    o->oMoveAnglePitch += o->oAngleVelPitch;
-    o->oMoveAngleYaw += o->oAngleVelYaw;
-    o->oMoveAngleRoll += o->oAngleVelRoll;
-}
-
 void cur_obj_rotate_face_angle_using_vel(void) {
     o->oFaceAnglePitch += o->oAngleVelPitch;
     o->oFaceAngleYaw += o->oAngleVelYaw;
     o->oFaceAngleRoll += o->oAngleVelRoll;
-}
-
-void cur_obj_set_face_angle_to_move_angle(void) {
-    o->oFaceAnglePitch = o->oMoveAnglePitch;
-    o->oFaceAngleYaw = o->oMoveAngleYaw;
-    o->oFaceAngleRoll = o->oMoveAngleRoll;
 }
 
 s32 cur_obj_follow_path(UNUSED s32 unusedArg) {
