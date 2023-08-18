@@ -332,7 +332,7 @@ void bowser_bitfs_actions(void) {
                 }
             } else { // far away
                 o->oAction = BOWSER_ACT_CHARGE_MARIO;
-                if (500.0f < o->oBowserDistToCenter && o->oBowserDistToCenter < 1500.0f
+                if (sqr(500.0f) < o->oBowserDistToCenter && o->oBowserDistToCenter < sqr(1500.0f)
                     && rand < 0.5f) { // 50% chance
                     o->oAction = BOWSER_ACT_BIG_JUMP;
                 }
@@ -680,7 +680,7 @@ s32 bowser_land(void) {
  */
 void bowser_short_second_hop(void) {
     if (o->oBehParams2ndByte == BOWSER_BP_BITS && o->oBowserStatus & BOWSER_STATUS_BIG_JUMP) {
-        if (o->oBowserDistToCenter > 1000.0f) {
+        if (o->oBowserDistToCenter > sqr(1000.0f)) {
             o->oForwardVel = 60.0f;
         }
     }
@@ -1045,7 +1045,7 @@ void bowser_act_jump_onto_stage(void) {
         case BOWSER_SUB_ACT_JUMP_ON_STAGE_LAND:
             if (o->oPosY > o->oHomeY) {
                 o->oDragStrength = 0.0f;
-                if (o->oBowserDistToCenter < 2500.0f) {
+                if (o->oBowserDistToCenter < sqr(2500.0f)) {
                     if (absf(o->oFloorHeight - o->oHomeY) < 100.0f) {
                         approach_f32_signed(&o->oForwardVel, 0, -5.0f);
                     } else {
@@ -1645,7 +1645,7 @@ void bhv_bowser_loop(void) {
     s16 angleToMario;  // AngleToMario from Bowser's perspective
 
     // Set distance/angle values
-    o->oBowserDistToCenter = sqrtf(o->oPosX * o->oPosX + o->oPosZ * o->oPosZ);
+    o->oBowserDistToCenter = o->oPosX * o->oPosX + o->oPosZ * o->oPosZ;
     o->oBowserAngleToCenter = atan2s(0.0f - o->oPosZ, 0.0f - o->oPosX);
     angleToMario = abs_angle_diff(o->oMoveAngleYaw, o->oAngleToMario);
 

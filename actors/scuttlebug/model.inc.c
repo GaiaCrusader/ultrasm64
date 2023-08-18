@@ -77,7 +77,7 @@ const Gfx scuttlebug_seg6_dl_060139F8[] = {
     gsSPDisplayList(scuttlebug_seg6_dl_060139C0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -113,7 +113,7 @@ const Gfx scuttlebug_seg6_dl_06013AE8[] = {
     gsSPDisplayList(scuttlebug_seg6_dl_06013AB0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -149,7 +149,7 @@ const Gfx scuttlebug_seg6_dl_06013BD0[] = {
     gsSPDisplayList(scuttlebug_seg6_dl_06013B98),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -185,7 +185,7 @@ const Gfx scuttlebug_seg6_dl_06013CB8[] = {
     gsSPDisplayList(scuttlebug_seg6_dl_06013C80),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -221,7 +221,7 @@ const Gfx scuttlebug_seg6_dl_06013DA0[] = {
     gsSPDisplayList(scuttlebug_seg6_dl_06013D68),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -326,7 +326,7 @@ const Gfx scuttlebug_seg6_dl_06014188[] = {
     gsSPDisplayList(scuttlebug_seg6_dl_06014150),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPEndDisplayList(),
 };
@@ -362,7 +362,7 @@ const Gfx scuttlebug_seg6_dl_06014270[] = {
     gsSPDisplayList(scuttlebug_seg6_dl_06014238),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPEndDisplayList(),
 };

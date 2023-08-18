@@ -4030,8 +4030,9 @@ s16 reduce_by_dist_from_camera(s16 value, f32 maxDist, f32 posX, f32 posY, f32 p
     f32 goalDY = gLakituState.goalPos[1] - posY;
     f32 goalDZ = gLakituState.goalPos[2] - posZ;
 
-    dist = sqrtf(goalDX * goalDX + goalDY * goalDY + goalDZ * goalDZ);
-    if (maxDist > dist) {
+    dist = goalDX * goalDX + goalDY * goalDY + goalDZ * goalDZ;
+    if (maxDist * maxDist > dist) {
+        dist = sqrtf(dist);
         pos[0] = posX;
         pos[1] = posY;
         pos[2] = posZ;

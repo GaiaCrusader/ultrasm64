@@ -254,7 +254,7 @@ s32 update_sliding(struct MarioState *m, f32 stopSpeed) {
             break;
     }
 
-    oldSpeed = sqrtf(m->slideVelX * m->slideVelX + m->slideVelZ * m->slideVelZ);
+    oldSpeed = m->slideVelX * m->slideVelX + m->slideVelZ * m->slideVelZ;
 
     //! This is attempting to use trig derivatives to rotate Mario's speed.
     // It is slightly off/asymmetric since it uses the new X speed, but the old
@@ -262,9 +262,11 @@ s32 update_sliding(struct MarioState *m, f32 stopSpeed) {
     m->slideVelX += m->slideVelZ * (m->intendedMag / 32.0f) * sideward * 0.05f;
     m->slideVelZ -= m->slideVelX * (m->intendedMag / 32.0f) * sideward * 0.05f;
 
-    newSpeed = sqrtf(m->slideVelX * m->slideVelX + m->slideVelZ * m->slideVelZ);
+    newSpeed = m->slideVelX * m->slideVelX + m->slideVelZ * m->slideVelZ;
 
     if (oldSpeed > 0.0f && newSpeed > 0.0f) {
+        oldSpeed = sqrtf(oldSpeed);
+        newSpeed = sqrtf(newSpeed);
         m->slideVelX = m->slideVelX * oldSpeed / newSpeed;
         m->slideVelZ = m->slideVelZ * oldSpeed / newSpeed;
     }

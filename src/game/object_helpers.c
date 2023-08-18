@@ -2242,9 +2242,10 @@ void spawn_mist_particles_with_sound(u32 sp18) {
 void cur_obj_push_mario_away(f32 radius) {
     f32 marioRelX = gMarioObject->oPosX - o->oPosX;
     f32 marioRelZ = gMarioObject->oPosZ - o->oPosZ;
-    f32 marioDist = sqrtf(sqr(marioRelX) + sqr(marioRelZ));
+    f32 marioDist = sqr(marioRelX) + sqr(marioRelZ);
 
-    if (marioDist < radius) {
+    if (marioDist < radius * radius) {
+        marioDist = sqrtf(marioDist);
         //! If this function pushes Mario out of bounds, it will trigger Mario's
         //  oob failsafe
         gMarioStates[0].pos[0] += (radius - marioDist) / radius * marioRelX;
@@ -2370,9 +2371,9 @@ s32 cur_obj_mario_far_away(void) {
     f32 dx = o->oHomeX - gMarioObject->oPosX;
     f32 dy = o->oHomeY - gMarioObject->oPosY;
     f32 dz = o->oHomeZ - gMarioObject->oPosZ;
-    f32 marioDistToHome = sqrtf(dx * dx + dy * dy + dz * dz);
+    f32 marioDistToHome = dx * dx + dy * dy + dz * dz;
 
-    if (o->oDistanceToMario > 2000.0f && marioDistToHome > 2000.0f) {
+    if (o->oDistanceToMario > 2000.0f && marioDistToHome > sqr(2000.0f)) {
         return TRUE;
     } else {
         return FALSE;
