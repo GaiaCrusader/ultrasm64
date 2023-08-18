@@ -216,7 +216,7 @@ f32 painting_mario_y(struct Painting *painting) {
     // Add 50 to make the ripple closer to Mario's center of mass.
     f32 relY = gPaintingMarioYPos - painting->posY + 50.0f;
 
-    if (relY < 0.0) {
+    if (relY < 0.0f) {
         relY = 0.0f;
     } else if (relY > painting->size) {
         relY = painting->size;
@@ -230,7 +230,7 @@ f32 painting_mario_y(struct Painting *painting) {
 f32 painting_mario_z(struct Painting *painting) {
     f32 relZ = painting->posZ - gPaintingMarioZPos;
 
-    if (relZ < 0.0) {
+    if (relZ < 0.0f) {
         relZ = 0.0f;
     } else if (relZ > painting->size) {
         relZ = painting->size;
@@ -265,7 +265,7 @@ f32 painting_ripple_y(struct Painting *painting, s8 ySource) {
 f32 painting_nearest_4th(struct Painting *painting) {
     f32 firstQuarter = painting->size / 4.0f;       // 1/4 of the way across the painting
     f32 secondQuarter = painting->size / 2.0f;      // 1/2 of the way across the painting
-    f32 thirdQuarter = painting->size * 3.0 / 4.0f; // 3/4 of the way across the painting
+    f32 thirdQuarter = painting->size * 3.0f / 4.0f; // 3/4 of the way across the painting
 
     if (painting->floorEntered & RIPPLE_LEFT) {
         return firstQuarter;
@@ -293,7 +293,7 @@ f32 painting_nearest_4th(struct Painting *painting) {
 f32 painting_mario_x(struct Painting *painting) {
     f32 relX = gPaintingMarioXPos - painting->posX;
 
-    if (relX < 0.0) {
+    if (relX < 0.0f) {
         relX = 0.0f;
     } else if (relX > painting->size) {
         relX = painting->size;
@@ -591,7 +591,7 @@ void painting_update_ripple_state(struct Painting *painting) {
     }
     if (painting->rippleTrigger == RIPPLE_TRIGGER_PROXIMITY) {
         // if the painting is barely rippling, make it stop rippling
-        if (painting->currRippleMag <= 1.0) {
+        if (painting->currRippleMag <= 1.0f) {
             painting->state = PAINTING_IDLE;
             gRipplingPainting = NULL;
         }
@@ -751,10 +751,10 @@ void painting_calculate_triangle_normals(s16 *mesh, s16 numVtx, s16 numTris) {
 s8 normalize_component(f32 comp) {
     s8 rounded;
 
-    if (comp > 0.0) {
-        rounded = comp * 127.0 + 0.5f; // round up
-    } else if (comp < 0.0) {
-        rounded = comp * 128.0 - 0.5f; // round down
+    if (comp > 0.0f) {
+        rounded = comp * 127.0f + 0.5f; // round up
+    } else if (comp < 0.0f) {
+        rounded = comp * 128.0f - 0.5f; // round down
     } else {
         rounded = 0;                  // don't round 0
     }
@@ -806,7 +806,7 @@ void painting_average_vertex_normals(s16 *neighborTris, s16 numVtx) {
         nz /= neighbors;
         nlen = sqrtf(nx * nx + ny * ny + nz * nz);
 
-        if (nlen == 0.0) {
+        if (nlen == 0.0f) {
             gPaintingMesh[i].norm[0] = 0;
             gPaintingMesh[i].norm[1] = 0;
             gPaintingMesh[i].norm[2] = 0;

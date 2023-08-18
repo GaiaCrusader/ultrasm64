@@ -262,7 +262,7 @@ void piranha_plant_act_respawn(void) {
      * sets the Piranha Plant's scale to 0, therefore the Piranha Plant will
      * grow from the ground unconditionally when in this state.
      */
-    if (o->oPiranhaPlantScale < 1.0) {
+    if (o->oPiranhaPlantScale < 1.0f) {
         // Grow by 0.02 per frame.
         o->oPiranhaPlantScale += 0.02;
     } else {

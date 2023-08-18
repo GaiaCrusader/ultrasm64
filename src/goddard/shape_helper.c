@@ -906,7 +906,7 @@ struct ObjShape *make_grid_shape(enum ObjTypeFlag gridType, s32 a1, s32 a2, s32 
     gridShape->faceCount = 0;
     gridShape->vtxCount = 0;
 
-    sp44 = 2.0 / a3; //? 2.0f
+    sp44 = 2.0f / a3; //? 2.0f
     sp5C = -1.0f;
     sp6C = 0.0f;
     sp70 = -1.0f;
@@ -919,8 +919,8 @@ struct ObjShape *make_grid_shape(enum ObjTypeFlag gridType, s32 a1, s32 a2, s32 
                 objBuf[row][col] = gd_make_vertex(sp68, sp6C, sp70);
             } else if (gridType == OBJ_TYPE_PARTICLES) {
                 objBuf[row][col] = make_particle(0, 0, sp68, sp6C + 2.0f, sp70);
-                ((struct ObjParticle *) objBuf[row][col])->unk44 = (1.0 + sp68) / 2.0f;
-                ((struct ObjParticle *) objBuf[row][col])->unk48 = (1.0 + sp70) / 2.0f;
+                ((struct ObjParticle *) objBuf[row][col])->unk44 = (1.0f + sp68) / 2.0f;
+                ((struct ObjParticle *) objBuf[row][col])->unk48 = (1.0f + sp70) / 2.0f;
             }
             sp68 += sp44;
         }

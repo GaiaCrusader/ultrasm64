@@ -393,9 +393,9 @@ u16 *intro_sample_framebuffer(s32 imageW, s32 imageH, s32 sampleW, s32 sampleH) 
             }
 
             size = sampleW * sampleH;
-            image[imageH * iy + ix] = ((((u16) (r / size + 0.5) << 0xB) & 0xF800) & 0xffff) +
-                                      ((((u16) (g / size + 0.5) << 0x6) &  0x7C0) & 0xffff) +
-                                      ((((u16) (b / size + 0.5) << 0x1) &   0x3E) & 0xffff) + 1;
+            image[imageH * iy + ix] = ((((u16) (r / size + 0.5f) << 0xB) & 0xF800) & 0xffff) +
+                                      ((((u16) (g / size + 0.5f) << 0x6) &  0x7C0) & 0xffff) +
+                                      ((((u16) (b / size + 0.5f) << 0x1) &   0x3E) & 0xffff) + 1;
         }
     }
 

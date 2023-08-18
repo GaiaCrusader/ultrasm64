@@ -124,7 +124,7 @@ struct DynList dynlist_mario_master[] = {
             SetSkinShape(DYNOBJ_MARIO_FACE_SHAPE),
             SetScale(1.0, 1.0, 1.0f),
             SetRotation(0.0, 90.0, 0.0f),
-            SetAttachOffset(0.0, -154.9, 118.5),
+            SetAttachOffset(0.0f, -154.9f, 118.5f),
             MakeAttachedJoint(DYNOBJ_MARIO_RIGHT_JAW_JOINT),
                 SetScale(1.0, 1.0, 1.0f),
                 SetRotation(0.0, 0.0, -111.558),

@@ -2984,21 +2984,9 @@ const BehaviorScript bhvInsideCannon[] = {
     BREAK(),
 };
 
-const BehaviorScript bhvUnused2A10[] = {
-    BEGIN(OBJ_LIST_DEFAULT),
-    BILLBOARD(),
-    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    BREAK(),
-};
-
 const BehaviorScript bhvStaticObject[] = {
     BEGIN(OBJ_LIST_DEFAULT),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
-    BREAK(),
-};
-
-const BehaviorScript bhvUnused2A54[] = {
-    BEGIN(OBJ_LIST_DEFAULT),
     BREAK(),
 };
 

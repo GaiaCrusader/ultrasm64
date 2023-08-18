@@ -1096,7 +1096,7 @@ static f32 get_sound_pan(f32 x, f32 z) {
         // since x is not clamped. On JP, this can lead to an out-of-bounds
         // float read in note_set_vel_pan_reverb when x is highly negative,
         // causing console crashes when that float is a nan or denormal.
-        pan = 0.5 + x / (US_FLOAT(6.0) * absZ);
+        pan = 0.5f + x / (US_FLOAT(6.0) * absZ);
     }
 
     return pan;

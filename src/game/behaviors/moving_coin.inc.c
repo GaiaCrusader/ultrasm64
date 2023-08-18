@@ -122,10 +122,10 @@ void bhv_moving_blue_coin_loop(void) {
                     cur_obj_play_sound_2(SOUND_GENERAL_COIN_DROP);
                 }
             } else {
-                o->oForwardVel *= 0.98;
+                o->oForwardVel *= 0.98f;
             }
 
-            if (o->oForwardVel > 75.0) {
+            if (o->oForwardVel > 75.0f) {
                 o->oForwardVel = 75.0f;
             }
 
@@ -141,7 +141,7 @@ void bhv_moving_blue_coin_loop(void) {
 
 void bhv_blue_coin_sliding_jumping_init(void) {
     o->oGravity = 3.0f;
-    o->oFriction = 0.98;
+    o->oFriction = 0.98f;
     o->oBuoyancy = 1.5f;
 
     obj_set_hitbox(o, &sMovingBlueCoinHitbox);

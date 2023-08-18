@@ -443,8 +443,8 @@ void world_pos_to_screen_coords(struct GdVec3f *pos, struct ObjCamera *cam, stru
         return;
     }
 
-    pos->x *= 256.0 / -pos->z;
-    pos->y *= 256.0 / pos->z;
+    pos->x *= 256.0f / -pos->z;
+    pos->y *= 256.0f / pos->z;
     pos->x += view->lowerRight.x / 2.0f;
     pos->y += view->lowerRight.y / 2.0f;
 }
@@ -741,9 +741,9 @@ void Proc8017A980(struct ObjLight *light) {
     sp24 = light->unk30;
     if (light->flags & LIGHT_UNK02) {
         sp20 = -gd_dot_vec3f(&sLightPositionCache[light->id], &light->unk80);
-        sp1C = 1.0 - light->unk38 / 90.0f;
+        sp1C = 1.0f - light->unk38 / 90.0f;
         if (sp20 > sp1C) {
-            sp20 = (sp20 - sp1C) * (1.0 / (1.0 - sp1C));
+            sp20 = (sp20 - sp1C) * (1.0f / (1.0f - sp1C));
             if (sp20 > 1.0f) {
                 sp20 = 1.0f;
             } else if (sp20 < 0.0f) {

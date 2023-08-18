@@ -98,7 +98,7 @@ void bully_act_chase_mario(void) {
 }
 
 void bully_act_knockback(void) {
-    if (o->oForwardVel < 10.0 && (s32) o->oVelY == 0) {
+    if (o->oForwardVel < 10.0f && (s32) o->oVelY == 0) {
         o->oForwardVel = 1.0f;
         o->oBullyKBTimerAndMinionKOCounter++;
         o->oFlags |= OBJ_FLAG_SET_FACE_YAW_TO_MOVE_YAW;

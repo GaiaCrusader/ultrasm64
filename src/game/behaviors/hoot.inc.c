@@ -25,12 +25,12 @@ void hoot_floor_bounce(void) {
 
     floorY = hoot_find_next_floor(&floorGeo, 375.0f);
     if (floorY + 75.0f > o->oPosY) {
-        o->oMoveAnglePitch -= 3640.8888;
+        o->oMoveAnglePitch -= 3640.8888f;
     }
 
     floorY = hoot_find_next_floor(&floorGeo, 200.0f);
     if (floorY + 125.0f > o->oPosY) {
-        o->oMoveAnglePitch -= 7281.7776;
+        o->oMoveAnglePitch -= 7281.7776f;
     }
 
     floorY = hoot_find_next_floor(&floorGeo, 0);
@@ -38,7 +38,7 @@ void hoot_floor_bounce(void) {
         o->oPosY = floorY + 125.0f;
     }
 
-    if (o->oMoveAnglePitch < -21845.3328) {
+    if (o->oMoveAnglePitch < -21845.3328f) {
         o->oMoveAnglePitch = -21845;
     }
 }
@@ -59,9 +59,9 @@ void hoot_free_step(s16 fastOscY, s32 speed) {
 
     o->oPosX += o->oVelX;
     if (fastOscY == 0) {
-        o->oPosY -= o->oVelY + coss((s32)(animFrame * 3276.8)) * 50.0f / 4;
+        o->oPosY -= o->oVelY + coss((s32)(animFrame * 3276.8f)) * 50.0f / 4;
     } else {
-        o->oPosY -= o->oVelY + coss((s32)(animFrame * 6553.6)) * 50.0f / 4;
+        o->oPosY -= o->oVelY + coss((s32)(animFrame * 6553.6f)) * 50.0f / 4;
     }
     o->oPosZ += o->oVelZ;
 
@@ -103,7 +103,7 @@ void hoot_carry_step(s32 speed, UNUSED f32 xPrev, UNUSED f32 zPrev) {
     o->oVelZ = coss(yaw) * hSpeed;
 
     o->oPosX += o->oVelX;
-    o->oPosY -= o->oVelY + coss((s32)(animFrame * 6553.6)) * 50.0f / 4;
+    o->oPosY -= o->oVelY + coss((s32)(animFrame * 6553.6f)) * 50.0f / 4;
     o->oPosZ += o->oVelZ;
 
     if (animFrame == 0) {

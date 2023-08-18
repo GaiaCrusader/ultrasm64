@@ -662,6 +662,7 @@ void setup_game_memory(void) {
     }
     // Setup Mario Animations
     gMarioAnimsMemAlloc = main_pool_alloc(0x4000, MEMORY_POOL_LEFT);
+    gMarioAnimHeap = main_pool_alloc(0x4000, MEMORY_POOL_LEFT);
     //gMarioAnimsMemAlloc = main_pool_alloc(sizeof(struct Animation), MEMORY_POOL_LEFT);
     set_segment_base_addr(17, (void *) gMarioAnimsMemAlloc);
     setup_dma_table_list(&gMarioAnimsBuf, gMarioAnims, gMarioAnimsMemAlloc);

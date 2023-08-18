@@ -779,7 +779,7 @@ s16 get_str_x_pos_from_center(s16 centerPos, u8 *str, UNUSED f32 scale) {
     }
     // return the x position of where the string starts as half the string's
     // length from the position of the provided center.
-    return (s16)(centerPos - (s16)(spacesWidth / 2.0));
+    return (s16)(centerPos - (s16)(spacesWidth / 2.0f));
 }
 #endif
 
@@ -801,7 +801,7 @@ s16 get_str_x_pos_from_center_scale(s16 centerPos, u8 *str, f32 scale) {
     }
     // return the x position of where the string starts as half the string's
     // length from the position of the provided center.
-    return (f32) centerPos - (scale * (charsWidth / 2.0)) - ((scale / 2.0) * (spacesWidth / 2.0));
+    return (f32) centerPos - (scale * (charsWidth / 2.0f)) - ((scale / 2.0f) * (spacesWidth / 2.0f));
 }
 #endif
 
@@ -953,7 +953,7 @@ void render_dialog_box_type(struct DialogEntry *dialog, s8 linesPerBox) {
     switch (gDialogBoxType) {
         case DIALOG_TYPE_ROTATE: // Renders a dialog black box with zoom and rotation
             if (gDialogBoxState == DIALOG_STATE_OPENING || gDialogBoxState == DIALOG_STATE_CLOSING) {
-                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0 / gDialogBoxScaleLerp, 1.0 / gDialogBoxScaleLerp, 1.0f);
+                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0f / gDialogBoxScaleLerp, 1.0f / gDialogBoxScaleLerp, 1.0f);
                 // convert the speed into angle
                 create_dl_rotation_matrix(MENU_MTX_NOPUSH, gDialogBoxOpenTimerLerp * 4.0f, 0, 0, 1.0f);
             }
@@ -961,9 +961,9 @@ void render_dialog_box_type(struct DialogEntry *dialog, s8 linesPerBox) {
             break;
         case DIALOG_TYPE_ZOOM: // Renders a dialog white box with zoom
             if (gDialogBoxState == DIALOG_STATE_OPENING || gDialogBoxState == DIALOG_STATE_CLOSING) {
-                create_dl_translation_matrix(MENU_MTX_NOPUSH, 65.0 - (65.0 / gDialogBoxScaleLerp),
-                                              (40.0 / gDialogBoxScaleLerp) - 40, 0);
-                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0 / gDialogBoxScaleLerp, 1.0 / gDialogBoxScaleLerp, 1.0f);
+                create_dl_translation_matrix(MENU_MTX_NOPUSH, 65.0f - (65.0f / gDialogBoxScaleLerp),
+                                              (40.0f / gDialogBoxScaleLerp) - 40, 0);
+                create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.0f / gDialogBoxScaleLerp, 1.0f / gDialogBoxScaleLerp, 1.0f);
             }
             gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 150);
             break;
@@ -1003,8 +1003,8 @@ void change_and_flash_dialog_text_color_lines(s8 colorMode, s8 lineNum) {
 
 #ifdef VERSION_EU
 void render_generic_dialog_char_at_pos(struct DialogEntry *dialog, s16 x, s16 y, u8 c) {
-    s16 width = (8.0 - (gDialogBoxScaleLerp * 0.8f));
-    s16 height = (16.0 - (gDialogBoxScaleLerp * 0.8f));
+    s16 width = (8.0f - (gDialogBoxScaleLerp * 0.8f));
+    s16 height = (16.0f - (gDialogBoxScaleLerp * 0.8f));
     s16 tmpX = (dialog->leftOffset + (65.0f - (65.0f / gDialogBoxScaleLerp)));
     s16 tmpY = ((240 - dialog->width) - ((40.0f / gDialogBoxScaleLerp) - 40));
     s16 xCoord = (tmpX + (x / gDialogBoxScaleLerp));

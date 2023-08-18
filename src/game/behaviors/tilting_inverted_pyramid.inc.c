@@ -1,4 +1,6 @@
 
+#include "game/rendering_graph_node.h"
+#include "string.h"
 /**
  * This is the behavior file for the tilting inverted pyramids in BitFS/LLL.
  * The object essentially just tilts and moves Mario with it.
@@ -96,7 +98,7 @@ void bhv_tilting_inverted_pyramid_loop(void) {
         //! Always true since dy = 500, making d >= 500.
         if (d != 0.0f) {
             // Normalizing
-            d = 1.0 / d;
+            d = 1.0f / d;
             dx *= d;
             dy *= d;
             dz *= d;
@@ -133,6 +135,12 @@ void bhv_tilting_inverted_pyramid_loop(void) {
         mz += posAfterRotation[2] - posBeforeRotation[2];
         set_mario_pos(mx, my, mz);
     }
+    o->header.gfx.throwMatrix = &o->transform;
+    if (gThrowMatIndex >= THROWMATSTACK)
+        return;
 
-    o->header.gfx.throwMatrix = transform;
+    memcpy(&gThrowMatStack[gThrowMatSwap][gThrowMatIndex], o->transform, sizeof(Mat4));
+    o->header.gfx.matrixID[gThrowMatSwap] = gThrowMatIndex;
+    gThrowMatIndex++;
+
 }

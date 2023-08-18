@@ -18,7 +18,7 @@ void boulder_act_1(void) {
         spawn_mist_particles();
     }
 
-    if (o->oForwardVel > 70.0) {
+    if (o->oForwardVel > 70.0f) {
         o->oForwardVel = 70.0f;
     }
 

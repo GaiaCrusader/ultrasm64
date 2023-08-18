@@ -261,7 +261,7 @@ void geo_append_display_list(void *displayList, s16 layer) {
         listNode->transform = gMatStackFixed[gMatStackIndex];
         listNode->displayList = displayList;
         listNode->next = 0;
-        if (gCurGraphNodeObject != NULL && gAntiAliasing == 0) {
+        if (gCurGraphNodeObject != NULL && gAntiAliasing == 0 && ((struct Object *) gCurGraphNodeObjectNode->behavior) != segmented_to_virtual(bhvStaticObject)) {
             listNode->fancyAA = TRUE;
         } else {
             listNode->fancyAA = FALSE;
@@ -1068,11 +1068,10 @@ void linear_mtxf_mul_vec3f_and_translate(Mat4 m, Vec3f dst, Vec3f v) {
  * Process an object node.
  */
 void geo_process_object(struct Object *node) {
-
+    BehaviorScript *bhv = segmented_to_virtual(node->behavior);
     // !@Bug: Breaks JRB ship
     if ((node->header.gfx.sharedChild == NULL || !(node->header.gfx.node.flags & GRAPH_RENDER_ACTIVE) || 
-    node->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE) && node->behavior != segmented_to_virtual(bhvInSunkenShip3) && 
-    node->behavior != segmented_to_virtual(bhvLllTiltingInvertedPyramid) && node->behavior != segmented_to_virtual(bhvBitfsTiltingInvertedPyramid)) {
+    node->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE) && bhv != bhvInSunkenShip3) {
         // Still want to know where the object is in worldspace, for audio panning to correctly work.
         mtxf_translate(gMatStack[gMatStackIndex + 1], node->header.gfx.pos);
         linear_mtxf_mul_vec3f_and_translate(gCameraTransform, node->header.gfx.cameraToObject, gMatStack[gMatStackIndex + 1][3]);
@@ -1087,7 +1086,7 @@ void geo_process_object(struct Object *node) {
             warp_node(node);
     }
 
-    if (gFileSelect) {
+    if (gFileSelect || bhv == bhvLllTiltingInvertedPyramid || bhv == bhvBitfsTiltingInvertedPyramid) {
         if (node->header.gfx.matrixID[gThrowMatSwap ^ 1] != MATRIX_NULL) {
             node->header.gfx.throwMatrix = &gThrowMatStack[gThrowMatSwap ^ 1][node->header.gfx.matrixID[gThrowMatSwap ^ 1]];
         } else {

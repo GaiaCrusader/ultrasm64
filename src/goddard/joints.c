@@ -741,7 +741,7 @@ void func_80190B54(struct ObjJoint *a0, struct ObjJoint *a1, struct GdVec3f *a2)
         D_801BAAE0.y = spA4.y - (sp8C.y * sp7C);
         D_801BAAE0.z = spA4.z - (sp8C.z * sp7C);
 
-        sp78 = 5.4 / sp7C; //? 5.4f
+        sp78 = 5.4f / sp7C; //? 5.4f
         D_801BAAD0.x *= sp78;
         D_801BAAD0.y *= sp78;
         D_801BAAD0.z *= sp78;
@@ -918,7 +918,7 @@ void func_80191BF8(struct ObjJoint *j) {
     if ((sp1C = j->unk3C.y - (D_801A8058 + 30.0f)) < 0.0f && j->velocity.y < 0.0f) {
         sp1C += j->velocity.y;
         sp1C *= 0.8f; //? 0.8f
-        func_80190F3C(j, -j->velocity.x * 0.7, -sp1C, -j->velocity.z * 0.7);
+        func_80190F3C(j, -j->velocity.x * 0.7f, -sp1C, -j->velocity.z * 0.7f);
     }
 
     func_80190F3C(j, 0.0f, 0.0f, 0.0f);

@@ -34,7 +34,7 @@ void snowmans_bottom_act_1(void) {
     o->oSnowmansBottomUnkF8 = o->oPathedTargetYaw;
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oSnowmansBottomUnkF8, 0x400);
 
-    if (o->oForwardVel > 70.0) {
+    if (o->oForwardVel > 70.0f) {
         o->oForwardVel = 70.0f;
     }
 
@@ -52,7 +52,7 @@ void snowmans_bottom_act_1(void) {
 void snowmans_bottom_act_2(void) {
     object_step_without_floor_orient();
 
-    if (o->oForwardVel > 70.0) {
+    if (o->oForwardVel > 70.0f) {
         o->oForwardVel = 70.0f;
     }
 

@@ -10,9 +10,9 @@ void bhv_flamethrower_flame_loop(void) {
     }
 
     if (o->oBehParams2ndByte == 2) {
-        scale = o->oTimer * (o->oForwardVel - 6.0f) / 100.0 + 2.0f;
+        scale = o->oTimer * (o->oForwardVel - 6.0f) / 100.0f + 2.0f;
     } else {
-        scale = o->oTimer * (o->oForwardVel - 20.0) / 100.0 + 1.0f;
+        scale = o->oTimer * (o->oForwardVel - 20.0f) / 100.0f + 1.0f;
     }
 
     if (o->oBehParams2ndByte == 3) {

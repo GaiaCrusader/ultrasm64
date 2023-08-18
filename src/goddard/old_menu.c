@@ -159,7 +159,7 @@ void reset_gadget(struct ObjGadget *gdgt) {
     f32 range;
     struct ObjValPtr *vp;
 
-    range = (f32)(1.0 / (gdgt->rangeMax - gdgt->rangeMin));
+    range = (f32)(1.0f / (gdgt->rangeMax - gdgt->rangeMin));
 
     if (gdgt->valueGrp != NULL) {
         vp = (struct ObjValPtr *) gdgt->valueGrp->firstMember->obj;

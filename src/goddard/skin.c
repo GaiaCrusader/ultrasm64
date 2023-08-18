@@ -158,12 +158,12 @@ void collision_something_801926A4(struct ObjNet *net) {
             D_801B9E28.z /= D_801B9E34;
         }
 
-        D_801B9E28.x *= 1.0 / gGdCounter.ctr1; // !1.0f
-        D_801B9E28.y *= 1.0 / gGdCounter.ctr1; // !1.0f
-        D_801B9E28.z *= 1.0 / gGdCounter.ctr1; // !1.0f
-        D_801B9E18.x *= 1.0 / gGdCounter.ctr1; // !1.0f
-        D_801B9E18.y *= 1.0 / gGdCounter.ctr1; // !1.0f
-        D_801B9E18.z *= 1.0 / gGdCounter.ctr1; // !1.0f
+        D_801B9E28.x *= 1.0f / gGdCounter.ctr1; // !1.0f
+        D_801B9E28.y *= 1.0f / gGdCounter.ctr1; // !1.0f
+        D_801B9E28.z *= 1.0f / gGdCounter.ctr1; // !1.0f
+        D_801B9E18.x *= 1.0f / gGdCounter.ctr1; // !1.0f
+        D_801B9E18.y *= 1.0f / gGdCounter.ctr1; // !1.0f
+        D_801B9E18.z *= 1.0f / gGdCounter.ctr1; // !1.0f
 
         func_8017E584(gGdSkinNet, &D_801B9E28, &D_801B9E18);
         func_8017E838(gGdSkinNet, &D_801B9E28, &D_801B9E18);
@@ -183,8 +183,8 @@ void collision_something_801926A4(struct ObjNet *net) {
     net->worldPos.z += net->collDisp.z;
     func_8017E9EC(net);
 
-    net->torque.x *= 0.98; //? 0.98f
-    net->torque.z *= 0.98; //? 0.98f
+    net->torque.x *= 0.98f; //? 0.98f
+    net->torque.z *= 0.98f; //? 0.98f
     net->torque.y *= 0.9f;  //? 0.9f
 }
 

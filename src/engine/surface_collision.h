@@ -15,7 +15,7 @@
 #define FLOOR_LOWER_LIMIT_MISC      (FLOOR_LOWER_LIMIT + 1000)
 // same as FLOOR_LOWER_LIMIT_MISC, explicitly for shadow.c 
 // It doesn't match if ".0" is removed or ".f" is added
-#define FLOOR_LOWER_LIMIT_SHADOW    (FLOOR_LOWER_LIMIT + 1000.0)
+#define FLOOR_LOWER_LIMIT_SHADOW    (FLOOR_LOWER_LIMIT + 1000.0f)
 
 struct WallCollisionData {
     /*0x00*/ f32 x, y, z;

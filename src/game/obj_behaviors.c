@@ -148,7 +148,7 @@ s8 turn_obj_away_from_steep_floor(struct Surface *objFloor, f32 floorY, f32 objV
     floor_nZ = objFloor->normal.z;
 
     // If the floor is steep and we are below it (i.e. walking into it), turn away from the floor.
-    if (floor_nY < 0.5 && floorY > o->oPosY) {
+    if (floor_nY < 0.5f && floorY > o->oPosY) {
         objVelXCopy = objVelX;
         objVelZCopy = objVelZ;
         turn_obj_away_from_surface(objVelXCopy, objVelZCopy, floor_nX, floor_nY, floor_nZ, &objYawX,
@@ -279,7 +279,7 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
     if (o->oVelY > 75.0f) {
         o->oVelY = 75.0f;
     }
-    if (o->oVelY < -75.0) {
+    if (o->oVelY < -75.0f) {
         o->oVelY = -75.0f;
     }
 
@@ -298,7 +298,7 @@ void calc_new_obj_vel_and_pos_y_underwater(struct Surface *objFloor, f32 floorY,
     }
 
     // If moving fast near the surface of the water, flip vertical speed? To emulate skipping?
-    if (o->oForwardVel > 12.5 && (waterY + 30.0f) > o->oPosY && (waterY - 30.0f) < o->oPosY) {
+    if (o->oForwardVel > 12.5f && (waterY + 30.0f) > o->oPosY && (waterY - 30.0f) < o->oPosY) {
         o->oVelY = -o->oVelY;
     }
 
@@ -559,7 +559,7 @@ void adjust_rolling_face_pitch(f32 f12) {
     o->oFaceAnglePitch += (s16)(o->oForwardVel * (100.0f / f12));
     o->oSnowmansBottomScale += o->oForwardVel * 0.0001;
 
-    if (o->oSnowmansBottomScale > 1.0) {
+    if (o->oSnowmansBottomScale > 1.0f) {
         o->oSnowmansBottomScale = 1.0f;
     }
 }

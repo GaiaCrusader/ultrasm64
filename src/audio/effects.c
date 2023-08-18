@@ -449,7 +449,7 @@ s32 adsr_update(struct AdsrState *adsr) {
                     }
                     adsr->target = (f32) BSWAP16(adsr->envelope[adsr->envIndex].arg) / 32767.0f;
 #elif defined(VERSION_EU)
-                    adsr->target = (f32) BSWAP16(adsr->envelope[adsr->envIndex].arg) / 32767.0;
+                    adsr->target = (f32) BSWAP16(adsr->envelope[adsr->envIndex].arg) / 32767.0f;
 #endif
                     adsr->target = adsr->target * adsr->target;
                     adsr->velocity = (adsr->target - adsr->current) / adsr->delay;
