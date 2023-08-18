@@ -9,6 +9,7 @@
 
 #define UNLOCK_ALL
 #define PUPPYPRINT_DEBUG
+#define DISABLE_DEMOS 
 
 // Bug Fixes
 // --| Post-JP Version Nintendo Bug Fixes

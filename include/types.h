@@ -250,7 +250,7 @@ struct MarioBodyState {
 };
 
 struct MarioState {
-    /*0x00*/ u16 unk00;
+    /*0xB6*/ u16 capTimer;
     /*0x02*/ u16 input;
     /*0x04*/ u32 flags;
     /*0x08*/ u32 particleFlags;
@@ -262,7 +262,8 @@ struct MarioState {
     /*0x1C*/ u32 actionArg;
     /*0x20*/ f32 intendedMag;
     /*0x24*/ s16 intendedYaw;
-    /*0x26*/ s16 invincTimer;
+    /*0x26*/ s8 invincTimer;
+    /*0xAD*/ s8 numLives;
     /*0x28*/ u8 framesSinceA;
     /*0x29*/ u8 framesSinceB;
     /*0x2A*/ u8 wallKickTimer;
@@ -297,15 +298,12 @@ struct MarioState {
     /*0xA4*/ u32 collidedObjInteractTypes;
     /*0xA8*/ s16 numCoins;
     /*0xAA*/ s16 numStars;
-    /*0xAC*/ s8 numKeys; // Unused key mechanic
-    /*0xAD*/ s8 numLives;
     /*0xAE*/ s16 health;
     /*0xB0*/ s16 unkB0;
     /*0xB2*/ u8 hurtCounter;
     /*0xB3*/ u8 healCounter;
     /*0xB4*/ u8 squishTimer;
     /*0xB5*/ u8 fadeWarpOpacity;
-    /*0xB6*/ u16 capTimer;
     /*0xB8*/ s16 prevNumStarsForDialog;
     /*0xBC*/ f32 peakHeight;
     /*0xC0*/ f32 quicksandDepth;

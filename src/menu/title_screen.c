@@ -49,6 +49,7 @@ s32 run_level_id_or_demo(s32 level) {
     gCurrDemoInput = NULL;
 
     if (level == LEVEL_NONE) {
+#ifndef DISABLE_DEMOS
         if (!gPlayer1Controller->buttonDown && !gPlayer1Controller->stickMag) {
             // start the demo. 800 frames has passed while
             // player is idle on PRESS START screen.
@@ -74,6 +75,9 @@ s32 run_level_id_or_demo(s32 level) {
         } else { // activity was detected, so reset the demo countdown.
             sDemoCountdown = 0;
         }
+#else
+            sDemoCountdown = 0;
+#endif
     }
     return level;
 }

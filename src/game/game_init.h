@@ -57,7 +57,6 @@ extern struct Controller *gPlayer2Controller;
 extern struct Controller *gPlayer3Controller;
 extern struct DemoInput *gCurrDemoInput;
 extern u16 gDemoInputListID;
-extern struct DemoInput gRecordedDemoInput;
 extern f32 gLerpSpeed;
 extern u32 gMoveSpeed;
 extern u8 gLoadReset;

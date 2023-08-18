@@ -105,7 +105,6 @@ struct Controller *gPlayer3Controller = &gControllers[2]; // Probably debug only
 // Title Screen Demo Handler
 struct DemoInput *gCurrDemoInput = NULL;
 u16 gDemoInputListID = 0;
-struct DemoInput gRecordedDemoInput = { 0 };
 
 // Display
 // ----------------------------------------------------------------------------------------------------
@@ -474,6 +473,7 @@ void adjust_analog_stick(struct Controller *controller) {
     }
 }
 
+#ifndef DISABLE_DEMOS
 /**
  * If a demo sequence exists, this will run the demo input list until it is complete.
  */
@@ -530,6 +530,7 @@ void run_demo_inputs(void) {
         }
     }
 }
+#endif
 
 /**
  * Update the controller struct with available inputs if present.
@@ -545,7 +546,9 @@ void read_controller_inputs(void) {
         release_rumble_pak_control();
 #endif
     }
+#ifndef DISABLE_DEMOS
     run_demo_inputs();
+#endif
 
     for (i = 0; i < 2; i++) {
         struct Controller *controller = &gControllers[i];
