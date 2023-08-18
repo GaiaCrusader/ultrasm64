@@ -79,7 +79,7 @@ f32 gHalfFovVert;
 f32 gHalfFovHor;
 u32 gCurrAnimPos;
 u8 gCameraSnap = FALSE;
-ALIGNED16 u8 gMarioAnimHeap[0x4000];
+void *gMarioAnimHeap;
 struct AnimInfo gMarioGfxAnim;
 struct DmaHandlerList gMarioGfxAnimBuf;
 struct DmaHandlerList *gMarioGfxAnimList = &gMarioGfxAnimBuf;

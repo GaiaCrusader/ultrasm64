@@ -54,7 +54,6 @@ extern s8 gSramProbe;
 extern void (*gGoddardVblankCallback)(void);
 extern struct Controller *gPlayer1Controller;
 extern struct Controller *gPlayer2Controller;
-extern struct Controller *gPlayer3Controller;
 extern struct DemoInput *gCurrDemoInput;
 extern u16 gDemoInputListID;
 extern f32 gLerpSpeed;

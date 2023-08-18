@@ -77,8 +77,8 @@ void hoot_free_step(s16 fastOscY, s32 speed) {
 }
 
 void hoot_player_set_yaw(void) {
-    s16 stickX = gPlayer3Controller->rawStickX;
-    s16 stickY = gPlayer3Controller->rawStickY;
+    s16 stickX = gPlayer1Controller->rawStickX;
+    s16 stickY = gPlayer1Controller->rawStickY;
 
     if (stickX < 10 && stickX >= -9) {
         stickX = 0;

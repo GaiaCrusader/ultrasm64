@@ -717,19 +717,19 @@ void handle_menu_scrolling(s8 scrollDirection, s8 *currentIndex, s8 minIndex, s8
     u8 index = 0;
 
     if (scrollDirection == MENU_SCROLL_VERTICAL) {
-        if (gPlayer3Controller->rawStickY > 60) {
+        if (gPlayer1Controller->rawStickY > 60) {
             index++;
         }
 
-        if (gPlayer3Controller->rawStickY < -60) {
+        if (gPlayer1Controller->rawStickY < -60) {
             index += 2;
         }
     } else if (scrollDirection == MENU_SCROLL_HORIZONTAL) {
-        if (gPlayer3Controller->rawStickX > 60) {
+        if (gPlayer1Controller->rawStickX > 60) {
             index += 2;
         }
 
-        if (gPlayer3Controller->rawStickX < -60) {
+        if (gPlayer1Controller->rawStickX < -60) {
             index++;
         }
     }
@@ -2894,7 +2894,7 @@ s32 pause_menu_logic(void) {
                 handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, 1, 3);
             }
 
-            if (gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
                 gDialogBoxState = DIALOG_STATE_OPENING;
@@ -2914,7 +2914,7 @@ s32 pause_menu_logic(void) {
         case DIALOG_STATE_HORIZONTAL:
         handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, COURSE_NUM_TO_INDEX(COURSE_MIN) - 1, COURSE_NUM_TO_INDEX(COURSE_BONUS_STAGES) + 1);
 
-            if (gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
+            if (gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON)) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_PAUSE_2, gGlobalSoundSource);
                 gMenuMode = MENU_MODE_NONE;
@@ -2988,7 +2988,7 @@ s32 clear_menu_logic(void) {
             increment_coin_score();
             handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, 1, 3);
 
-            if (gCourseDoneMenuTimer > 110 && (gPlayer3Controller->buttonPressed & A_BUTTON || gPlayer3Controller->buttonPressed & START_BUTTON)) {
+            if (gCourseDoneMenuTimer > 110 && (gPlayer1Controller->buttonPressed & A_BUTTON || gPlayer1Controller->buttonPressed & START_BUTTON)) {
                 level_set_transition(0, NULL);
                 play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
                 gDialogBoxState = DIALOG_STATE_OPENING;
@@ -3105,8 +3105,8 @@ void dialogue_logic(void) {
             gDialogBoxOpenTimer = 0.0f;
             gDialogBoxOpenTimerLerp = 0.0f;
 
-            if ((gPlayer3Controller->buttonPressed & A_BUTTON)
-                || (gPlayer3Controller->buttonPressed & B_BUTTON)) {
+            if ((gPlayer1Controller->buttonPressed & A_BUTTON)
+                || (gPlayer1Controller->buttonPressed & B_BUTTON)) {
                 if (gLastDialogPageStrPos == -1) {
                     handle_special_dialog_text(gDialogID);
                     gDialogBoxState = DIALOG_STATE_CLOSING;

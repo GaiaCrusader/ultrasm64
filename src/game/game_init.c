@@ -100,7 +100,6 @@ void (*gGoddardVblankCallback)(void) = NULL;
 // Defined controller slots
 struct Controller *gPlayer1Controller = &gControllers[0];
 struct Controller *gPlayer2Controller = &gControllers[1];
-struct Controller *gPlayer3Controller = &gControllers[2]; // Probably debug only, see note below
 
 // Title Screen Demo Handler
 struct DemoInput *gCurrDemoInput = NULL;
@@ -557,8 +556,7 @@ void read_controller_inputs(void) {
         if (controller->controllerData != NULL) {
             controller->rawStickX = controller->controllerData->stick_x;
             controller->rawStickY = controller->controllerData->stick_y;
-            controller->buttonPressed = controller->controllerData->button
-                                        & (controller->controllerData->button ^ controller->buttonDown);
+            controller->buttonPressed = controller->controllerData->button & (controller->controllerData->button ^ controller->buttonDown);
             // 0.5x A presses are a good meme
             controller->buttonDown = controller->controllerData->button;
             adjust_analog_stick(controller);
@@ -576,13 +574,13 @@ void read_controller_inputs(void) {
     // For some reason, player 1's inputs are copied to player 3's port.
     // This potentially may have been a way the developers "recorded"
     // the inputs for demos, despite record_demo existing.
-    gPlayer3Controller->rawStickX = gPlayer1Controller->rawStickX;
-    gPlayer3Controller->rawStickY = gPlayer1Controller->rawStickY;
-    gPlayer3Controller->stickX = gPlayer1Controller->stickX;
-    gPlayer3Controller->stickY = gPlayer1Controller->stickY;
-    gPlayer3Controller->stickMag = gPlayer1Controller->stickMag;
-    gPlayer3Controller->buttonPressed = gPlayer1Controller->buttonPressed;
-    gPlayer3Controller->buttonDown = gPlayer1Controller->buttonDown;
+    gPlayer1Controller->rawStickX = gPlayer1Controller->rawStickX;
+    gPlayer1Controller->rawStickY = gPlayer1Controller->rawStickY;
+    gPlayer1Controller->stickX = gPlayer1Controller->stickX;
+    gPlayer1Controller->stickY = gPlayer1Controller->stickY;
+    gPlayer1Controller->stickMag = gPlayer1Controller->stickMag;
+    gPlayer1Controller->buttonPressed = gPlayer1Controller->buttonPressed;
+    gPlayer1Controller->buttonDown = gPlayer1Controller->buttonDown;
 }
 
 /**
@@ -610,7 +608,7 @@ void init_controllers(void) {
     // Loop over the 4 ports and link the controller structs to the appropriate
     // status and pad. Interestingly, although there are pointers to 3 controllers,
     // only 2 are connected here. The third seems to have been reserved for debug
-    // purposes and was never connected in the retail ROM, thus gPlayer3Controller
+    // purposes and was never connected in the retail ROM, thus gPlayer1Controller
     // cannot be used, despite being referenced in various code.
     for (cont = 0, port = 0; port < 4 && cont < 2; port++) {
         // Is controller plugged in?
@@ -633,7 +631,7 @@ void init_controllers(void) {
 
 
 extern struct DmaHandlerList gMarioGfxAnimBuf;
-extern u8 gMarioAnimHeap[];
+extern void *gMarioAnimHeap;
 /**
  * Setup main segments and framebuffers.
  */
@@ -667,7 +665,7 @@ void setup_game_memory(void) {
     //gMarioAnimsMemAlloc = main_pool_alloc(sizeof(struct Animation), MEMORY_POOL_LEFT);
     set_segment_base_addr(17, (void *) gMarioAnimsMemAlloc);
     setup_dma_table_list(&gMarioAnimsBuf, gMarioAnims, gMarioAnimsMemAlloc);
-    setup_dma_table_list(&gMarioGfxAnimBuf, gMarioAnims, &gMarioAnimHeap);
+    setup_dma_table_list(&gMarioGfxAnimBuf, gMarioAnims, gMarioAnimHeap);
     // Setup Demo Inputs List
     gDemoInputsMemAlloc = main_pool_alloc(0x800, MEMORY_POOL_LEFT);
     set_segment_base_addr(24, (void *) gDemoInputsMemAlloc);
