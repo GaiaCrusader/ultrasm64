@@ -5,7 +5,7 @@ void dorrie_raise_head(void) {
     f32 xzDisp;
     f32 yDisp;
 
-    o->oDorrieNeckAngle -= (s16) absf(370.0f * sins(o->oDorrieHeadRaiseSpeed));
+    o->oDorrieNeckAngle -= (s16) ABS(370.0f * sins(o->oDorrieHeadRaiseSpeed));
 
     xzDisp = 440.0f * (coss(o->oDorrieNeckAngle) - coss(startAngle));
     yDisp = 440.0f * (sins(o->oDorrieNeckAngle) - sins(startAngle));

@@ -52,7 +52,7 @@ void checkerboard_plat_act_move_y(UNUSED s32 unused, f32 vel, s32 a2) {
 void checkerboard_plat_act_rotate(s32 a0, s16 a1) {
     o->oVelY = 0.0f;
     o->oAngleVelPitch = a1;
-    if (o->oTimer + 1 == 0x8000 / absi(a1)) {
+    if (o->oTimer + 1 == 0x8000 / ABS(a1)) {
         o->oAction = a0;
     }
     o->oCheckerBoardPlatformUnkF8 = a0;
@@ -93,8 +93,8 @@ void bhv_checkerboard_platform_loop(void) {
             break;
     }
 
-    o->oMoveAnglePitch += absi(o->oAngleVelPitch);
-    o->oFaceAnglePitch += absi(o->oAngleVelPitch);
+    o->oMoveAnglePitch += ABS(o->oAngleVelPitch);
+    o->oFaceAnglePitch += ABS(o->oAngleVelPitch);
     o->oFaceAngleYaw = o->oMoveAngleYaw;
 
     if (o->oMoveAnglePitch != 0) {

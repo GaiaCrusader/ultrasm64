@@ -42,7 +42,7 @@ void bhv_yellow_coin_init(void) {
     bhv_init_room();
     cur_obj_update_floor_height();
 
-    if (500.0f < absf(o->oPosY - o->oFloorHeight)) {
+    if (500.0f < ABS(o->oPosY - o->oFloorHeight)) {
         cur_obj_set_model(MODEL_YELLOW_COIN_NO_SHADOW);
     }
 
@@ -151,13 +151,13 @@ void bhv_coin_formation_spawn_loop(void) {
         } else {
             cur_obj_update_floor_height();
 
-            if (absf(o->oPosY - o->oFloorHeight) > 250.0f) {
+            if (ABS(o->oPosY - o->oFloorHeight) > 250.0f) {
                 cur_obj_set_model(MODEL_YELLOW_COIN_NO_SHADOW);
             }
         }
     } else {
         if (bhv_coin_sparkles_init()) {
-            o->parentObj->oCoinUnkF4 |= bit_shift_left(o->oBehParams2ndByte);
+            o->parentObj->oCoinUnkF4 |= sPowersOfTwo[o->oBehParams2ndByte];
         }
         o->oAnimState++;
     }

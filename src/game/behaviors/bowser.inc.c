@@ -1046,7 +1046,7 @@ void bowser_act_jump_onto_stage(void) {
             if (o->oPosY > o->oHomeY) {
                 o->oDragStrength = 0.0f;
                 if (o->oBowserDistToCenter < sqr(2500.0f)) {
-                    if (absf(o->oFloorHeight - o->oHomeY) < 100.0f) {
+                    if (ABS(o->oFloorHeight - o->oHomeY) < 100.0f) {
                         approach_f32_signed(&o->oForwardVel, 0, -5.0f);
                     } else {
                         cur_obj_forward_vel_approach_upward(150.0f, 2.0f);

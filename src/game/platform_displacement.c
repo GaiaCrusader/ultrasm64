@@ -39,7 +39,7 @@ void update_mario_platform(void) {
     marioZ = gMarioObject->oPosZ;
     floorHeight = find_floor(marioX, marioY, marioZ, &floor);
 
-    if (absf(marioY - floorHeight) < 4.0f) {
+    if (ABS(marioY - floorHeight) < 4.0f) {
         awayFromFloor = 0;
     } else {
         awayFromFloor = 1;

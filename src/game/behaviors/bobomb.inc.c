@@ -97,6 +97,9 @@ void bobomb_act_chase_mario(void) {
 void bobomb_act_launched(void) {
     s16 collisionFlags = 0;
     collisionFlags = object_step();
+    
+    o->header.gfx.matrixID[0] = MATRIX_NULL;
+    o->header.gfx.matrixID[1] = MATRIX_NULL;
     if ((collisionFlags & OBJ_COL_FLAG_GROUNDED) == OBJ_COL_FLAG_GROUNDED) {
         o->oAction = BOBOMB_ACT_EXPLODE;
     }
@@ -132,8 +135,6 @@ void generic_bobomb_free_loop(void) {
             break;
     }
 
-    o->header.gfx.matrixID[0] = MATRIX_NULL;
-    o->header.gfx.matrixID[1] = MATRIX_NULL;
     bobomb_check_interactions();
 
     if (o->oBobombFuseTimer > 150) {

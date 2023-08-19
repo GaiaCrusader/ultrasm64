@@ -86,7 +86,7 @@ static void fish_vertical_roam(s32 speed) {
     // If the stage is Secret Aquarium, the fish can 
     // travel as far vertically as they wish.
     if (gCurrLevelNum == LEVEL_SA) {
-        if (500.0f < absf(o->oPosY - o->oFishGoalY)) {
+        if (500.0f < ABS(o->oPosY - o->oFishGoalY)) {
             speed = 10;
         }
         o->oPosY = approach_f32_symmetric(o->oPosY, o->oFishGoalY, speed);

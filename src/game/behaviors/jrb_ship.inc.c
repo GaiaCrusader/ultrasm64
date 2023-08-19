@@ -95,7 +95,7 @@ void bhv_jrb_sliding_box_loop(void) {
     o->oJrbSlidingBoxUnkF8 += 0x100;
     o->oParentRelativePosZ += o->oJrbSlidingBoxUnkFC;
 
-    if (gMarioObject->oPosY > 1000.0f && absf(o->oJrbSlidingBoxUnkFC) > 3.0f) {
+    if (gMarioObject->oPosY > 1000.0f && ABS(o->oJrbSlidingBoxUnkFC) > 3.0f) {
         cur_obj_play_sound_1(SOUND_AIR_ROUGH_SLIDE);
     }
 

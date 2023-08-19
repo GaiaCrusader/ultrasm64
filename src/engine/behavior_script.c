@@ -80,9 +80,9 @@ void obj_update_gfx_pos_and_angle(struct Object *obj) {
     obj->header.gfx.pos[1] = obj->oPosY + obj->oGraphYOffset;
     obj->header.gfx.pos[2] = obj->oPosZ;
 
-    obj->header.gfx.angle[0] = obj->oFaceAnglePitch & 0xFFFF;
-    obj->header.gfx.angle[1] = obj->oFaceAngleYaw & 0xFFFF;
-    obj->header.gfx.angle[2] = obj->oFaceAngleRoll & 0xFFFF;
+    obj->header.gfx.angle[0] = obj->oFaceAnglePitch;
+    obj->header.gfx.angle[1] = obj->oFaceAngleYaw;
+    obj->header.gfx.angle[2] = obj->oFaceAngleRoll;
 }
 
 // Push the address of a behavior command to the object's behavior stack.
@@ -618,7 +618,7 @@ static s32 bhv_cmd_set_obj_physics(void) {
     gCurrentObject->oFriction = BHV_CMD_GET_1ST_S16(3) / 100.0f;
     gCurrentObject->oBuoyancy = BHV_CMD_GET_2ND_S16(3) / 100.0f;
 
-    gCurBhvCommand += 5;
+    gCurBhvCommand += 4;
     return BHV_PROC_CONTINUE;
 }
 

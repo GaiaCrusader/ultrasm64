@@ -8364,7 +8364,7 @@ void cutscene_dialog_start(struct Camera *c) {
     s16 yaw;
 
     cutscene_soften_music(c);
-    set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_DIALOG);
+    gTimeStopState |= (TIME_STOP_ENABLED | TIME_STOP_DIALOG);
 
 #ifndef VERSION_JP
     if (c->mode == CAMERA_MODE_BOSS_FIGHT) {
@@ -8515,7 +8515,7 @@ void cutscene_read_message(struct Camera *c) {
         case 0:
             if (get_dialog_id() != DIALOG_NONE) {
                 sCutsceneVars[0].angle[0]++;
-                set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_DIALOG);
+                gTimeStopState |= (TIME_STOP_ENABLED | TIME_STOP_DIALOG);
             }
             break;
         // Leave the dialog.

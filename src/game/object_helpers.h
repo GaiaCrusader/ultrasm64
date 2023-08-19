@@ -63,6 +63,8 @@ struct SpawnParticlesInfo {
     /*0x10*/ f32 sizeRange;
 };
 
+extern u8 sPowersOfTwo[];
+
 Gfx *geo_update_projectile_pos_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx);
 Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUSED void *context);
 Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node, UNUSED void *context);
@@ -218,8 +220,6 @@ s16 cur_obj_reflect_move_angle_off_wall(void);
 
 void obj_set_hitbox(struct Object *obj, struct ObjectHitbox *hitbox);
 s32 signum_positive(s32 x);
-f32 absf(f32 x);
-s32 absi(s32 a0);
 s32 cur_obj_wait_then_blink(s32 timeUntilBlinking, s32 numBlinks);
 s32 cur_obj_is_mario_ground_pounding_platform(void);
 void spawn_mist_particles(void);
@@ -235,7 +235,6 @@ s32 cur_obj_is_mario_on_platform(void);
 s32 jiggle_bbh_stair(s32 a0);
 void cur_obj_call_action_function(void (*actionFunctions[])(void));
 void spawn_base_star_with_no_lvl_exit(void);
-s32 bit_shift_left(s32 a0);
 s32 cur_obj_mario_far_away(void);
 s32 is_mario_moving_fast_or_in_air(s32 speedThreshold);
 s32 is_item_in_array(s8 item, s8 *array);
@@ -245,12 +244,7 @@ void obj_explode_and_spawn_coins(f32 sp18, s32 sp1C);
 void obj_set_collision_data(struct Object *obj, const void *segAddr);
 void cur_obj_if_hit_wall_bounce_away(void);
 s32 cur_obj_hide_if_mario_far_away_y(f32 distY);
-Gfx *geo_offset_klepto_held_object(s32 callContext, struct GraphNode *node, UNUSED Mat4 mtx);
-Gfx *geo_offset_klepto_debug(s32 callContext, struct GraphNode *node, UNUSED Mat4 mtx);
 s32 obj_is_hidden(struct Object *obj);
-void enable_time_stop(void);
-void disable_time_stop(void);
-void set_time_stop_flags(s32 flags);
 void clear_time_stop_flags(s32 flags);
 s32 cur_obj_can_mario_activate_textbox(f32 radius, f32 height, UNUSED s32 unused);
 s32 cur_obj_can_mario_activate_textbox_2(f32 radius, f32 height);

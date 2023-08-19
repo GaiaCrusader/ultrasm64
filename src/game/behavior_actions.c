@@ -78,7 +78,7 @@ s32 check_if_moving_over_floor(f32 a0, f32 a1) {
 
     floorHeight = find_floor(sp20, o->oPosY, sp18, &sp24);
 
-    if (absf(floorHeight - o->oPosY) < a0) {
+    if (ABS(floorHeight - o->oPosY) < a0) {
         return TRUE;
     } else {
         return FALSE;

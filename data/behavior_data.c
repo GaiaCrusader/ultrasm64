@@ -291,8 +291,7 @@
     BC_B(0x30), \
     BC_HH(wallHitboxRadius, gravity), \
     BC_HH(bounciness, dragStrength), \
-    BC_HH(friction, buoyancy), \
-    BC_HH(unused1, unused2)
+    BC_HH(friction, buoyancy)
 
 // Sets the object's interaction subtype. Unused.
 #define SET_INTERACT_SUBTYPE(subtype) \
@@ -3332,7 +3331,6 @@ const BehaviorScript bhvYellowBall[] = {
     BREAK(),
 };
 
-UNUSED static const u64 behavior_data_unused_0 = 0;
 const BehaviorScript bhvMario[] = {
     BEGIN(OBJ_LIST_PLAYER),
     SET_INT(oIntangibleTimer, 0),
@@ -3424,7 +3422,6 @@ const BehaviorScript bhvSwimmingWarp[] = {
     BREAK(),
 };
 
-UNUSED static const u64 behavior_data_unused_1 = 0;
 const BehaviorScript bhvRandomAnimatedTexture[] = {
     BEGIN(OBJ_LIST_LEVEL),
     OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),

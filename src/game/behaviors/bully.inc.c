@@ -176,6 +176,8 @@ void bully_step(void) {
     s16 collisionFlags = 0;
 
     collisionFlags = object_step();
+    o->header.gfx.matrixID[0] = MATRIX_NULL;
+    o->header.gfx.matrixID[1] = MATRIX_NULL;
     bully_backup_check(collisionFlags);
     bully_play_stomping_sound();
     obj_check_floor_death(collisionFlags, sObjFloor);
@@ -347,6 +349,8 @@ void bhv_big_bully_with_minions_loop(void) {
 
         case BULLY_ACT_ACTIVATE_AND_FALL:
             collisionFlags = object_step();
+            o->header.gfx.matrixID[0] = MATRIX_NULL;
+            o->header.gfx.matrixID[1] = MATRIX_NULL;
             if ((collisionFlags & OBJ_COL_FLAGS_LANDED) == OBJ_COL_FLAGS_LANDED) {
                 o->oAction = BULLY_ACT_PATROL;
             }

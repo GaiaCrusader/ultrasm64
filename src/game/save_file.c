@@ -627,7 +627,7 @@ void save_file_get_config(void) {
     gFrameCap = gSaveBuffer.menuData[0].frameCap;
 }
 
-u16 save_file_get_sound_mode(void) {
+u32 save_file_get_sound_mode(void) {
     return gSaveBuffer.menuData[0].soundMode;
 }
 

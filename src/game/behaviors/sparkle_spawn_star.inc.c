@@ -20,7 +20,7 @@ void bhv_spawned_star_init(void) {
     }
     sp24 = (o->oBehParams >> 24) & 0xFF;
 
-    if (bit_shift_left(sp24) & save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum))) {
+    if (sPowersOfTwo[sp24] & save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum))) {
         cur_obj_set_model(MODEL_TRANSPARENT_STAR);
     }
 
@@ -66,7 +66,7 @@ void bhv_spawned_star_loop(void) {
     if (o->oAction == 0) {
         if (o->oTimer == 0) {
             cutscene_object(CUTSCENE_STAR_SPAWN, o);
-            set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
+            gTimeStopState |= (TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
             o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
             o->oAngleVelYaw = 0x800;
             if (o->oBehParams2ndByte == 0) {

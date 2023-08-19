@@ -28,7 +28,7 @@
 #include "string.h"
 
 static s8 sBbhStairJiggleOffsets[] = { -8, 8, -4, 4 };
-static s16 sPowersOfTwo[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+u8 sPowersOfTwo[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
 
 static s32 clear_move_flag(u32 *, s32);
@@ -2186,22 +2186,6 @@ s32 signum_positive(s32 x) {
     }
 }
 
-f32 absf(f32 x) {
-    if (x >= 0) {
-        return x;
-    } else {
-        return -x;
-    }
-}
-
-s32 absi(s32 x) {
-    if (x >= 0) {
-        return x;
-    } else {
-        return -x;
-    }
-}
-
 s32 cur_obj_wait_then_blink(s32 timeUntilBlinking, s32 numBlinks) {
     s32 done = FALSE;
     s32 timeBlinking;
@@ -2285,7 +2269,7 @@ s32 cur_obj_set_direction_table(s8 *a0) {
 }
 
 s32 cur_obj_progress_direction_table(void) {
-    s8 spF;
+    s32 spF;
     s8 *sp8 = o->oToxBoxMovementPattern;
     s32 sp4 = o->oToxBoxMovementStep + 1;
 
@@ -2361,10 +2345,6 @@ s32 jiggle_bbh_stair(s32 a0) {
 void cur_obj_call_action_function(void (*actionFunctions[])(void)) {
     void (*actionFunction)(void) = actionFunctions[o->oAction];
     actionFunction();
-}
-
-s32 bit_shift_left(s32 a0) {
-    return sPowersOfTwo[a0];
 }
 
 s32 cur_obj_mario_far_away(void) {
@@ -2503,7 +2483,7 @@ void cur_obj_if_hit_wall_bounce_away(void) {
 }
 
 s32 cur_obj_hide_if_mario_far_away_y(f32 distY) {
-    if (absf(o->oPosY - gMarioObject->oPosY) < distY) {
+    if (ABS(o->oPosY - gMarioObject->oPosY) < distY) {
         cur_obj_unhide();
         return FALSE;
     } else {
@@ -2512,32 +2492,12 @@ s32 cur_obj_hide_if_mario_far_away_y(f32 distY) {
     }
 }
 
-Gfx *geo_offset_klepto_held_object(s32 callContext, struct GraphNode *node, UNUSED Mat4 mtx) {
-    return NULL;
-}
-
-Gfx *geo_offset_klepto_debug(s32 callContext, struct GraphNode *node, UNUSED Mat4 mtx) {
-    return NULL;
-}
-
 s32 obj_is_hidden(struct Object *obj) {
     if (obj->header.gfx.node.flags & GRAPH_RENDER_INVISIBLE) {
         return TRUE;
     } else {
         return FALSE;
     }
-}
-
-void enable_time_stop(void) {
-    gTimeStopState |= TIME_STOP_ENABLED;
-}
-
-void disable_time_stop(void) {
-    gTimeStopState &= ~TIME_STOP_ENABLED;
-}
-
-void set_time_stop_flags(s32 flags) {
-    gTimeStopState |= flags;
 }
 
 void clear_time_stop_flags(s32 flags) {
