@@ -1,6 +1,7 @@
 #include <ultra64.h>
 #include "sm64.h"
 #include "geo_commands.h"
+#include "level_commands.h"
 
 #include "make_const_nonconst.h"
 
@@ -19,3 +20,10 @@
 #include "game/behaviors/intro_scene.inc.c"
 #include "game/behaviors/yoshi.inc.c"
 #include "game/behaviors/intro_lakitu.inc.c"
+
+const LevelScript script_func_global_11[] = {
+    LOAD_MODEL_FROM_GEO(MODEL_BIRDS,                   birds_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_PEACH,                   peach_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_YOSHI,                   yoshi_geo),
+    RETURN(),
+};

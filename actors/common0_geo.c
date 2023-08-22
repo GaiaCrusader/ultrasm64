@@ -1,6 +1,7 @@
 #include <ultra64.h>
 #include "sm64.h"
 #include "geo_commands.h"
+#include "level_commands.h"
 
 #include "make_const_nonconst.h"
 
@@ -67,3 +68,30 @@
 #include "game/behaviors/tilting_inverted_pyramid.inc.c"
 #include "game/behaviors/bully.inc.c"
 #include "game/behaviors/thwomp.inc.c"
+
+const LevelScript script_func_global_1[] = {
+    LOAD_MODEL_FROM_GEO(MODEL_BLUE_COIN_SWITCH,        blue_coin_switch_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_AMP,                     dAmpGeo),
+    LOAD_MODEL_FROM_GEO(MODEL_PURPLE_SWITCH,           purple_switch_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_CHECKERBOARD_PLATFORM,   checkerboard_platform_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_BREAKABLE_BOX,           breakable_box_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_BREAKABLE_BOX_SMALL,     breakable_box_small_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_EXCLAMATION_BOX_OUTLINE, exclamation_box_outline_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_EXCLAMATION_BOX,         exclamation_box_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_GOOMBA,                  goomba_geo),
+    LOAD_MODEL_FROM_DL( MODEL_EXCLAMATION_POINT,       exclamation_box_outline_seg8_dl_08025F08, LAYER_ALPHA),
+    LOAD_MODEL_FROM_GEO(MODEL_KOOPA_SHELL,             koopa_shell_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_METAL_BOX,               metal_box_geo),
+    LOAD_MODEL_FROM_DL( MODEL_METAL_BOX_DL,            metal_box_dl,                             LAYER_OPAQUE),
+    LOAD_MODEL_FROM_GEO(MODEL_BLACK_BOBOMB,            black_bobomb_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_BOBOMB_BUDDY,            bobomb_buddy_geo),
+    LOAD_MODEL_FROM_DL( MODEL_DL_CANNON_LID,           cannon_lid_seg8_dl_080048E0,              LAYER_OPAQUE),
+    LOAD_MODEL_FROM_GEO(MODEL_BOWLING_BALL,            bowling_ball_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_CANNON_BARREL,           cannon_barrel_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_CANNON_BASE,             cannon_base_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_HEART,                   heart_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_FLYGUY,                  flyguy_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_CHUCKYA,                 chuckya_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_TRAJECTORY_MARKER_BALL,      bowling_ball_track_geo),
+    RETURN(),
+};

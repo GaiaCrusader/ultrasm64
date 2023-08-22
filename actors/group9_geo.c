@@ -1,6 +1,7 @@
 #include <ultra64.h>
 #include "sm64.h"
 #include "geo_commands.h"
+#include "level_commands.h"
 
 #include "make_const_nonconst.h"
 
@@ -22,3 +23,13 @@
 #include "game/behaviors/bbh_tilting_trap.inc.c"
 #include "game/behaviors/bbh_haunted_bookshelf.inc.c"
 #include "game/behaviors/bbh_merry_go_round.inc.c"
+
+const LevelScript script_func_global_10[] = {
+    LOAD_MODEL_FROM_GEO(MODEL_BOO,                     boo_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_HAUNTED_CHAIR,           haunted_chair_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MAD_PIANO,               mad_piano_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_BOOKEND_PART,            bookend_part_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_BOOKEND,                 bookend_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_HAUNTED_CAGE,            haunted_cage_geo),
+    RETURN(),
+};

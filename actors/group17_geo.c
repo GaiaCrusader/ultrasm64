@@ -1,6 +1,7 @@
 #include <ultra64.h>
 #include "sm64.h"
 #include "geo_commands.h"
+#include "level_commands.h"
 
 #include "make_const_nonconst.h"
 
@@ -20,3 +21,13 @@
 #include "game/behaviors/snufit.inc.c"
 #include "game/behaviors/dorrie.inc.c"
 #include "game/behaviors/scuttlebug.inc.c" // :scuttleeyes:
+
+const LevelScript script_func_global_18[] = {
+    LOAD_MODEL_FROM_GEO(MODEL_SWOOP,                   swoop_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_SCUTTLEBUG,              scuttlebug_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MR_I_IRIS,               mr_i_iris_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_MR_I,                    mr_i_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_DORRIE,                  dorrie_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_SNUFIT,                  snufit_geo),
+    RETURN(),
+};
