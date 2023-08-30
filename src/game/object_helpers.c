@@ -1300,6 +1300,10 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
         }
     }
 
+    
+    f32 normal[4];
+    get_surface_normal(normal, intendedFloor);
+
     if (intendedFloorHeight < FLOOR_LOWER_LIMIT_MISC) {
         // Don't move into OoB
         o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
@@ -1314,7 +1318,7 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
             // Don't walk off an edge
             o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
             return FALSE;
-        } else if (intendedFloor->normal.y > steepSlopeNormalY) {
+        } else if (normal[1] > steepSlopeNormalY) {
             // Allow movement onto a slope, provided it's not too steep
             o->oPosX = intendedX;
             o->oPosZ = intendedZ;
@@ -1324,7 +1328,7 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
             o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
             return FALSE;
         }
-    } else if ((intendedFloor->normal.y) > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
+    } else if (normal[1] > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
         // Allow movement upward, provided either:
         // - The target floor is flat enough (e.g. walking up stairs)
         // - We are above the target floor (most likely in the air)
@@ -1727,13 +1731,18 @@ static s32 cur_obj_detect_steep_floor(s16 steepAngleDegrees) {
         intendedZ = o->oPosZ + o->oVelZ;
         intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
         deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
+        
+        f32 normal[4];
+        if (intendedFloor) {
+            get_surface_normal(normal, intendedFloor);
+        }
 
         if (intendedFloorHeight < FLOOR_LOWER_LIMIT_MISC) {
             o->oWallAngle = o->oMoveAngleYaw + 0x8000;
             return 2;
-        } else if (intendedFloor->normal.y < steepNormalY && deltaFloorHeight > 0
+        } else if (normal[1] < steepNormalY && deltaFloorHeight > 0
                    && intendedFloorHeight > o->oPosY) {
-            o->oWallAngle = atan2s(intendedFloor->normal.z, intendedFloor->normal.x);
+            o->oWallAngle = atan2s(normal[2], normal[0]);
             return 1;
         } else {
             return 0;
@@ -1751,7 +1760,7 @@ s32 cur_obj_resolve_wall_collisions(void) {
     f32 offsetY = 10.0f;
     f32 radius = o->oWallHitboxRadius;
 
-    if (radius > 0.1L) {
+    if (radius > 0.1f) {
         collisionData.offsetY = offsetY;
         collisionData.radius = radius;
         collisionData.x = (s16) o->oPosX;
@@ -1765,7 +1774,11 @@ s32 cur_obj_resolve_wall_collisions(void) {
             o->oPosZ = collisionData.z;
             wall = collisionData.walls[collisionData.numWalls - 1];
 
-            o->oWallAngle = atan2s(wall->normal.z, wall->normal.x);
+            
+            f32 normal[4];
+            get_surface_normal(normal, wall);
+
+            o->oWallAngle = atan2s(normal[2], normal[0]);
             if (abs_angle_diff(o->oWallAngle, o->oMoveAngleYaw) > 0x4000) {
                 return TRUE;
             } else {
@@ -2724,9 +2737,11 @@ void cur_obj_align_gfx_with_floor(void) {
 
     find_floor(position[0], position[1], position[2], &floor);
     if (floor != NULL) {
-        floorNormal[0] = floor->normal.x;
-        floorNormal[1] = floor->normal.y;
-        floorNormal[2] = floor->normal.z;
+        f32 normal[4];
+        get_surface_normal(floorNormal, floor);
+        floorNormal[0] = normal[0];
+        floorNormal[1] = normal[1];
+        floorNormal[2] = normal[2];
 
         mtxf_align_terrain_normal(o->transform, floorNormal, position, o->oFaceAngleYaw);
         o->header.gfx.throwMatrix = &o->transform;

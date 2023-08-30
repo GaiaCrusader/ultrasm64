@@ -720,7 +720,9 @@ s16 look_down_slopes(s16 camYaw) {
 
     if (floor != NULL) {
         if (floor->type != SURFACE_WALL_MISC && floorDY > 0) {
-            if (floor->normal.z == 0.f && floorDY < 100.f) {
+            f32 normal[4];
+            get_surface_normal(normal, floor);
+            if (normal[2] == 0.f && floorDY < 100.f) {
                 pitch = 0x05B0;
             } else {
                 // Add the slope's angle of declination to the pitch
@@ -1472,11 +1474,10 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     // Find the floor of the arena
     pos[1] = find_floor(c->areaCenX, CELL_HEIGHT_LIMIT, c->areaCenZ, &floor);
     if (floor != NULL) {
-        nx = floor->normal.x;
-        ny = floor->normal.y;
-        nz = floor->normal.z;
-        oo = floor->originOffset;
-        pos[1] = 300.f - (nx * pos[0] + nz * pos[2] + oo) / ny;
+        
+        f32 normal[4];
+        get_surface_normal(normal, floor);
+        pos[1] = 300.f - (normal[0] * pos[0] + normal[2] * pos[2] + normal[3]) / ny;
         switch (gCurrLevelArea) {
             case AREA_BOB:
                 pos[1] += 125.f;
@@ -3696,15 +3697,13 @@ s32 collide_with_walls(Vec3f pos, f32 offsetY, f32 radius) {
         for (i = 0; i < collisionData.numWalls; i++) {
             wall = collisionData.walls[collisionData.numWalls - 1];
             vec3f_copy(newPos[i], pos);
-            normX = wall->normal.x;
-            normY = wall->normal.y;
-            normZ = wall->normal.z;
-            originOffset = wall->originOffset;
-            offset = normX * newPos[i][0] + normY * newPos[i][1] + normZ * newPos[i][2] + originOffset;
+            f32 normal[4];
+            get_surface_normal(normal, wall);
+            offset = normal[0] * newPos[i][0] + normal[1] * newPos[i][1] + normal[2] * newPos[i][2] + normal[3];
             offsetAbsolute = ABS2(offset);
             if (offsetAbsolute < radius) {
-                newPos[i][0] += normX * (radius - offset);
-                newPos[i][2] += normZ * (radius - offset);
+                newPos[i][0] += normal[0] * (radius - offset);
+                newPos[i][2] += normal[2] * (radius - offset);
                 vec3f_copy(pos, newPos[i]);
             }
         }
@@ -6436,7 +6435,10 @@ s32 rotate_camera_around_walls(struct Camera *c, Vec3f cPos, s16 *avoidYaw, s16 
                     status = 1;
                     wall = colData.walls[colData.numWalls - 1];
                     // wallYaw is parallel to the wall, not perpendicular
-                    wallYaw = atan2s(wall->normal.z, wall->normal.x) + DEGREES(90);
+                    
+                    f32 normal[4];
+                    get_surface_normal(normal, wall);
+                    wallYaw = atan2s(normal[2], normal[0]) + DEGREES(90);
                     // Calculate the avoid direction. The function returns the opposite direction so add 180
                     // degrees.
                     *avoidYaw = calc_avoid_yaw(yawFromMario, wallYaw) + DEGREES(180);
@@ -6452,7 +6454,9 @@ s32 rotate_camera_around_walls(struct Camera *c, Vec3f cPos, s16 *avoidYaw, s16 
 
             if (find_wall_collisions(&colData) != 0) {
                 wall = colData.walls[colData.numWalls - 1];
-                horWallNorm = atan2s(wall->normal.z, wall->normal.x);
+                f32 normal[4];
+                get_surface_normal(normal, wall);
+                horWallNorm = atan2s(normal[2], normal[0]);
                 wallYaw = horWallNorm + DEGREES(90);
                 // If Mario would be blocked by the surface, then avoid it
                 if ((is_range_behind_surface(sMarioCamState->pos, cPos, wall, yawRange, SURFACE_WALL_MISC) == 0)

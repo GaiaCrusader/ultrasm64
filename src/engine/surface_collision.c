@@ -7,6 +7,40 @@
 #include "surface_collision.h"
 #include "surface_load.h"
 
+void get_surface_normal(f32 *normal, struct Surface *surf) {
+    f32 nx, ny, nz;
+    f32 mag;
+    
+    register s32 x1, y1, z1;
+    register s32 x2, y2, z2;
+    register s32 x3, y3, z3;
+
+    x1 = surf->vertex1[0];
+    y1 = surf->vertex1[1];
+    z1 = surf->vertex1[2];
+    x2 = surf->vertex2[0];
+    y2 = surf->vertex2[1];
+    z2 = surf->vertex2[2];
+    x3 = surf->vertex3[0];
+    y3 = surf->vertex3[1];
+    z3 = surf->vertex3[2];
+
+    // (v2 - v1) x (v3 - v2)
+    nx = (y2 - y1) * (z3 - z2) - (z2 - z1) * (y3 - y2);
+    ny = (z2 - z1) * (x3 - x2) - (x2 - x1) * (z3 - z2);
+    nz = (x2 - x1) * (y3 - y2) - (y2 - y1) * (x3 - x2);
+    mag = sqrtf(nx * nx + ny * ny + nz * nz);
+    mag = (f32)(1.0f / mag);
+    nx *= mag;
+    ny *= mag;
+    nz *= mag;
+
+    normal[0] = nx;
+    normal[1] = ny;
+    normal[2] = nz;
+    normal[3] = -(nx * x1 + ny * y1 + nz * z1);
+}
+
 /**************************************************
  *                      WALLS                     *
  **************************************************/
@@ -17,7 +51,7 @@
  */
 static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struct WallCollisionData *data) {
     register struct Surface *surf;
-    register f32 offset;
+    f32 offset;
     register f32 radius = data->radius;
     register f32 x = data->x;
     register f32 y = data->y + data->offsetY;
@@ -42,7 +76,10 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
             continue;
         }
 
-        offset = surf->normal.x * x + surf->normal.y * y + surf->normal.z * z + surf->originOffset;
+        f32 normal[4];
+        get_surface_normal(normal, surf);
+
+        offset = normal[0] * x + normal[1] * y + normal[2] * z + normal[3];
 
         if (offset < -radius || offset > radius) {
             continue;
@@ -58,7 +95,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
             w1 = -surf->vertex1[2];            w2 = -surf->vertex2[2];            w3 = -surf->vertex3[2];
             y1 = surf->vertex1[1];            y2 = surf->vertex2[1];            y3 = surf->vertex3[1];
 
-            if (surf->normal.x > 0.0f) {
+            if (normal[0] > 0.0f) {
                 if ((y1 - y) * (w2 - w1) - (w1 - -pz) * (y2 - y1) > 0.0f) {
                     continue;
                 }
@@ -83,7 +120,7 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
             w1 = surf->vertex1[0];            w2 = surf->vertex2[0];            w3 = surf->vertex3[0];
             y1 = surf->vertex1[1];            y2 = surf->vertex2[1];            y3 = surf->vertex3[1];
 
-            if (surf->normal.z > 0.0f) {
+            if (normal[2] > 0.0f) {
                 if ((y1 - y) * (w2 - w1) - (w1 - px) * (y2 - y1) > 0.0f) {
                     continue;
                 }
@@ -135,8 +172,8 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
 
         //! (Wall Overlaps) Because this doesn't update the x and z local variables,
         //  multiple walls can push mario more than is required.
-        data->x += surf->normal.x * (radius - offset);
-        data->z += surf->normal.z * (radius - offset);
+        data->x += normal[0] * (radius - offset);
+        data->z += normal[2] * (radius - offset);
 
         //! (Unreferenced Walls) Since this only returns the first four walls,
         //  this can lead to wall interaction being missed. Typically unreferenced walls
@@ -269,10 +306,13 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
         }
 
         {
-            f32 nx = surf->normal.x;
-            f32 ny = surf->normal.y;
-            f32 nz = surf->normal.z;
-            f32 oo = surf->originOffset;
+            
+            f32 normal[4];
+            get_surface_normal(normal, surf);
+            f32 nx = normal[0];
+            f32 ny = normal[1];
+            f32 nz = normal[2];
+            f32 oo = normal[3];
             f32 height;
 
             // If a wall, ignore it. Likely a remnant, should never occur.
@@ -376,10 +416,12 @@ f32 find_floor_height_and_data(f32 xPos, f32 yPos, f32 zPos, struct FloorGeometr
     *floorGeo = NULL;
 
     if (floor != NULL) {
-        sFloorGeo.normalX = floor->normal.x;
-        sFloorGeo.normalY = floor->normal.y;
-        sFloorGeo.normalZ = floor->normal.z;
-        sFloorGeo.originOffset = floor->originOffset;
+        f32 normal[4];
+        get_surface_normal(normal, floor);
+        sFloorGeo.normalX = normal[0];
+        sFloorGeo.normalY = normal[1];
+        sFloorGeo.normalZ = normal[2];
+        sFloorGeo.originOffset = normal[3];
 
         *floorGeo = &sFloorGeo;
     }
@@ -438,10 +480,12 @@ static struct Surface *find_floor_from_list(struct SurfaceNode *surfaceNode, s32
             continue;
         }
 
-        nx = surf->normal.x;
-        ny = surf->normal.y;
-        nz = surf->normal.z;
-        oo = surf->originOffset;
+        f32 normal[4];
+        get_surface_normal(normal, surf);
+        nx = normal[0];
+        ny = normal[1];
+        nz = normal[2];
+        oo = normal[3];
 
         // If a wall, ignore it. Likely a remnant, should never occur.
         if (ny == 0.0f) {

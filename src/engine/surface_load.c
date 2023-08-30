@@ -117,17 +117,21 @@ void add_surface_to_cell(s16 dynamic, s16 cellX, s16 cellZ, struct Surface *surf
     s16 sortDir;
     s16 listIndex;
 
-    if (surface->normal.y > 0.01f) {
+    
+    f32 normal[4];
+    get_surface_normal(normal, surface);
+
+    if (normal[1] > 0.01f) {
         listIndex = SPATIAL_PARTITION_FLOORS;
         sortDir = 1; // highest to lowest, then insertion order
-    } else if (surface->normal.y < -0.01f) {
+    } else if (normal[1] < -0.01f) {
         listIndex = SPATIAL_PARTITION_CEILS;
         sortDir = -1; // lowest to highest, then insertion order
     } else {
         listIndex = SPATIAL_PARTITION_WALLS;
         sortDir = 0; // insertion order
 
-        if (surface->normal.x < -0.707f || surface->normal.x > 0.707f) {
+        if (normal[0] < -0.707f || normal[0] > 0.707f) {
             surface->flags |= SURFACE_FLAG_X_PROJECTION;
         }
     }
@@ -358,11 +362,6 @@ struct Surface *read_surface_data(s16 *vertexData, s16 **vertexIndices, u32 dyna
     if (y3 > maxY) {
         maxY = y3;
     }
-    mag = sqrtf(mag);
-    mag = (f32)(1.0f / mag);
-    nx *= mag;
-    ny *= mag;
-    nz *= mag;
 
     surface = alloc_surface(dynamic);
 
@@ -377,12 +376,6 @@ struct Surface *read_surface_data(s16 *vertexData, s16 **vertexIndices, u32 dyna
     surface->vertex1[2] = z1;
     surface->vertex2[2] = z2;
     surface->vertex3[2] = z3;
-
-    surface->normal.x = nx;
-    surface->normal.y = ny;
-    surface->normal.z = nz;
-
-    surface->originOffset = -(nx * x1 + ny * y1 + nz * z1);
 
     surface->lowerY = minY - 5;
     surface->upperY = maxY + 5;

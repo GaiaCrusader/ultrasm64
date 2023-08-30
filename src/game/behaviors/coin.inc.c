@@ -83,14 +83,19 @@ void bhv_coin_loop(void) {
     cur_obj_if_hit_wall_bounce_away();
     cur_obj_move_standard(-62);
 
-    if ((sp1C = o->oFloor) != NULL) {
+    
+
+    if ((sp1C = o->oFloor) != NULL) {        
+    f32 normal[4];
+    get_surface_normal(normal, o->oFloor);
+
         if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
             o->oSubAction = 1;
         }
         if (o->oSubAction == 1) {
             o->oBounciness = 0;
-            if (sp1C->normal.y < 0.9f) {
-                s16 sp1A = atan2s(sp1C->normal.z, sp1C->normal.x);
+            if (normal[1] < 0.9f) {
+                s16 sp1A = atan2s(normal[2], normal[0]);
                 cur_obj_rotate_yaw_toward(sp1A, 0x400);
             }
         }

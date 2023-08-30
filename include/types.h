@@ -226,12 +226,6 @@ struct Surface {
     /*0x0A*/ Vec3s vertex1;
     /*0x10*/ Vec3s vertex2;
     /*0x16*/ Vec3s vertex3;
-    /*0x1C*/ struct {
-        f32 x;
-        f32 y;
-        f32 z;
-    } normal;
-    /*0x28*/ f32 originOffset;
     /*0x2C*/ struct Object *object;
 };
 
@@ -308,6 +302,9 @@ struct MarioState {
     /*0xBC*/ f32 peakHeight;
     /*0xC0*/ f32 quicksandDepth;
     /*0xC4*/ f32 unkC4;
+    f32 floorNormals[4];
+    f32 wallNormals[4];
+    f32 ceilNormals[4];
 };
 
 #endif // TYPES_H

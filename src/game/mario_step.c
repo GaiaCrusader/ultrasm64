@@ -12,8 +12,7 @@
 static s16 sMovingSandSpeeds[] = { 12, 8, 4, 0 };
 
 struct Surface gWaterSurfacePseudoFloor = {
-    SURFACE_VERY_SLIPPERY, 0,    0,    0, 0, 0, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
-    { 0.0f, 1.0f, 0.0f },  0.0f, NULL,
+    SURFACE_VERY_SLIPPERY, 0,    0,    0, 0, 0, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, NULL,
 };
 
 void transfer_bully_speed(struct BullyCollisionData *obj1, struct BullyCollisionData *obj2) {
@@ -52,7 +51,7 @@ void init_bully_collision_data(struct BullyCollisionData *data, f32 posX, f32 po
 
 void mario_bonk_reflection(struct MarioState *m, u32 negateSpeed) {
     if (m->wall != NULL) {
-        s16 wallAngle = atan2s(m->wall->normal.z, m->wall->normal.x);
+        s16 wallAngle = atan2s(m->wallNormals[2], m->wallNormals[0]);
         m->faceAngle[1] = wallAngle - (s16)(m->faceAngle[1] - wallAngle);
 
         play_sound((m->flags & MARIO_METAL_CAP) ? SOUND_ACTION_METAL_BONK : SOUND_ACTION_BONK,
@@ -226,16 +225,26 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
     f32 ceilHeight;
     f32 floorHeight;
     f32 waterLevel;
+    f32 normal[4];
 
     resolve_and_return_wall_collisions(nextPos, 30.0f, 24.0f);
     upperWall = resolve_and_return_wall_collisions(nextPos, 60.0f, 50.0f);
 
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+    if (floor) {
+        get_surface_normal(m->floorNormals, floor);
+    }
     ceilHeight = vec3f_find_ceil(nextPos, floorHeight, &ceil);
+    if (ceil) {
+        get_surface_normal(m->ceilNormals, ceil);
+    }
 
     waterLevel = find_water_level(nextPos[0], nextPos[2]);
 
     m->wall = upperWall;
+    if (m->wall) {
+        get_surface_normal(m->wallNormals, upperWall);
+    }
 
     if (floor == NULL) {
         return GROUND_STEP_HIT_WALL_STOP_QSTEPS;
@@ -244,7 +253,7 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
     if ((m->action & ACT_FLAG_RIDING_SHELL) && floorHeight < waterLevel) {
         floorHeight = waterLevel;
         floor = &gWaterSurfacePseudoFloor;
-        floor->originOffset = floorHeight; //! Wrong origin offset (no effect)
+        m->floorNormals[3] = floorHeight; //! Wrong origin offset (no effect)
     }
 
     if (nextPos[1] > floorHeight + 100.0f) {
@@ -267,7 +276,7 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
     m->floorHeight = floorHeight;
 
     if (upperWall != NULL) {
-        s16 wallDYaw = atan2s(upperWall->normal.z, upperWall->normal.x) - m->faceAngle[1];
+        s16 wallDYaw = atan2s(m->wallNormals[2], m->wallNormals[0]) - m->faceAngle[1];
 
         if (wallDYaw >= 0x2AAA && wallDYaw <= 0x5555) {
             return GROUND_STEP_NONE;
@@ -288,8 +297,8 @@ s32 perform_ground_step(struct MarioState *m) {
     Vec3f intendedPos;
 
     for (i = 0; i < 4; i++) {
-        intendedPos[0] = m->pos[0] + m->floor->normal.y * (m->vel[0] / 4.0f);
-        intendedPos[2] = m->pos[2] + m->floor->normal.y * (m->vel[2] / 4.0f);
+        intendedPos[0] = m->pos[0] + m->floorNormals[1] * (m->vel[0] / 4.0f);
+        intendedPos[2] = m->pos[2] + m->floorNormals[1] * (m->vel[2] / 4.0f);
         intendedPos[1] = m->pos[1];
 
         stepResult = perform_ground_quarter_step(m, intendedPos);
@@ -329,8 +338,10 @@ u32 check_ledge_grab(struct MarioState *m, struct Surface *wall, Vec3f intendedP
 
     //! Since the search for floors starts at y + 160, we will sometimes grab
     // a higher ledge than expected (glitchy ledge grab)
-    ledgePos[0] = nextPos[0] - wall->normal.x * 60.0f;
-    ledgePos[2] = nextPos[2] - wall->normal.z * 60.0f;
+    f32 normal[4];
+    get_surface_normal(normal, wall);
+    ledgePos[0] = nextPos[0] - normal[0] * 60.0f;
+    ledgePos[2] = nextPos[2] - normal[2] * 60.0f;
     ledgePos[1] = find_floor(ledgePos[0], nextPos[1] + 160.0f, ledgePos[2], &ledgeFloor);
 
     if (ledgePos[1] - nextPos[1] <= 100.0f) {
@@ -341,10 +352,11 @@ u32 check_ledge_grab(struct MarioState *m, struct Surface *wall, Vec3f intendedP
     m->floor = ledgeFloor;
     m->floorHeight = ledgePos[1];
 
-    m->floorAngle = atan2s(ledgeFloor->normal.z, ledgeFloor->normal.x);
-
     m->faceAngle[0] = 0;
-    m->faceAngle[1] = atan2s(wall->normal.z, wall->normal.x) + 0x8000;
+    m->faceAngle[1] = atan2s(normal[2], normal[0]) + 0x8000;
+    get_surface_normal(normal, wall);
+    m->floorAngle = atan2s(normal[2], normal[0]);
+
     return TRUE;
 }
 
@@ -365,7 +377,13 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
     lowerWall = resolve_and_return_wall_collisions(nextPos, 30.0f, 50.0f);
 
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+    if (floor) {
+        get_surface_normal(m->floorNormals, floor);
+    }
     ceilHeight = vec3f_find_ceil(nextPos, floorHeight, &ceil);
+    if (ceil) {
+        get_surface_normal(m->ceilNormals, ceil);
+    }
 
     waterLevel = find_water_level(nextPos[0], nextPos[2]);
 
@@ -387,7 +405,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
     if ((m->action & ACT_FLAG_RIDING_SHELL) && floorHeight < waterLevel) {
         floorHeight = waterLevel;
         floor = &gWaterSurfacePseudoFloor;
-        floor->originOffset = floorHeight; //! Incorrect origin offset (no effect)
+        m->floorNormals[3] = floorHeight; //! Incorrect origin offset (no effect)
     }
 
     //! This check uses f32, but findFloor uses short (overflow jumps)
@@ -448,7 +466,8 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 
     if (upperWall != NULL || lowerWall != NULL) {
         m->wall = upperWall != NULL ? upperWall : lowerWall;
-        wallDYaw = atan2s(m->wall->normal.z, m->wall->normal.x) - m->faceAngle[1];
+        get_surface_normal(m->wallNormals, m->wall);
+        wallDYaw = atan2s(m->wallNormals[2], m->wallNormals[0]) - m->faceAngle[1];
 
         if (m->wall->type == SURFACE_BURNING) {
             return AIR_STEP_HIT_LAVA_WALL;

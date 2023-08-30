@@ -76,7 +76,13 @@ static u32 perform_water_full_step(struct MarioState *m, Vec3f nextPos) {
 
     wall = resolve_and_return_wall_collisions(nextPos, 10.0f, 110.0f);
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+    if (floor) {
+        get_surface_normal(m->floorNormals, floor);
+    }
     ceilHeight = vec3f_find_ceil(nextPos, floorHeight, &ceil);
+    if (ceil) {
+        get_surface_normal(m->ceilNormals, ceil);
+    }
 
     if (floor == NULL) {
         return WATER_STEP_CANCELLED;
@@ -1118,7 +1124,7 @@ static void update_metal_water_walking_speed(struct MarioState *m) {
         m->forwardVel += 1.1f;
     } else if (m->forwardVel <= val) {
         m->forwardVel += 1.1f - m->forwardVel / 43.0f;
-    } else if (m->floor->normal.y >= 0.95f) {
+    } else if (m->floorNormals[1] >= 0.95f) {
         m->forwardVel -= 1.0f;
     }
 
