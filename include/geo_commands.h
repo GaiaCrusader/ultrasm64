@@ -290,6 +290,12 @@
     CMD_HH(y, z), \
     CMD_PTR(displayList)
 
+#define GEO_ANIMATED_PART_MATERIAL(layer, x, y, z, displayList, material) \
+    CMD_BBH(0x13, layer | 0x80, x), \
+    CMD_HH(y, z), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
+
 /**
  * 0x14: Create billboarding node with optional display list
  *   0x01: u8 params
@@ -319,6 +325,11 @@
 #define GEO_DISPLAY_LIST(layer, displayList) \
     CMD_BBH(0x15, layer, 0x0000), \
     CMD_PTR(displayList)
+
+#define GEO_DISPLAY_LIST_MATERIAL(layer, displayList, material) \
+    CMD_BBH(0x15, layer | 0x80, 0x0000), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
 
 /**
  * 0x16: Create shadow scene graph node

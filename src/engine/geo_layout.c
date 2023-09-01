@@ -560,11 +560,17 @@ void geo_layout_cmd_node_animated_part(void) {
     s32 drawingLayer = cur_geo_cmd_u8(0x01);
     void *displayList = cur_geo_cmd_ptr(0x08);
     s16 *cmdPos = (s16 *) gGeoLayoutCommand;
+    s32 params = cur_geo_cmd_u8(0x01);
+    void *material = NULL;
 
     read_vec3s(translation, &cmdPos[1]);
 
-    graphNode =
-        init_graph_node_animated_part(gGraphNodePool, NULL, drawingLayer, displayList, translation);
+    if (params & 0x80) {
+        material = cur_geo_cmd_ptr(0x0C);
+        gGeoLayoutCommand += 0x04 << CMD_SIZE_SHIFT;
+    }
+
+    graphNode = init_graph_node_animated_part(gGraphNodePool, NULL, drawingLayer, displayList, translation, material);
 
     register_scene_graph_node(&graphNode->node);
 
@@ -611,10 +617,17 @@ void geo_layout_cmd_node_billboard(void) {
 */
 void geo_layout_cmd_node_display_list(void) {
     struct GraphNodeDisplayList *graphNode;
-    s32 drawingLayer = cur_geo_cmd_u8(0x01);
+    s32 drawingLayer = cur_geo_cmd_u8(0x01) & 0x0F;
     void *displayList = cur_geo_cmd_ptr(0x04);
+    s32 params = cur_geo_cmd_u8(0x01);
+    void *material = NULL;
 
-    graphNode = init_graph_node_display_list(gGraphNodePool, NULL, drawingLayer, displayList);
+    if (params & 0x80) {
+        material = cur_geo_cmd_ptr(0x08);
+        gGeoLayoutCommand += 0x04 << CMD_SIZE_SHIFT;
+    }
+
+    graphNode = init_graph_node_display_list(gGraphNodePool, NULL, drawingLayer, displayList, material);
 
     register_scene_graph_node(&graphNode->node);
 

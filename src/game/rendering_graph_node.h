@@ -8,6 +8,20 @@
 #define THROWMATSTACK 24
 #define MATRIX_NULL 250
 
+typedef struct RenderNode {
+    Gfx *dl;
+    Gfx *material;
+    Mtx *mtx;
+    s32 aaMode;
+    struct RenderNode *next;
+    struct RenderNode *prev;
+} RenderNode;
+
+typedef struct RenderList {
+    RenderNode *entryHead;
+    struct RenderList *next;
+} RenderList;
+
 extern struct GraphNodeRoot *gCurGraphNodeRoot;
 extern struct GraphNodeMasterList *gCurGraphNodeMasterList;
 extern struct GraphNodePerspective *gCurGraphNodeCamFrustum;

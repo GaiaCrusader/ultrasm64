@@ -226,6 +226,7 @@ struct GraphNodeAnimatedPart {
     /*0x00*/ struct GraphNode node;
     /*0x14*/ void *displayList;
     /*0x18*/ Vec3s translation;
+    void *material;
 };
 
 /** A GraphNode that draws a display list rotated in a way to always face the
@@ -245,6 +246,7 @@ struct GraphNodeBillboard {
 struct GraphNodeDisplayList {
     /*0x00*/ struct GraphNode node;
     /*0x14*/ void *displayList;
+    void *material;
 };
 
 /** GraphNode part that scales itself and its children.
@@ -364,11 +366,11 @@ struct GraphNodeObject *init_graph_node_object(struct AllocOnlyPool *pool, struc
                                                struct GraphNode *sharedChild, Vec3f pos, Vec3s angle, Vec3f scale);
 struct GraphNodeCullingRadius *init_graph_node_culling_radius(struct AllocOnlyPool *pool, struct GraphNodeCullingRadius *graphNode, s16 radius);
 struct GraphNodeAnimatedPart *init_graph_node_animated_part(struct AllocOnlyPool *pool, struct GraphNodeAnimatedPart *graphNode,
-                                                            s32 drawingLayer, void *displayList, Vec3s translation);
+                                                            s32 drawingLayer, void *displayList, Vec3s translation, void *material);
 struct GraphNodeBillboard *init_graph_node_billboard(struct AllocOnlyPool *pool, struct GraphNodeBillboard *graphNode,
                                                      s32 drawingLayer, void *displayList, Vec3s translation);
 struct GraphNodeDisplayList *init_graph_node_display_list(struct AllocOnlyPool *pool, struct GraphNodeDisplayList *graphNode,
-                                                          s32 drawingLayer, void *displayList);
+                                                          s32 drawingLayer, void *displayList, void *material);
 struct GraphNodeShadow *init_graph_node_shadow(struct AllocOnlyPool *pool, struct GraphNodeShadow *graphNode,
                                                s16 shadowScale, u8 shadowSolidity, u8 shadowType);
 struct GraphNodeObjectParent *init_graph_node_object_parent(struct AllocOnlyPool *pool, struct GraphNodeObjectParent *sp1c,

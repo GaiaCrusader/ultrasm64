@@ -416,10 +416,11 @@ static void level_cmd_load_model_from_dl(void) {
     s16 val1 = CMD_GET(s16, 2) & 0x0FFF;
     s16 val2 = ((u16)CMD_GET(s16, 2)) >> 12;
     void *val3 = CMD_GET(void *, 4);
+    void *material = NULL;
 
     if (val1 < 256) {
         gLoadedGraphNodes[val1] =
-            (struct GraphNode *) init_graph_node_display_list(sLevelPool, 0, val2, val3);
+            (struct GraphNode *) init_graph_node_display_list(sLevelPool, 0, val2, val3, material);
     }
 
     sCurrentCmd = CMD_NEXT;

@@ -347,7 +347,7 @@ struct GraphNodeCullingRadius *init_graph_node_culling_radius(struct AllocOnlyPo
 struct GraphNodeAnimatedPart *init_graph_node_animated_part(struct AllocOnlyPool *pool,
                                                             struct GraphNodeAnimatedPart *graphNode,
                                                             s32 drawingLayer, void *displayList,
-                                                            Vec3s translation) {
+                                                            Vec3s translation, void *material) {
     if (pool != NULL) {
         graphNode = alloc_only_pool_alloc(pool, sizeof(struct GraphNodeAnimatedPart));
     }
@@ -357,6 +357,7 @@ struct GraphNodeAnimatedPart *init_graph_node_animated_part(struct AllocOnlyPool
         vec3s_copy(graphNode->translation, translation);
         graphNode->node.flags = (drawingLayer << 8) | (graphNode->node.flags & 0xFF);
         graphNode->displayList = displayList;
+        graphNode->material = material;
     }
 
     return graphNode;
@@ -388,7 +389,7 @@ struct GraphNodeBillboard *init_graph_node_billboard(struct AllocOnlyPool *pool,
  */
 struct GraphNodeDisplayList *init_graph_node_display_list(struct AllocOnlyPool *pool,
                                                           struct GraphNodeDisplayList *graphNode,
-                                                          s32 drawingLayer, void *displayList) {
+                                                          s32 drawingLayer, void *displayList, void *material) {
     if (pool != NULL) {
         graphNode = alloc_only_pool_alloc(pool, sizeof(struct GraphNodeDisplayList));
     }
@@ -397,6 +398,7 @@ struct GraphNodeDisplayList *init_graph_node_display_list(struct AllocOnlyPool *
         init_scene_graph_node_links(&graphNode->node, GRAPH_NODE_TYPE_DISPLAY_LIST);
         graphNode->node.flags = (drawingLayer << 8) | (graphNode->node.flags & 0xFF);
         graphNode->displayList = displayList;
+        graphNode->material = material;
     }
 
     return graphNode;

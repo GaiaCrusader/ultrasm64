@@ -17,6 +17,7 @@
 #include "game_init.h"
 #include "object_list_processor.h"
 #include "behavior_data.h"
+#include "segment2.h"
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -83,6 +84,11 @@ void *gMarioAnimHeap;
 struct AnimInfo gMarioGfxAnim;
 struct DmaHandlerList gMarioGfxAnimBuf;
 struct DmaHandlerList *gMarioGfxAnimList = &gMarioGfxAnimBuf;
+RenderNode *gRenderNodeHead[7];
+RenderNode *gRenderNodeTail[7];
+RenderList *gMateriallistHead[7];
+RenderList *gMateriallistTail[7];
+u8 sShowAll = FALSE;
 
 struct AllocOnlyPool *gDisplayListHeap;
 
@@ -199,12 +205,15 @@ void update_level_fog(Gfx **gfx) {
     }
 }
 
+s32 sMaterialSwaps = 0;
+
 /**
  * Process a master list node.
  */
-void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
-    struct DisplayListNode *currList;
+void geo_process_master_list_sub(void) {
     struct RenderModeContainer *mode2List;
+    RenderNode *list;
+    Gfx *lastMaterial = NULL;
     Gfx *gfx = gDisplayListHead;
     s32 switchAA = FALSE;
     s32 lastAA = 0;
@@ -212,20 +221,34 @@ void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
     gSPSetGeometryMode(gfx++, G_ZBUFFER);
     gDPSetCycleType(gfx++, G_CYC_2CYCLE);
     update_level_fog(&gfx);
-
     for (u32 i = 0; i < GFX_NUM_MASTER_LISTS; i++, switchAA = TRUE) {
-        if ((currList = node->listHeads[i]) != NULL) {
-            while (currList != NULL) {
-                if (switchAA == TRUE || currList->fancyAA != lastAA) {
-                    mode2List = &renderModeTable_2Cycle[gAntiAliasing + 1 + currList->fancyAA];
+        list = gRenderNodeHead[i];
+        if (list) {
+            while (list) {
+                if (switchAA == TRUE || list->aaMode != lastAA) {
+                    mode2List = &renderModeTable_2Cycle[gAntiAliasing + 1 + list->aaMode];
                     gDPSetRenderMode(gfx++, gFirstCycleRM, mode2List->modes[i]);
                     switchAA = FALSE;
                 }
-                gSPMatrix(gfx++, OS_K0_TO_PHYSICAL(currList->transform), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-                gSPDisplayList(gfx++, currList->displayList);
-                currList = currList->next;
+                if (list->mtx) {
+                    gSPMatrix(gfx++, OS_K0_TO_PHYSICAL(list->mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+                }
+                if (list->material && list->material != lastMaterial) {
+                    gSPDisplayList(gfx++, list->material);
+                    sMaterialSwaps++;
+                }
+                if (list->material == NULL) {
+                    sMaterialSwaps++;
+                }
+                lastMaterial = list->material;
+                gSPDisplayList(gfx++, list->dl);
+                list = list->next;
             }
         }
+        gRenderNodeHead[i] = NULL;
+        gRenderNodeTail[i] = NULL;
+        gMateriallistHead[i] = NULL;
+        gMateriallistTail[i] = NULL;
     }
     gSPClearGeometryMode(gfx++, G_ZBUFFER | G_FOG);
     gDPPipeSync(gfx++);
@@ -248,43 +271,73 @@ static void *alloc_display_listGRAPH(u32 size) {
     return gGfxPoolEnd;
 }
 
+void find_material_list(RenderNode *node, s32 layer) {
+    RenderList *matList;
+    if (gRenderNodeHead[layer] == NULL) {
+        gRenderNodeHead[layer] = node;
+        matList = alloc_only_pool_allocGRAPH(gDisplayListHeap, sizeof(RenderList));
+        gMateriallistHead[layer] = matList;
+    } else {
+        if (node->material) {
+            RenderList *list = gMateriallistHead[layer];
+            while (list) {
+                if (list->entryHead->material == node->material) {
+                    if (list->entryHead == gRenderNodeHead[layer]) {
+                        gRenderNodeHead[layer] = node;
+                    } else {
+                        list->entryHead->prev->next = node;
+                    }
+                    node->next = list->entryHead;
+                    node->prev = list->entryHead->prev;
+                    list->entryHead = node;
+                    return;
+                }
+                list = list->next;
+            }
+        }
+        matList = alloc_only_pool_allocGRAPH(gDisplayListHeap, sizeof(RenderList));
+        gMateriallistTail[layer]->next = matList;
+        gRenderNodeTail[layer]->next = node;
+    }
+    node->next = NULL;
+    matList->entryHead = node;
+    matList->next = NULL;
+    gMateriallistTail[layer] = matList;
+    node->prev = gRenderNodeTail[layer];
+    gRenderNodeTail[layer] = node;
+}
+
 /**
  * Appends the display list to one of the master lists based on the layer
  * parameter. Look at the RenderModeContainer struct to see the corresponding
  * render modes of layers.
  */
-void geo_append_display_list(void *displayList, s16 layer) {
+void geo_append_display_list(void *displayList, s16 layer, void *material) {
 
     if (gCurGraphNodeMasterList != 0) {
-        struct DisplayListNode *listNode = alloc_only_pool_allocGRAPH(gDisplayListHeap, sizeof(struct DisplayListNode));
-
-        listNode->transform = gMatStackFixed[gMatStackIndex];
-        listNode->displayList = displayList;
-        listNode->next = 0;
+        RenderNode *entry = alloc_only_pool_allocGRAPH(gDisplayListHeap, sizeof(RenderNode));
+        entry->mtx = gMatStackFixed[gMatStackIndex];
         if (gCurGraphNodeObject != NULL && gAntiAliasing == 0 && ((struct Object *) gCurGraphNodeObject)->behavior != segmented_to_virtual(bhvStaticObject)) {
-            listNode->fancyAA = TRUE;
+            entry->aaMode = TRUE;
         } else {
-            listNode->fancyAA = FALSE;
+            entry->aaMode = FALSE;
         }
-        if (gCurGraphNodeMasterList->listHeads[layer] == 0) {
-            gCurGraphNodeMasterList->listHeads[layer] = listNode;
-        } else {
-            gCurGraphNodeMasterList->listTails[layer]->next = listNode;
-        }
-        gCurGraphNodeMasterList->listTails[layer] = listNode;
+        entry->material = material;
+        entry->dl = displayList;
+        find_material_list(entry, layer);
     }
 }
 
-void inc_mat_stack() {
+void inc_mat_stack(void) {
     Mtx *mtx = alloc_display_listGRAPH(sizeof(*mtx));
     gMatStackIndex++;
     mtxf_to_mtx((s16 *) mtx, (f32 *) gMatStack[gMatStackIndex]);
     gMatStackFixed[gMatStackIndex] = mtx;
 }
 
-void append_dl_and_return(const struct GraphNodeDisplayList *node) {
+void append_dl_and_return(const struct GraphNodeDisplayList *node, void *material) {
     if (node->displayList != NULL) {
-        geo_append_display_list(node->displayList, node->node.flags >> 8);
+        geo_append_display_list(node->displayList, node->node.flags >> 8, material);
     }
     if (((struct GraphNodeRoot *) node)->node.children != NULL) {
         geo_process_node_and_siblings(((struct GraphNodeRoot *) node)->node.children);
@@ -302,7 +355,7 @@ void geo_process_master_list(struct GraphNodeMasterList *node) {
             node->listHeads[i] = NULL;
         }
         geo_process_node_and_siblings(node->node.children);
-        geo_process_master_list_sub(node);
+        geo_process_master_list_sub();
         gCurGraphNodeMasterList = NULL;
     }
 }
@@ -540,7 +593,7 @@ void geo_process_translation_rotation(struct GraphNodeTranslationRotation *node)
     mtxf_rotate_zxy_and_translate(mtxf, translation, node->rotation);
     mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
     inc_mat_stack();
-    append_dl_and_return((struct GraphNodeDisplayList *) node);
+    append_dl_and_return((struct GraphNodeDisplayList *) node, NULL);
 }
 
 /**
@@ -563,7 +616,7 @@ void geo_process_translation(const struct GraphNodeTranslation *node) {
     }
 
     inc_mat_stack();
-    append_dl_and_return((struct GraphNodeDisplayList *) node);
+    append_dl_and_return((struct GraphNodeDisplayList *) node, NULL);
 }
 
 /**
@@ -577,7 +630,7 @@ void geo_process_rotation(struct GraphNodeRotation *node) {
     mtxf_mul(gMatStack[gMatStackIndex + 1], mtxf, gMatStack[gMatStackIndex]);
 
     inc_mat_stack();
-    append_dl_and_return((struct GraphNodeDisplayList *) node);
+    append_dl_and_return((struct GraphNodeDisplayList *) node, NULL);
 }
 
 void mtxf_scale_vec3f(Mat4 dest, Mat4 mtx, Vec3f s) {
@@ -604,7 +657,7 @@ void geo_process_scale(const struct GraphNodeScale *node) {
     vec3f_set(scaleVec, node->scale, node->scale, node->scale);
     mtxf_scale_vec3f(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], scaleVec);
     inc_mat_stack();
-    append_dl_and_return((struct GraphNodeDisplayList *) node);
+    append_dl_and_return((struct GraphNodeDisplayList *) node, NULL);
 }
 
 /**
@@ -625,7 +678,7 @@ void geo_process_billboard(struct GraphNodeBillboard *node) {
     }
     mtxf_billboard(gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex], translation, scale, gCurGraphNodeCamera->roll);
     inc_mat_stack();
-    append_dl_and_return(((struct GraphNodeDisplayList *) node));
+    append_dl_and_return(((struct GraphNodeDisplayList *) node), NULL);
 }
 
 /**
@@ -635,7 +688,7 @@ void geo_process_billboard(struct GraphNodeBillboard *node) {
  */
 void geo_process_display_list(const struct GraphNodeDisplayList *node) {
 
-    append_dl_and_return((struct GraphNodeDisplayList *) node);
+    append_dl_and_return((struct GraphNodeDisplayList *) node, node->material);
     gMatStackIndex++;
 }
 
@@ -648,7 +701,7 @@ void geo_process_generated_list(struct GraphNodeGenerated *node) {
         Gfx *list = node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, (struct AllocOnlyPool *) gMatStack[gMatStackIndex]);
 
         if (list != NULL) {
-            geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8);
+            geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8, NULL);
         }
     }
     if (node->fnNode.node.children != NULL) {
@@ -668,7 +721,7 @@ void geo_process_background(struct GraphNodeBackground *node) {
         list = node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, (struct AllocOnlyPool *) gMatStack[gMatStackIndex]);
     }
     if (list != NULL) {
-        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8);
+        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(list), node->fnNode.node.flags >> 8, NULL);
     } else if (gCurGraphNodeMasterList != NULL) {
         Gfx *gfxStart = alloc_display_listGRAPH(sizeof(Gfx) * 8);
         Gfx *gfx = gfxStart;
@@ -681,7 +734,7 @@ void geo_process_background(struct GraphNodeBackground *node) {
         gDPSetCycleType(gfx++, G_CYC_1CYCLE);
         gSPEndDisplayList(gfx++);
 
-        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(gfxStart), 0);
+        geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(gfxStart), 0, NULL);
     }
     if (node->fnNode.node.children != NULL) {
         geo_process_node_and_siblings(node->fnNode.node.children);
@@ -796,7 +849,7 @@ void geo_process_animated_part(const struct GraphNodeAnimatedPart *node) {
     mtxf_rot_trans_mul(rotation, translation, gMatStack[gMatStackIndex + 1], gMatStack[gMatStackIndex]);
     gCurrAnimPos++;
     inc_mat_stack();
-    append_dl_and_return((struct GraphNodeDisplayList *) node);
+    append_dl_and_return((struct GraphNodeDisplayList *) node, node->material);
 }
 
 s32 load_patchable_table_render(struct DmaHandlerList *list, s32 index) {
@@ -972,9 +1025,14 @@ void geo_process_shadow(struct GraphNodeShadow *node) {
 
         if (shadowList != NULL) {
             mtxf_shadow(gMatStack[gMatStackIndex + 1], gCurrShadow.floorNormal, shadowPos, gCurrShadow.scale, gCurGraphNodeObject->angleLerp[1]);
-
+            Gfx *material;
+            if (node->shadowType == SHADOW_CIRCLE) {
+                material = dl_shadow_circle;
+            } else {
+                material = dl_shadow_square;
+            }
             inc_mat_stack();
-            geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), gCurrShadow.isDecal ? LAYER_TRANSPARENT_DECAL : LAYER_TRANSPARENT);
+            geo_append_display_list((void *) VIRTUAL_TO_PHYSICAL(shadowList), gCurrShadow.isDecal ? LAYER_TRANSPARENT_DECAL : LAYER_TRANSPARENT, NULL);
 
             gMatStackIndex--;
         }
@@ -1345,6 +1403,8 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         Mtx *initialMatrix;
         Vp *viewport = alloc_display_listGRAPH(sizeof(*viewport));
 
+        print_text_fmt_int(32,64, "%d", sMaterialSwaps);
+        sMaterialSwaps = 0;
         gDisplayListHeap = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool), MEMORY_POOL_LEFT);
         initialMatrix = alloc_display_listGRAPH(sizeof(*initialMatrix));
         gCurLookAt = (LookAt*) alloc_display_list(sizeof(LookAt));
