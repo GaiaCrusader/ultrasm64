@@ -11,9 +11,9 @@ void get_surface_normal(f32 *normal, struct Surface *surf) {
     f32 nx, ny, nz;
     f32 mag;
     
-    register s32 x1, y1, z1;
-    register s32 x2, y2, z2;
-    register s32 x3, y3, z3;
+    register f32 x1, y1, z1;
+    register f32 x2, y2, z2;
+    register f32 x3, y3, z3;
 
     x1 = surf->vertex1[0];
     y1 = surf->vertex1[1];
@@ -62,9 +62,9 @@ static s32 find_wall_collisions_from_list(struct SurfaceNode *surfaceNode, struc
     s32 numCols = 0;
 
     // Max collision radius = 200
-    if (radius > 200.0f) {
+    /*if (radius > 200.0f) {
         radius = 200.0f;
-    }
+    }*/
 
     // Stay in this loop until out of walls.
     while (surfaceNode != NULL) {
