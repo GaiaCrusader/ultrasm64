@@ -1477,7 +1477,7 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
         
         f32 normal[4];
         get_surface_normal(normal, floor);
-        pos[1] = 300.f - (normal[0] * pos[0] + normal[2] * pos[2] + normal[3]) / ny;
+        pos[1] = 300.f - (normal[0] * pos[0] + normal[2] * pos[2] + normal[3]) / normal[1];
         switch (gCurrLevelArea) {
             case AREA_BOB:
                 pos[1] += 125.f;
