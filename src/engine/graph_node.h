@@ -106,17 +106,6 @@ struct GraphNodePerspective {
     /*0x22*/ s16 far;   // far clipping plane
 };
 
-/** An entry in the master list. It is a linked list of display lists
- *  carrying a transformation matrix.
- */
-struct DisplayListNode {
-    Mtx *transform;
-    void *displayList;
-    void *material;
-    struct DisplayListNode *next;
-    u8 fancyAA;
-};
-
 /** GraphNode that manages the 8 top-level display lists that will be drawn
  *  Each list has its own render mode, so for example water is drawn in a
  *  different master list than opaque objects.
@@ -124,8 +113,6 @@ struct DisplayListNode {
  */
 struct GraphNodeMasterList {
     /*0x00*/ struct GraphNode node;
-    /*0x14*/ struct DisplayListNode *listHeads[GFX_NUM_MASTER_LISTS];
-    /*0x34*/ struct DisplayListNode *listTails[GFX_NUM_MASTER_LISTS];
 };
 
 /** Simply used as a parent to group multiple children.
@@ -192,6 +179,7 @@ struct GraphNodeTranslationRotation {
     /*0x14*/ void *displayList;
     /*0x18*/ Vec3s translation;
     /*0x1E*/ Vec3s rotation;
+    void *material;
 };
 
 /** GraphNode that translates itself and its children.
@@ -202,6 +190,7 @@ struct GraphNodeTranslation {
     /*0x00*/ struct GraphNode node;
     /*0x14*/ void *displayList;
     /*0x18*/ Vec3s translation;
+    void *material;
 };
 
 /** GraphNode that rotates itself and its children.
@@ -213,6 +202,7 @@ struct GraphNodeRotation {
     /*0x00*/ struct GraphNode node;
     /*0x14*/ void *displayList;
     /*0x18*/ Vec3s rotation;
+    void *material;
 };
 
 /** GraphNode part that transforms itself and its children based on animation
@@ -238,6 +228,7 @@ struct GraphNodeBillboard {
     /*0x00*/ struct GraphNode node;
     /*0x14*/ void *displayList;
     /*0x18*/ Vec3s translation;
+    void *material;
 };
 
 /** A GraphNode that simply draws a display list without doing any
@@ -261,6 +252,7 @@ struct GraphNodeScale {
     /*0x00*/ struct GraphNode node;
     /*0x14*/ void *displayList;
     /*0x18*/ f32 scale;
+    void *material;
 };
 
 /** GraphNode that draws a shadow under an object.
@@ -355,20 +347,20 @@ struct GraphNodeSwitchCase *init_graph_node_switch_case(struct AllocOnlyPool *po
 struct GraphNodeCamera *init_graph_node_camera(struct AllocOnlyPool *pool, struct GraphNodeCamera *graphNode,
                                                f32 *pos, f32 *focus, GraphNodeFunc func, s32 mode);
 struct GraphNodeTranslationRotation *init_graph_node_translation_rotation(struct AllocOnlyPool *pool, struct GraphNodeTranslationRotation *graphNode,
-                                                                          s32 drawingLayer, void *displayList, Vec3s translation, Vec3s rotation);
+                                                                          s32 drawingLayer, void *displayList, Vec3s translation, Vec3s rotation, void *material);
 struct GraphNodeTranslation *init_graph_node_translation(struct AllocOnlyPool *pool, struct GraphNodeTranslation *graphNode,
-                                                         s32 drawingLayer, void *displayList, Vec3s translation);
+                                                         s32 drawingLayer, void *displayList, Vec3s translation, void *material);
 struct GraphNodeRotation *init_graph_node_rotation(struct AllocOnlyPool *pool, struct GraphNodeRotation *graphNode,
-                                                   s32 drawingLayer, void *displayList, Vec3s rotation);
+                                                   s32 drawingLayer, void *displayList, Vec3s rotation, void *material);
 struct GraphNodeScale *init_graph_node_scale(struct AllocOnlyPool *pool, struct GraphNodeScale *graphNode,
-                                             s32 drawingLayer, void *displayList, f32 scale);
+                                             s32 drawingLayer, void *displayList, f32 scale, void *material);
 struct GraphNodeObject *init_graph_node_object(struct AllocOnlyPool *pool, struct GraphNodeObject *graphNode,
                                                struct GraphNode *sharedChild, Vec3f pos, Vec3s angle, Vec3f scale);
 struct GraphNodeCullingRadius *init_graph_node_culling_radius(struct AllocOnlyPool *pool, struct GraphNodeCullingRadius *graphNode, s16 radius);
 struct GraphNodeAnimatedPart *init_graph_node_animated_part(struct AllocOnlyPool *pool, struct GraphNodeAnimatedPart *graphNode,
                                                             s32 drawingLayer, void *displayList, Vec3s translation, void *material);
 struct GraphNodeBillboard *init_graph_node_billboard(struct AllocOnlyPool *pool, struct GraphNodeBillboard *graphNode,
-                                                     s32 drawingLayer, void *displayList, Vec3s translation);
+                                                     s32 drawingLayer, void *displayList, Vec3s translation, void *material);
 struct GraphNodeDisplayList *init_graph_node_display_list(struct AllocOnlyPool *pool, struct GraphNodeDisplayList *graphNode,
                                                           s32 drawingLayer, void *displayList, void *material);
 struct GraphNodeShadow *init_graph_node_shadow(struct AllocOnlyPool *pool, struct GraphNodeShadow *graphNode,

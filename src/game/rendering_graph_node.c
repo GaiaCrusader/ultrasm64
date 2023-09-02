@@ -351,9 +351,6 @@ void append_dl_and_return(const struct GraphNodeDisplayList *node, void *materia
 void geo_process_master_list(struct GraphNodeMasterList *node) {
     if (gCurGraphNodeMasterList == NULL && node->node.children != NULL) {
         gCurGraphNodeMasterList = node;
-        for (u32 i = 0; i < GFX_NUM_MASTER_LISTS; i++) {
-            node->listHeads[i] = NULL;
-        }
         geo_process_node_and_siblings(node->node.children);
         geo_process_master_list_sub();
         gCurGraphNodeMasterList = NULL;
@@ -1403,7 +1400,7 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         Mtx *initialMatrix;
         Vp *viewport = alloc_display_listGRAPH(sizeof(*viewport));
 
-        print_text_fmt_int(32,64, "%d", sMaterialSwaps);
+        //print_text_fmt_int(32,64, "%d", sMaterialSwaps);
         sMaterialSwaps = 0;
         gDisplayListHeap = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool), MEMORY_POOL_LEFT);
         initialMatrix = alloc_display_listGRAPH(sizeof(*initialMatrix));

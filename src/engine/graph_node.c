@@ -211,7 +211,7 @@ struct GraphNodeCamera *init_graph_node_camera(struct AllocOnlyPool *pool,
 struct GraphNodeTranslationRotation *
 init_graph_node_translation_rotation(struct AllocOnlyPool *pool,
                                      struct GraphNodeTranslationRotation *graphNode, s32 drawingLayer,
-                                     void *displayList, Vec3s translation, Vec3s rotation) {
+                                     void *displayList, Vec3s translation, Vec3s rotation, void *material) {
     if (pool != NULL) {
         graphNode = alloc_only_pool_alloc(pool, sizeof(struct GraphNodeTranslationRotation));
     }
@@ -223,6 +223,7 @@ init_graph_node_translation_rotation(struct AllocOnlyPool *pool,
         vec3s_copy(graphNode->rotation, rotation);
         graphNode->node.flags = (drawingLayer << 8) | (graphNode->node.flags & 0xFF);
         graphNode->displayList = displayList;
+        graphNode->material = material;
     }
 
     return graphNode;
@@ -234,7 +235,7 @@ init_graph_node_translation_rotation(struct AllocOnlyPool *pool,
 struct GraphNodeTranslation *init_graph_node_translation(struct AllocOnlyPool *pool,
                                                          struct GraphNodeTranslation *graphNode,
                                                          s32 drawingLayer, void *displayList,
-                                                         Vec3s translation) {
+                                                         Vec3s translation, void *material) {
     if (pool != NULL) {
         graphNode = alloc_only_pool_alloc(pool, sizeof(struct GraphNodeTranslation));
     }
@@ -245,6 +246,7 @@ struct GraphNodeTranslation *init_graph_node_translation(struct AllocOnlyPool *p
         vec3s_copy(graphNode->translation, translation);
         graphNode->node.flags = (drawingLayer << 8) | (graphNode->node.flags & 0xFF);
         graphNode->displayList = displayList;
+        graphNode->material = material;
     }
 
     return graphNode;
@@ -256,7 +258,7 @@ struct GraphNodeTranslation *init_graph_node_translation(struct AllocOnlyPool *p
 struct GraphNodeRotation *init_graph_node_rotation(struct AllocOnlyPool *pool,
                                                    struct GraphNodeRotation *graphNode,
                                                    s32 drawingLayer, void *displayList,
-                                                   Vec3s rotation) {
+                                                   Vec3s rotation, void *material) {
     if (pool != NULL) {
         graphNode = alloc_only_pool_alloc(pool, sizeof(struct GraphNodeRotation));
     }
@@ -266,6 +268,7 @@ struct GraphNodeRotation *init_graph_node_rotation(struct AllocOnlyPool *pool,
         vec3s_copy(graphNode->rotation, rotation);
         graphNode->node.flags = (drawingLayer << 8) | (graphNode->node.flags & 0xFF);
         graphNode->displayList = displayList;
+        graphNode->material = material;
     }
 
     return graphNode;
@@ -276,7 +279,7 @@ struct GraphNodeRotation *init_graph_node_rotation(struct AllocOnlyPool *pool,
  */
 struct GraphNodeScale *init_graph_node_scale(struct AllocOnlyPool *pool,
                                              struct GraphNodeScale *graphNode, s32 drawingLayer,
-                                             void *displayList, f32 scale) {
+                                             void *displayList, f32 scale, void *material) {
     if (pool != NULL) {
         graphNode = alloc_only_pool_alloc(pool, sizeof(struct GraphNodeScale));
     }
@@ -286,6 +289,7 @@ struct GraphNodeScale *init_graph_node_scale(struct AllocOnlyPool *pool,
         graphNode->node.flags = (drawingLayer << 8) | (graphNode->node.flags & 0xFF);
         graphNode->scale = scale;
         graphNode->displayList = displayList;
+        graphNode->material = material;
     }
 
     return graphNode;
@@ -369,7 +373,7 @@ struct GraphNodeAnimatedPart *init_graph_node_animated_part(struct AllocOnlyPool
 struct GraphNodeBillboard *init_graph_node_billboard(struct AllocOnlyPool *pool,
                                                      struct GraphNodeBillboard *graphNode,
                                                      s32 drawingLayer, void *displayList,
-                                                     Vec3s translation) {
+                                                     Vec3s translation, void *material) {
     if (pool != NULL) {
         graphNode = alloc_only_pool_alloc(pool, sizeof(struct GraphNodeBillboard));
     }
@@ -379,6 +383,7 @@ struct GraphNodeBillboard *init_graph_node_billboard(struct AllocOnlyPool *pool,
         vec3s_copy(graphNode->translation, translation);
         graphNode->node.flags = (drawingLayer << 8) | (graphNode->node.flags & 0xFF);
         graphNode->displayList = displayList;
+        graphNode->material = material;
     }
 
     return graphNode;

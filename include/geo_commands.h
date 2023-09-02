@@ -199,6 +199,11 @@
     CMD_BBH(0x10, (0x00 | layer | 0x80), 0x0000), \
     CMD_HHHHHH(tx, ty, tz, rx, ry, rz), \
     CMD_PTR(displayList)
+#define GEO_TRANSLATE_ROTATE_WITH_DL_MATERIAL(layer, tx, ty, tz, rx, ry, rz, displayList, material) \
+    CMD_BBH(0x10, (0x00 | layer | 0x80 | 0x40), 0x0000), \
+    CMD_HHHHHH(tx, ty, tz, rx, ry, rz), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
 
 /**
  *   fieldLayout = 1: Translate
@@ -214,6 +219,11 @@
     CMD_BBH(0x10, (0x10 | layer | 0x80), tx), \
     CMD_HH(ty, tz), \
     CMD_PTR(displayList)
+#define GEO_TRANSLATE_WITH_DL_MATERIAL(layer, tx, ty, tz, displayList, material) \
+    CMD_BBH(0x10, (0x10 | layer | 0x80 | 0x40), tx), \
+    CMD_HH(ty, tz), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
 
 /**
  *   fieldLayout = 2: Rotate
@@ -229,6 +239,11 @@
     CMD_BBH(0x10, (0x20 | layer | 0x80), rx), \
     CMD_HH(ry, rz), \
     CMD_PTR(displayList)
+#define GEO_ROTATE_WITH_DL_MATERIAL(layer, rx, ry, rz, displayList, material) \
+    CMD_BBH(0x10, (0x20 | layer | 0x80 | 0x40), rx), \
+    CMD_HH(ry, rz), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
 
 /**
  *   fieldLayout = 3: Rotate Y
@@ -240,6 +255,10 @@
 #define GEO_ROTATE_Y_WITH_DL(layer, ry, displayList) \
     CMD_BBH(0x10, (0x30 | layer | 0x80), ry), \
     CMD_PTR(displayList)
+#define GEO_ROTATE_Y_WITH_DL_MATERIAL(layer, ry, displayList, material) \
+    CMD_BBH(0x10, (0x30 | layer | 0x80 | 0x40), ry), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
 
 /**
  * 0x11: Create translation scene graph node with optional display list
@@ -258,6 +277,11 @@
     CMD_BBH(0x11, (layer | 0x80), ux), \
     CMD_HH(uy, uz), \
     CMD_PTR(displayList)
+#define GEO_TRANSLATE_NODE_WITH_DL_MATERIAL(layer, ux, uy, uz, displayList, material) \
+    CMD_BBH(0x11, (layer | 0x80 | 0x40), ux), \
+    CMD_HH(uy, uz), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
 
 /**
  * 0x12: Create rotation scene graph node with optional display list
@@ -276,6 +300,11 @@
     CMD_BBH(0x12, (layer | 0x80), ux), \
     CMD_HH(uy, uz), \
     CMD_PTR(displayList)
+#define GEO_ROTATION_NODE_WITH_DL_material(layer, ux, uy, uz, displayList, material) \
+    CMD_BBH(0x12, (layer | 0x80 | 0x40), ux), \
+    CMD_HH(uy, uz), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
 
 /**
  * 0x13: Create a scene graph node that is rotated by the object's animation.
@@ -313,6 +342,11 @@
     CMD_BBH(0x14, (layer | 0x80), tx), \
     CMD_HH(ty, tz), \
     CMD_PTR(displayList)
+#define GEO_BILLBOARD_WITH_PARAMS_AND_DL_MATERIAL(layer, tx, ty, tz, displayList, material) \
+    CMD_BBH(0x14, (layer | 0x80 | 0x40), tx), \
+    CMD_HH(ty, tz), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
 #define GEO_BILLBOARD() \
     GEO_BILLBOARD_WITH_PARAMS(0, 0, 0, 0)
 
@@ -414,6 +448,11 @@
     CMD_BBH(0x1D, (layer | 0x80), 0x0000), \
     CMD_W(scale), \
     CMD_PTR(displayList)
+#define GEO_SCALE_WITH_DL_MATERIAL(layer, scale, displayList, material) \
+    CMD_BBH(0x1D, (layer | 0x80 | 40), 0x0000), \
+    CMD_W(scale), \
+    CMD_PTR(displayList), \
+    CMD_PTR(material)
 
 /**
  * 0x1E: No operation
