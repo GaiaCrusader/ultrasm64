@@ -44,7 +44,7 @@
  *
  */
 
-s16 gMatStackIndex;
+s16 gMatStackIndex = 0;
 Mat4 gMatStack[32];
 Mtx *gMatStackFixed[32];
 Mat4 gThrowMatStack[2][THROWMATSTACK];
@@ -571,7 +571,6 @@ void geo_process_camera(struct GraphNodeCamera *node) {
         geo_process_node_and_siblings(node->fnNode.node.children);
         gCurGraphNodeCamera = NULL;
     }
-    gMatStackIndex--;
 }
 
 /**

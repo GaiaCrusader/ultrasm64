@@ -154,47 +154,6 @@ static s32 int_sci_notation(s32 base, s32 significand) {
     return base;
 }
 
-/* 23C1C8 -> 23C468; orig name: func_8018D9F8 */
-char *sprint_val_withspecifiers(char *str, union PrintVal val, char *specifiers) {
-    s32 fracPart; // sp3C
-    s32 intPart;  // sp38
-    s32 intPrec;  // sp34
-    s32 fracPrec; // sp30
-    char cur; // sp2B
-
-    fracPrec = 6;
-    intPrec = 6;
-
-    while ((cur = *specifiers++)) {
-        if (cur == 'd') {
-            sPadNumPrint = FALSE;
-            str = format_number_decimal(str, val.i, 1000000000);
-        } else if (cur == 'x') {
-            sPadNumPrint = TRUE; /* doesn't affect hex printing, though... */
-            str = format_number_hex(str, val.i);
-        } else if (cur == 'f') {
-            intPart = (s32) val.f;
-            fracPart = (s32)((val.f - (f32) intPart) * (f32) int_sci_notation(10, fracPrec));
-            sPadNumPrint = FALSE;
-            str = format_number_decimal(str, intPart, int_sci_notation(10, intPrec));
-            *str++ = '.';
-            sPadNumPrint = TRUE;
-            str = format_number_decimal(str, fracPart, int_sci_notation(10, fracPrec - 1));
-        } else if (cur >= '0' && cur <= '9') {
-            cur = cur - '0';
-            intPrec = cur;
-            if (*specifiers++) {
-                fracPrec = (*specifiers++) - '0';
-            }
-        } else {
-            gd_strcpy(str, "<BAD TYPE>");
-            str += 10;
-        }
-    }
-
-    return str;
-}
-
 /* 23C468 -> 23C4AC; orig name: func_8018DC98 */
 void gd_strcpy(char *dst, const char *src) {
     while ((*dst++ = *src++)) {
