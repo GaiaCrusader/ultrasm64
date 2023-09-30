@@ -729,7 +729,7 @@ void thread5_game_loop(UNUSED void *arg) {
             continue;
         }
 #ifdef PUPPYPRINT_DEBUG
-        u32 first = osGetTime();
+        u32 first = osGetCount();
         profiler_log_thread5_time(THREAD5_START);
 #endif
 
@@ -751,7 +751,7 @@ void thread5_game_loop(UNUSED void *arg) {
         profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
         profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
         profiler_log_thread5_time(THREAD5_END);
-        gGameTime = osGetTime() - first;
+        gGameTime = osGetCount() - first;
 #endif
         if (thread9Start == FALSE) {
             osStartThread(&gVideoLoopThread);
@@ -815,11 +815,11 @@ void thread9_graphics(UNUSED void *arg) {
 
     while (gResetTimer == 0) {
 #ifdef PUPPYPRINT_DEBUG
-        u32 first = osGetTime();
+        u32 first = osGetCount();
 #endif
 
-        u32 deltaTime = osGetTime() - prevTime;
-        prevTime = osGetTime();
+        u32 deltaTime = osGetCount() - prevTime;
+        prevTime = osGetCount();
         gLerpSpeed = OS_CYCLES_TO_USEC(deltaTime) / 33333.33f;
         if (gLoadReset) {
             gLoadReset = 0;
@@ -862,7 +862,7 @@ void thread9_graphics(UNUSED void *arg) {
             end_master_display_list();
             alloc_display_list(0);
 #ifdef PUPPYPRINT_DEBUG
-            gVideoTime = osGetTime() - first;
+            gVideoTime = osGetCount() - first;
             profiler_log_thread9_time(THREAD9_END);
 #endif      
             display_and_vsync();

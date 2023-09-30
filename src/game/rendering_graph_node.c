@@ -216,34 +216,32 @@ void geo_process_master_list_sub(void) {
     Gfx *lastMaterial = NULL;
     Gfx *gfx = gDisplayListHead;
     s32 switchAA = FALSE;
-    s32 lastAA = 0;
 
     gSPSetGeometryMode(gfx++, G_ZBUFFER);
     gDPSetCycleType(gfx++, G_CYC_2CYCLE);
     update_level_fog(&gfx);
     for (u32 i = 0; i < GFX_NUM_MASTER_LISTS; i++, switchAA = TRUE) {
         list = gRenderNodeHead[i];
-        if (list) {
-            while (list) {
-                if (switchAA == TRUE || list->aaMode != lastAA) {
-                    mode2List = &renderModeTable_2Cycle[gAntiAliasing + 1 + list->aaMode];
-                    gDPSetRenderMode(gfx++, gFirstCycleRM, mode2List->modes[i]);
-                    switchAA = FALSE;
-                }
-                if (list->mtx) {
-                    gSPMatrix(gfx++, OS_K0_TO_PHYSICAL(list->mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-                }
-                if (list->material && list->material != lastMaterial) {
-                    gSPDisplayList(gfx++, list->material);
-                    sMaterialSwaps++;
-                }
-                if (list->material == NULL) {
-                    sMaterialSwaps++;
-                }
-                lastMaterial = list->material;
-                gSPDisplayList(gfx++, list->dl);
-                list = list->next;
+        s32 lastAA = -1;
+        while (list) {
+            if (list->aaMode != lastAA) {
+                mode2List = &renderModeTable_2Cycle[gAntiAliasing + 1 + list->aaMode];
+                gDPSetRenderMode(gfx++, gFirstCycleRM, mode2List->modes[i]);
+                lastAA = list->aaMode;
             }
+            if (list->mtx) {
+                gSPMatrix(gfx++, OS_K0_TO_PHYSICAL(list->mtx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+            }
+            if (list->material && list->material != lastMaterial) {
+                gSPDisplayList(gfx++, list->material);
+                sMaterialSwaps++;
+            }
+            if (list->material == NULL) {
+                sMaterialSwaps++;
+            }
+            lastMaterial = list->material;
+            gSPDisplayList(gfx++, list->dl);
+            list = list->next;
         }
         gRenderNodeHead[i] = NULL;
         gRenderNodeTail[i] = NULL;

@@ -21,7 +21,7 @@ struct ProfilerFrameData gProfilerFrameData[2];
 
 // log the current osTime to the appropriate idx for current thread5 processes.
 void profiler_log_thread5_time(enum ProfilerGameEvent eventID) {
-    gProfilerFrameData[gCurrentFrameIndex1].gameTimes[eventID] = osGetTime();
+    gProfilerFrameData[gCurrentFrameIndex1].gameTimes[eventID] = osGetCount();
 
     // event ID 4 is the last profiler event for after swapping
     // buffers: switch the Info after updating.
@@ -32,7 +32,7 @@ void profiler_log_thread5_time(enum ProfilerGameEvent eventID) {
 }
 
 void profiler_log_thread9_time(enum ProfilerGameEvent9 eventID) {
-    gProfilerFrameData[gCurrentFrameIndex3].videoTimes[eventID] = osGetTime();
+    gProfilerFrameData[gCurrentFrameIndex3].videoTimes[eventID] = osGetCount();
 
     // event ID 4 is the last profiler event for after swapping
     // buffers: switch the Info after updating.
@@ -46,7 +46,7 @@ void profiler_log_thread4_time(void) {
     struct ProfilerFrameData *profiler = &gProfilerFrameData[gCurrentFrameIndex1];
 
     if (profiler->numSoundTimes < ARRAY_COUNT(profiler->soundTimes)) {
-        profiler->soundTimes[profiler->numSoundTimes++] = osGetTime();
+        profiler->soundTimes[profiler->numSoundTimes++] = osGetCount();
     }
 }
 
@@ -57,7 +57,7 @@ void profiler_log_gfx_time(enum ProfilerGfxEvent eventID) {
         gProfilerFrameData[gCurrentFrameIndex2].numVblankTimes = 0;
     }
 
-    gProfilerFrameData[gCurrentFrameIndex2].gfxTimes[eventID] = osGetTime();
+    gProfilerFrameData[gCurrentFrameIndex2].gfxTimes[eventID] = osGetCount();
 }
 
 // log the times between vblank started and ended.
@@ -65,7 +65,7 @@ void profiler_log_vblank_time(void) {
     struct ProfilerFrameData *profiler = &gProfilerFrameData[gCurrentFrameIndex2];
 
     if (profiler->numVblankTimes < ARRAY_COUNT(profiler->vblankTimes)) {
-        profiler->vblankTimes[profiler->numVblankTimes++] = osGetTime();
+        profiler->vblankTimes[profiler->numVblankTimes++] = osGetCount();
     }
 }
 

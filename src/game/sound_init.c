@@ -342,7 +342,7 @@ void thread4_sound(UNUSED void *arg) {
 
         osRecvMesg(&sSoundMesgQueue, &msg, OS_MESG_BLOCK);
 #ifdef PUPPYPRINT_DEBUG
-        u32 first = osGetTime();
+        u32 first = osGetCount();
 #endif
         if (gResetTimer < 25) {
             struct SPTask *spTask;
@@ -354,7 +354,7 @@ void thread4_sound(UNUSED void *arg) {
             profiler_log_thread4_time();
         }
 #ifdef PUPPYPRINT_DEBUG
-        gSoundTime = osGetTime() - first;
+        gSoundTime = osGetCount() - first;
 #endif
     }
 }
