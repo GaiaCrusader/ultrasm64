@@ -821,14 +821,8 @@ void thread9_graphics(UNUSED void *arg) {
         u32 deltaTime = osGetCount() - prevTime;
         prevTime = osGetCount();
         gLerpSpeed = OS_CYCLES_TO_USEC(deltaTime) / 33333.33f;
-        if (gLoadReset) {
-            gLoadReset = 0;
-            gLerpSpeed = 1.0f;
-            gMoveSpeed = 1;
-        }
-
-        
-        if (gDisableDraw == 1) {
+   
+        if (gDisableDraw) {
             gDisableDraw = 0;
             gWarpTransition.isActive = FALSE;
             if (!gWarpTransition.isActive) {
@@ -850,12 +844,14 @@ void thread9_graphics(UNUSED void *arg) {
                 gMoveSpeed = 0;
             }
             lastRenderedFrame = gGlobalTimer;
-
-
+            if (gLoadReset) {
+                gLoadReset = 0;
+                gLerpSpeed = 1.0f;
+                gMoveSpeed = 1;
+            }
             if (gTargetCam) {
                 update_graph_node_camera(gTargetCam);
             }
-            swap_screen();
             select_gfx_pool();
             init_rcp();
             render_game();
@@ -866,6 +862,7 @@ void thread9_graphics(UNUSED void *arg) {
             profiler_log_thread9_time(THREAD9_END);
 #endif      
             display_and_vsync();
+            swap_screen();
         }
 
         osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
