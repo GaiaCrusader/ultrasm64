@@ -3304,6 +3304,12 @@ void create_camera(struct GraphNodeCamera *gc, struct AllocOnlyPool *pool) {
     vec3f_copy(c->focus, gc->focus);
 }
 
+#ifdef BBPLAYER
+#define ISIQUE 1
+#else
+#define ISIQUE 0
+#endif
+
 struct GraphNodeCamera *gTargetCam;
 
 Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
@@ -3315,7 +3321,7 @@ Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
             break;
         case GEO_CONTEXT_RENDER:
             gTargetCam = gc;
-            if (gTargetCam && !gIsConsole) {
+            if ((gTargetCam && !gIsConsole) || ISIQUE) {
                 update_graph_node_camera(gTargetCam);
             }
             //update_graph_node_camera(gc);

@@ -806,6 +806,12 @@ void swap_screen(void) {
     }
 }
 
+#ifdef BBPLAYER
+#define ISNOTIQUE 0
+#else
+#define ISNOTIQUE 1
+#endif
+
 void thread9_graphics(UNUSED void *arg) {
     u32 prevTime = 0;
     gScreenSwapTimer = 1;
@@ -849,7 +855,7 @@ void thread9_graphics(UNUSED void *arg) {
                 gLerpSpeed = 1.0f;
                 gMoveSpeed = 1;
             }
-            if (gTargetCam && gIsConsole) {
+            if ((gTargetCam && gIsConsole) && ISNOTIQUE) {
                 update_graph_node_camera(gTargetCam);
             }
             select_gfx_pool();
