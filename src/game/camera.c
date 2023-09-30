@@ -3315,6 +3315,9 @@ Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
             break;
         case GEO_CONTEXT_RENDER:
             gTargetCam = gc;
+            if (gTargetCam && !gIsConsole) {
+                update_graph_node_camera(gTargetCam);
+            }
             //update_graph_node_camera(gc);
             break;
     }

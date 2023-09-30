@@ -504,7 +504,7 @@ void update_graph_node_camera(struct GraphNodeCamera *gc) {
     vec3f_copy(gc->focus, gLakituState.focus);
     zoom_out_if_paused_and_outside(gc);
 
-    if (!gMoveSpeed || sCurrPlayMode == 2 || gCameraSnap == TRUE) {
+    if (!gMoveSpeed || sCurrPlayMode == 2 || gCameraSnap) {
         gc->posLerp[0] = gc->pos[0];
         gc->posLerp[1] = gc->pos[1];
         gc->posLerp[2] = gc->pos[2];

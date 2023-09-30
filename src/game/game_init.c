@@ -849,7 +849,7 @@ void thread9_graphics(UNUSED void *arg) {
                 gLerpSpeed = 1.0f;
                 gMoveSpeed = 1;
             }
-            if (gTargetCam) {
+            if (gTargetCam && gIsConsole) {
                 update_graph_node_camera(gTargetCam);
             }
             select_gfx_pool();

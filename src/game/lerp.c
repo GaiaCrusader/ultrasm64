@@ -41,11 +41,15 @@ s32 absi_lerp(s32 x) {
     }
 }
 
+u32 abs_angle_diff_lerp(s16 x0, s16 x1) {
+    return absi_lerp((s16) (x1 - x0));
+}
+
 s32 approach_angle_lerp(s32 current, s32 target) {
     s32 diff1;
     s32 ret;
     //return target - localLerp((s16) (target - current), 0, gLerpSpeed);
-    if ((diff1 = abs_angle_diff(current, target)) >= 0x2000) {
+    if ((diff1 = abs_angle_diff_lerp(current, target)) >= 0x2000) {
         return target;
     }
     if (gMoveSpeed == 1) {
