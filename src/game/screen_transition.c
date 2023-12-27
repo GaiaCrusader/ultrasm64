@@ -204,7 +204,7 @@ void render_textured_transition(s8 fadeTimer, s8 transTime, struct WarpTransitio
 
     if (verts != NULL) {
         load_tex_transition_vertex(verts, fadeTimer, transData, centerTransX, centerTransY, texTransRadius, transTexType);
-        gSPDisplayList(gDisplayListHead++, dl_proj_mtx_fullscreen)
+        gSPDisplayList(gDisplayListHead++, dl_proj_mtx_fullscreen);
         gDPPipeSync(gDisplayListHead++);
         gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
         gDPSetRenderMode(gDisplayListHead++, G_RM_CLD_SURF, G_RM_CLD_SURF2);
@@ -322,8 +322,8 @@ Gfx *render_cannon_circle_base(void) {
             gDPSetPrimColor(g++, 0, 0, 0, 0, 0, 255);
             gDPFillRectangle(g++, 0, 0, ((gScreenWidth / 2) - (SCREEN_WIDTH / 2)) + 4, gScreenHeight);
             gDPFillRectangle(g++, gScreenWidth - ((gScreenWidth / 2) - (SCREEN_WIDTH / 2)) - 4, 0, gScreenWidth, gScreenHeight);
-        gDPSetPrimColor(gDisplayListHead++, 0, 0, 255, 255, 255, 255);
-        finish_blank_box();
+            gDPSetPrimColor(gDisplayListHead++, 0, 0, 255, 255, 255, 255);
+            finish_blank_box();
         }
         gSPDisplayList(g++, dl_screen_transition_end);
         gSPEndDisplayList(g);

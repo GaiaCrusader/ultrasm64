@@ -223,6 +223,15 @@ void handle_vblank(void) {
     }
 }
 
+typedef struct {
+    u16 vertexCount;
+    u16 triDrawCount;
+    u32 triRequestCount:18;
+    u32 rectCount:14;
+} F3DEX3PerfCounters;
+
+extern u32 sNumTris;
+
 void handle_sp_complete(void) {
     struct SPTask *curSPTask = gActiveSPTask;
 
@@ -276,6 +285,11 @@ void handle_dp_complete(void) {
     if (sCurrentDisplaySPTask->msgqueue != NULL) {
         osSendMesg(sCurrentDisplaySPTask->msgqueue, sCurrentDisplaySPTask->msg, OS_MESG_NOBLOCK);
     }
+#ifdef PUPPYPRINT_DEBUG
+    F3DEX3PerfCounters* counters = (F3DEX3PerfCounters*)( (u8*)gGfxSPTaskYieldBuffer + OS_YIELD_DATA_SIZE - 0x10);
+    osInvalDCache(counters, sizeof(F3DEX3PerfCounters));
+    sNumTris = counters->triDrawCount;
+#endif
     profiler_log_gfx_time(RDP_COMPLETE);
     sCurrentDisplaySPTask->state = SPTASK_STATE_FINISHED_DP;
     sCurrentDisplaySPTask = NULL;
@@ -473,11 +487,11 @@ void thread1_idle(UNUSED void *arg) {
 		break;
 	case OS_TV_MPAL:
 		// MPAL
-        VI = osViModeMpalLan1;
+        //VI = osViModeMpalLan1;
 		break;
 	case OS_TV_PAL:
 		// PAL
-        VI = osViModePalLan1;
+        //VI = osViModePalLan1;
 		break;
 	}
     change_vi(&VI, SCREEN_WIDTH, SCREEN_HEIGHT);

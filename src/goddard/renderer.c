@@ -1314,23 +1314,7 @@ void gd_dl_lookat(struct ObjCamera *cam, f32 arg1, f32 arg2, f32 arg3, f32 arg4,
     lookat->l[1].l.dir[0] = LOOKAT_PACK(cam->unkE8[0][1]);
     lookat->l[1].l.dir[1] = LOOKAT_PACK(cam->unkE8[1][1]);
     lookat->l[1].l.dir[2] = LOOKAT_PACK(cam->unkE8[2][1]);
-
-    lookat->l[0].l.col[0] = 0;
-    lookat->l[0].l.col[1] = 0;
-    lookat->l[0].l.col[2] = 0;
     lookat->l[0].l.pad1 = 0;
-    lookat->l[0].l.colc[0] = 0;
-    lookat->l[0].l.colc[1] = 0;
-    lookat->l[0].l.colc[2] = 0;
-    lookat->l[0].l.pad2 = 0;
-    lookat->l[1].l.col[0] = 0;
-    lookat->l[1].l.col[1] = 0x80;
-    lookat->l[1].l.col[2] = 0;
-    lookat->l[1].l.pad1 = 0;
-    lookat->l[1].l.colc[0] = 0;
-    lookat->l[1].l.colc[1] = 0x80;
-    lookat->l[1].l.colc[2] = 0;
-    lookat->l[1].l.pad2 = 0;
 
     lookat = &D_801BE790[0];
     lookat->l[0].l.dir[0] = 1;
@@ -1341,22 +1325,7 @@ void gd_dl_lookat(struct ObjCamera *cam, f32 arg1, f32 arg2, f32 arg3, f32 arg4,
     lookat->l[1].l.dir[1] = 1;
     lookat->l[1].l.dir[2] = 0;
 
-    lookat->l[0].l.col[0] = 0;
-    lookat->l[0].l.col[1] = 0;
-    lookat->l[0].l.col[2] = 0;
     lookat->l[0].l.pad1 = 0;
-    lookat->l[0].l.colc[0] = 0;
-    lookat->l[0].l.colc[1] = 0;
-    lookat->l[0].l.colc[2] = 0;
-    lookat->l[0].l.pad2 = 0;
-    lookat->l[1].l.col[0] = 0;
-    lookat->l[1].l.col[1] = 0x80;
-    lookat->l[1].l.col[2] = 0;
-    lookat->l[1].l.pad1 = 0;
-    lookat->l[1].l.colc[0] = 0;
-    lookat->l[1].l.colc[1] = 0x80;
-    lookat->l[1].l.colc[2] = 0;
-    lookat->l[1].l.pad2 = 0;
 
     gSPLookAt(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&D_801BE7D0[gGdFrameBufNum]));
     &sCurrentGdDl->mtx[sCurrentGdDl->curMtxIdx++];
@@ -1411,7 +1380,7 @@ Vtx *gd_dl_make_vertex(f32 x, f32 y, f32 z, f32 alpha) {
 /* 24E6C0 -> 24E724 */
 void func_8019FEF0(void) {
     sTriangleBufCount++;
-    if (sVertexBufCount >= 30) {
+    if (sVertexBufCount >= 54) {
         gd_dl_flush_vertices();
         func_801A0038();
     }
@@ -1449,7 +1418,10 @@ void gd_dl_flush_vertices(void) {
         gSPVertex(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&sCurrentGdDl->vtx[sVertexBufStartIndex]), sVertexBufCount, 0);
         // load triangle data
         for (i = 0; i < sTriangleBufCount; i++) {
-            if (sTriangleBufCount - i > 1) {
+            /*if (sTriangleBufCount - i > 4) {
+                gSPTriStrip(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], sTriangleBuf[i][0] - sVertexBufStartIndex, sTriangleBuf[i][1] - sVertexBufStartIndex, sTriangleBuf[i][2] - sVertexBufStartIndex, sTriangleBuf[i + 1][2] - sVertexBufStartIndex, sTriangleBuf[i + 2][2] - sVertexBufStartIndex, sTriangleBuf[i + 3][2] - sVertexBufStartIndex, sTriangleBuf[i + 4][2] - sVertexBufStartIndex);
+                i += 4;
+            } else */if (sTriangleBufCount - i > 1) {
                 gSP2Triangles(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], sTriangleBuf[i][0] - sVertexBufStartIndex, sTriangleBuf[i][1] - sVertexBufStartIndex, sTriangleBuf[i][2] - sVertexBufStartIndex, 0,
                                         sTriangleBuf[i + 1][0] - sVertexBufStartIndex, sTriangleBuf[i + 1][1] - sVertexBufStartIndex, sTriangleBuf[i + 1][2] - sVertexBufStartIndex, 0);
                                         i++;
@@ -1559,9 +1531,6 @@ s32 gd_dl_material_lighting(s32 id, struct GdColour *colour, s32 material) {
     }
     switch (material) {
         case GD_MTL_TEX_OFF:
-            gddl_is_loading_shine_dl(FALSE);
-            gddl_is_loading_shine_dl(FALSE);
-            gddl_is_loading_shine_dl(FALSE);
             gddl_is_loading_shine_dl(FALSE);
             numLights = NUMLIGHTS_2;
             break;
@@ -2008,6 +1977,11 @@ void gd_setproperty(enum GdProperty prop, f32 f1, f32 f2, f32 f3) {
             sAmbScaleColour.b = f3;
             break;
         case GD_PROP_LIGHT_DIR:
+            f32 magnitude = sqrtf(f1 * f1 + f2 * f2 + f3 * f3);
+        
+            f1 /= magnitude;
+            f2 /= magnitude;
+            f3 /= magnitude;
             sLightDirections[sLightId].x = (s32)(f1 * 120.f);
             sLightDirections[sLightId].y = (s32)(f2 * 120.f);
             sLightDirections[sLightId].z = (s32)(f3 * 120.f);
@@ -2579,7 +2553,7 @@ void gd_put_sprite(u16 *sprite, s32 x, s32 y, s32 wx, s32 wy) {
     for (r = 0; r < wy; r += 32) {
         for (c = 0; c < wx; c += 32) {
              gDPLoadTextureBlock(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], (r * 32) + sprite + c, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0,
-                G_TX_WRAP | G_TX_NOMIRROR, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD)
+                G_TX_WRAP | G_TX_NOMIRROR, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
              gSPTextureRectangle(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], x << 2, (y + r) << 2, (x + 32) << 2, (y + r + 32) << 2,
                 G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
         }

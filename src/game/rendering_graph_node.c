@@ -465,11 +465,9 @@ f32 billboardMatrix[3][4] = {
     { 0, 0, 1.0f, 0 },
 };
 
-Lights1 defaultLight = gdSPDefLights1(
-    0x3F, 0x3F, 0x3F, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00
-);
+Lights1 defaultLight = gdSPDefLights1(0x3F, 0x3F, 0x3F, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00);
 
-Vec3f globalLightDirection = { 0x28, 0x28, 0x28 };
+Vec3f globalLightDirection = { 0x4A, 0x4A, 0x4A };
 
 void linear_mtxf_transpose_mul_vec3f_render(Mat4 m, Vec3f dst, Vec3f v) {
     s32 i;
@@ -1405,8 +1403,6 @@ void geo_process_root(struct GraphNodeRoot *node, Vp *b, Vp *c, s32 clearColor) 
         initialMatrix = alloc_display_listGRAPH(sizeof(*initialMatrix));
         gCurLookAt = (LookAt*) alloc_display_list(sizeof(LookAt));
         bzero(gCurLookAt, sizeof(LookAt));
-        gCurLookAt->l[1].l.col[1] = 0x80;
-        gCurLookAt->l[1].l.colc[1] = 0x80;
         gMatStackIndex = 0;
         gCurrAnimType = 0;
         vec3s_set(viewport->vp.vtrans, gScreenWidth * 2, gScreenHeight * 2, 511);

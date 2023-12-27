@@ -77,6 +77,8 @@ typedef volatile s16 vs16;
 typedef volatile s32 vs32;
 typedef volatile s64 vs64;
 
+#define sqrtf(f) __builtin_sqrtf(f)
+
 
 /*************************************************************************
  * Common definitions

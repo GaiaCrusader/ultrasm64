@@ -386,6 +386,7 @@ u8 gShowProfilerNew = TRUE;
 u32 gVideoTime = 0;
 u32 gSoundTime = 0;
 u32 gGameTime = 0;
+u32 sNumTris = 0;
 u32 totalCPUReads[PROFILER_COUNT + 2];
 u32 totalRSPReads[PROFILER_COUNT + 2];
 u32 totalRDPReads[PROFILER_COUNT + 2];
@@ -423,6 +424,7 @@ void render_profiler(void) {
     print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) totalRSPReads[PROFILER_COUNT + 1]);
     print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) totalRDPReads[PROFILER_COUNT + 1]);
     print_text_fmt_int(32, 240 - (gScreenHeight - 24), "RAM %x", (u32) sPoolFreeSpace);
+    print_text_fmt_int(32, 240 - (gScreenHeight - 40), "TRI %d", (u32) sNumTris);
 }
 
 void profiler_logic(void) {

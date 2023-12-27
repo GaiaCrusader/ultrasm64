@@ -813,6 +813,18 @@ void load_sequence(u32 player, u32 seqId, s32 loadAsync) {
     }
 }
 
+void alSeqFileNew(ALSeqFile *file, u8 *base) {
+    s32 offset = (s32) base;
+    s32 i;
+    
+    /*
+     * patch the file so that offsets are pointers
+     */
+    for (i = 0; i < file->seqCount; i++) {
+        file->seqArray[i].offset = (u8 *)((u8 *)file->seqArray[i].offset + offset);
+    }
+}
+
 void load_sequence_internal(u32 player, u32 seqId, s32 loadAsync) {
     void *sequenceData;
     struct SequencePlayer *seqPlayer = &gSequencePlayers[player];
