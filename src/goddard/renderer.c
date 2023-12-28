@@ -1562,7 +1562,7 @@ s32 gd_dl_material_lighting(s32 id, struct GdColour *colour, s32 material) {
 
             gSPNumLights(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], NUMLIGHTS_1);
             gSPLight(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&DL_CURRENT_LIGHT(sCurrentGdDl).l), LIGHT_1);
-            gSPLight(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&DL_CURRENT_LIGHT(sCurrentGdDl).a), LIGHT_2);
+            gSPAmbient(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&DL_CURRENT_LIGHT(sCurrentGdDl).a), LIGHT_2);
             &sCurrentGdDl->light[sCurrentGdDl->curLightIdx++];
             if (id > 0) {
                 gd_enddlsplist();
@@ -1610,7 +1610,7 @@ s32 gd_dl_material_lighting(s32 id, struct GdColour *colour, s32 material) {
         gSPLight(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&DL_CURRENT_LIGHT(sCurrentGdDl).l[i]), i + 1);
     }
     // L801A1550
-    gSPLight(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&DL_CURRENT_LIGHT(sCurrentGdDl).a), i + 1);
+    gSPAmbient(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&DL_CURRENT_LIGHT(sCurrentGdDl).a), i + 1);
     &sCurrentGdDl->light[sCurrentGdDl->curLightIdx++];
     gd_enddlsplist();
     return 0;

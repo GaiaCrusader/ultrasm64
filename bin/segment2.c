@@ -2618,7 +2618,6 @@ const Gfx dl_skybox_end[] = {
 
 // 0x02014790 - 0x020147D0
 const Gfx dl_waterbox_rgba16_begin[] = {
-    gsSPClipRatio(FRUSTRATIO_1),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPPipeSync(),
@@ -2632,7 +2631,6 @@ const Gfx dl_waterbox_rgba16_begin[] = {
 
 // 0x020147D0 - 0x02014810
 const Gfx dl_waterbox_ia16_begin[] = {
-    gsSPClipRatio(FRUSTRATIO_1),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPPipeSync(),
@@ -2647,7 +2645,6 @@ const Gfx dl_waterbox_ia16_begin[] = {
 // 0x02014810 - 0x02014838
 const Gfx dl_waterbox_end[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
-    gsSPClipRatio(FRUSTRATIO_2),
     gsDPPipeSync(),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
