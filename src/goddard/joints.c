@@ -163,7 +163,7 @@ void eye_joint_update_func(struct ObjJoint *self) {
     sp50.x *= 2.0f; //?2.0f
     sp50.y *= 2.0f; //?2.0f
     sp50.z *= 2.0f; //?2.0f
-    if (gd_vec3f_magnitude(&sp50) > 30.0f) {
+    if (gd_vec3f_magnitude_sqrtf(&sp50) > 30.0f * 30.0f) {
         gd_normalize_vec3f(&sp50);
         sp50.x *= 30.0f;
         sp50.y *= 30.0f;
@@ -353,7 +353,7 @@ void func_8018F520(struct ObjBone *b) {
     sp84.z = sp78.z;
 
     gd_normalize_vec3f(&sp84);
-    sp64 = gd_vec3f_magnitude(&sp78);
+    sp64 = gd_vec3f_magnitude_sqrtf(&sp78);
     gd_create_rot_mat_angular(&mtx, &sp84, sp64);
     gd_mult_mat4f(&b->mat70, &mtx, &b->mat70);
     D_801BA968.x = b->mat70[2][0];
@@ -550,11 +550,12 @@ void func_80190168(struct ObjBone *b, UNUSED struct ObjJoint *a1, UNUSED struct 
         if (sp58 == 0.0f) {
             sp58 = 1.0f;
         }
-        sp60 = (b->unkF8 / sqr(sp58)) * b->spring;
+        sp60 = (b->unkF8 / sp58) * b->spring;
+        sp60 *= sp60;
     }
 
     if (b->unk104 & 0x4) {
-        if (sp60 > (sp58 = gd_vec3f_magnitude(&sp7C))) {
+        if (sp60 > (gd_vec3f_magnitude(&sp7C))) {
             sp5C = b->spring;
             a3->x *= sp5C;
             a3->y *= sp5C;
@@ -567,7 +568,7 @@ void func_80190168(struct ObjBone *b, UNUSED struct ObjJoint *a1, UNUSED struct 
     }
 
     if (b->unk104 & 0x2) {
-        if (sp60 < (sp58 = gd_vec3f_magnitude(&sp7C))) {
+        if (sp60 < (gd_vec3f_magnitude(&sp7C))) {
             sp5C = b->spring;
             a3->x *= sp5C;
             a3->y *= sp5C;
@@ -751,7 +752,7 @@ void func_80190B54(struct ObjJoint *a0, struct ObjJoint *a1, struct GdVec3f *a2)
         spA4.z *= sp78;
 
         gd_cross_vec3f(&spA4, &D_801BAAD0, &sp80);
-        sp78 = gd_vec3f_magnitude(&sp80);
+        sp78 = gd_vec3f_magnitude_sqrtf(&sp80);
         gd_normalize_vec3f(&sp80);
         gd_create_rot_mat_angular(&sp38, &sp80, sp78);
         gd_mult_mat4f(&a0->matE8, &sp38, &a0->matE8);
@@ -807,7 +808,9 @@ f32 func_80190F3C(struct ObjJoint *a0, f32 a1, f32 a2, f32 a3) {
     sp24.y -= a0->unk3C.y;
     sp24.z -= a0->unk3C.z;
 
-    return gd_vec3f_magnitude(&sp24);
+    return 0.0f;
+
+    //return gd_vec3f_magnitude(&sp24);
 }
 
 /* 23F978 -> 23F9F0 */

@@ -145,7 +145,7 @@ void func_80182088(struct Connection *cxn) {
     sp4C.x = sp1C->pos.x - sp18->pos.x;
     sp4C.y = sp1C->pos.y - sp18->pos.y;
     sp4C.z = sp1C->pos.z - sp18->pos.z;
-    sp20 = gd_vec3f_magnitude(&sp4C);
+    sp20 = gd_vec3f_magnitude_sqrtf(&sp4C);
     sp24 = sp20 - cxn->unk24;
     sp4C.x /= sp20;
     sp4C.y /= sp20;
@@ -234,7 +234,7 @@ struct Connection *make_connection(struct ObjVertex *vtx1, struct ObjVertex *vtx
     sp28.x -= sp1C.x;
     sp28.y -= sp1C.y;
     sp28.z -= sp1C.z;
-    conn->unk24 = gd_vec3f_magnitude(&sp28);
+    conn->unk24 = gd_vec3f_magnitude_sqrtf(&sp28);
     // Duplicate conditional. Possibly should've checked `vtx2`;
     // Also, this shouldn't be called with particle types...
     if (vtx1->header.type == OBJ_TYPE_PARTICLES && vtx1->header.type == OBJ_TYPE_PARTICLES) {
@@ -295,7 +295,7 @@ void func_80182A08(struct ObjParticle *ptc, struct GdVec3f *b) {
                     sp20->unk38.x = gd_rand_float() * 50.0f - 25.0f;
                     sp20->unk38.y = gd_rand_float() * 50.0f - 25.0f;
                     sp20->unk38.z = gd_rand_float() * 50.0f - 25.0f;
-                } while (gd_vec3f_magnitude(&sp20->unk38) > 30.0f);
+                } while (gd_vec3f_magnitude(&sp20->unk38) > 30.0f * 30.0f);
                 sp20->unk38.x += b->x;
                 sp20->unk38.y += b->y;
                 sp20->unk38.z += b->z;
@@ -417,7 +417,7 @@ void move_particle(struct ObjParticle *ptc) {
                             sp2C->unk38.x = gd_rand_float() * 64.0f - 32.0f;
                             sp2C->unk38.y = gd_rand_float() * 64.0f - 32.0f;
                             sp2C->unk38.z = gd_rand_float() * 64.0f - 32.0f;
-                        } while (gd_vec3f_magnitude(&sp2C->unk38) > 32.0f);
+                        } while (gd_vec3f_magnitude(&sp2C->unk38) > 32.0f * 32.0f);
                         sp2C->unk30 = gd_rand_float() * 180.0f;
                         sp2C->header.drawFlags &= ~OBJ_INVISIBLE;
                         sp2C->flags |= 8;

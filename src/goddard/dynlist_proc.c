@@ -2398,7 +2398,7 @@ f32 d_calc_world_dist_btwn(struct GdObj *obj1, struct GdObj *obj2) {
     posdiff.y = obj2pos.y - obj1pos.y;
     posdiff.z = obj2pos.z - obj1pos.z;
 
-    return gd_vec3f_magnitude(&posdiff);
+    return gd_vec3f_magnitude_sqrtf(&posdiff);
 }
 
 /**

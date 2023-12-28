@@ -1001,7 +1001,7 @@ void func_8017E9EC(struct ObjNet *net) {
     sp5C.z = net->torque.z;
 
     gd_normalize_vec3f(&sp5C);
-    sp18 = gd_vec3f_magnitude(&net->torque);
+    sp18 = gd_vec3f_magnitude_sqrtf(&net->torque);
     gd_create_rot_mat_angular(&sp1C, &sp5C, -sp18);
     gd_mult_mat4f(&D_801B9DC8, &sp1C, &D_801B9DC8);
 }
@@ -1384,7 +1384,7 @@ void drag_picked_object(struct GdObj *inputObj) {
         return;
     }
 
-    dispMag = gd_vec3f_magnitude(&gViewUpdateCamera->unk40);
+    dispMag = gd_vec3f_magnitude_sqrtf(&gViewUpdateCamera->unk40);
     dispMag /= 1000.0f;
 
     displacement.x = ((f32)(ctrl->csrX - ctrl->dragStartX)) * dispMag;

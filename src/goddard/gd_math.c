@@ -295,6 +295,10 @@ void gd_absrot_mat4(Mat4f *mtx, s32 axisnum, f32 ang) {
 
 
 f32 gd_vec3f_magnitude(struct GdVec3f *vec) {
+    return (SQ(vec->x) + SQ(vec->y) + SQ(vec->z));
+}
+
+f32 gd_vec3f_magnitude_sqrtf(struct GdVec3f *vec) {
     return sqrtf(SQ(vec->x) + SQ(vec->y) + SQ(vec->z));
 }
 
@@ -307,17 +311,17 @@ s32 gd_normalize_vec3f(struct GdVec3f *vec) {
         return FALSE;
     }
 
-    mag = sqrtf(mag);
     if (mag == 0.0f) {
         vec->x = 0.0f;
         vec->y = 0.0f;
         vec->z = 0.0f;
         return FALSE;
     }
-
-    vec->x /= mag;
-    vec->y /= mag;
-    vec->z /= mag;
+    
+    mag = 1.0f / sqrtf(mag);
+    vec->x *= mag;
+    vec->y *= mag;
+    vec->z *= mag;
 
     return TRUE;
 }
