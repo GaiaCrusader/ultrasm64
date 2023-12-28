@@ -184,89 +184,89 @@ static struct DynListBankInfo sDynLists[] = {     // @ 801A8704
     { TABLE_END, NULL }
 };
 
-ALIGNED8 static Texture gd_texture_hand_open[] = {
+ALIGNED8 static const Texture gd_texture_hand_open[] = {
 #include "textures/intro_raw/hand_open.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_hand_closed[] = {
+ALIGNED8 static const Texture gd_texture_hand_closed[] = {
 #include "textures/intro_raw/hand_closed.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_red_star_0[] = {
+ALIGNED8 static const Texture gd_texture_red_star_0[] = {
 #include "textures/intro_raw/red_star_0.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_red_star_1[] = {
+ALIGNED8 static const Texture gd_texture_red_star_1[] = {
 #include "textures/intro_raw/red_star_1.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_red_star_2[] = {
+ALIGNED8 static const Texture gd_texture_red_star_2[] = {
 #include "textures/intro_raw/red_star_2.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_red_star_3[] = {
+ALIGNED8 static const Texture gd_texture_red_star_3[] = {
 #include "textures/intro_raw/red_star_3.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_red_star_4[] = {
+ALIGNED8 static const Texture gd_texture_red_star_4[] = {
 #include "textures/intro_raw/red_star_4.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_red_star_5[] = {
+ALIGNED8 static const Texture gd_texture_red_star_5[] = {
 #include "textures/intro_raw/red_star_5.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_red_star_6[] = {
+ALIGNED8 static const Texture gd_texture_red_star_6[] = {
 #include "textures/intro_raw/red_star_6.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_red_star_7[] = {
+ALIGNED8 static const Texture gd_texture_red_star_7[] = {
 #include "textures/intro_raw/red_star_7.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_white_star_0[] = {
+ALIGNED8 static const Texture gd_texture_white_star_0[] = {
 #include "textures/intro_raw/white_star_0.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_white_star_1[] = {
+ALIGNED8 static const Texture gd_texture_white_star_1[] = {
 #include "textures/intro_raw/white_star_1.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_white_star_2[] = {
+ALIGNED8 static const Texture gd_texture_white_star_2[] = {
 #include "textures/intro_raw/white_star_2.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_white_star_3[] = {
+ALIGNED8 static const Texture gd_texture_white_star_3[] = {
 #include "textures/intro_raw/white_star_3.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_white_star_4[] = {
+ALIGNED8 static const Texture gd_texture_white_star_4[] = {
 #include "textures/intro_raw/white_star_4.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_white_star_5[] = {
+ALIGNED8 static const Texture gd_texture_white_star_5[] = {
 #include "textures/intro_raw/white_star_5.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_white_star_6[] = {
+ALIGNED8 static const Texture gd_texture_white_star_6[] = {
 #include "textures/intro_raw/white_star_6.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_white_star_7[] = {
+ALIGNED8 static const Texture gd_texture_white_star_7[] = {
 #include "textures/intro_raw/white_star_7.rgba16.inc.c"
 };
 
-static Vtx_t gd_vertex_star[] = {
+static const Vtx_t gd_vertex_star[] = {
     {{-64,   0, 0}, 0, {  0, 992}, {0x00, 0x00, 0x7F}},
     {{ 64,   0, 0}, 0, {992, 992}, {0x00, 0x00, 0x7F}},
     {{ 64, 128, 0}, 0, {992,   0}, {0x00, 0x00, 0x7F}},
     {{-64, 128, 0}, 0, {  0,   0}, {0x00, 0x00, 0x7F}},
 };
 
-static Gfx gd_dl_star_common[] = {
+static const Gfx gd_dl_star_common[] = {
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
     gsSPClearGeometryMode(G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR),
-    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_NOOP2),
+    gsDPSetRenderMode(G_RM_RA_ZB_TEX_EDGE, G_RM_NOOP2),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -282,103 +282,103 @@ static Gfx gd_dl_star_common[] = {
     gsSPEndDisplayList(),
 };
 
-static Gfx gd_dl_red_star_0[] = {
+static const Gfx gd_dl_red_star_0[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_red_star_0),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_red_star_1[] = {
+static const Gfx gd_dl_red_star_1[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_red_star_1),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_red_star_2[] = {
+static const Gfx gd_dl_red_star_2[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_red_star_2),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_red_star_3[] = {
+static const Gfx gd_dl_red_star_3[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_red_star_3),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_red_star_4[] = {
+static const Gfx gd_dl_red_star_4[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_red_star_4),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_red_star_5[] = {
+static const Gfx gd_dl_red_star_5[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_red_star_5),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_red_star_6[] = {
+static const Gfx gd_dl_red_star_6[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_red_star_6),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_red_star_7[] = {
+static const Gfx gd_dl_red_star_7[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_red_star_7),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_silver_star_0[] = {
+static const Gfx gd_dl_silver_star_0[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_white_star_0),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_silver_star_1[] = {
+static const Gfx gd_dl_silver_star_1[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_white_star_1),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_silver_star_2[] = {
+static const Gfx gd_dl_silver_star_2[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_white_star_2),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_silver_star_3[] = {
+static const Gfx gd_dl_silver_star_3[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_white_star_3),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_silver_star_4[] = {
+static const Gfx gd_dl_silver_star_4[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_white_star_4),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_silver_star_5[] = {
+static const Gfx gd_dl_silver_star_5[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_white_star_5),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_silver_star_6[] = {
+static const Gfx gd_dl_silver_star_6[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_white_star_6),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx gd_dl_silver_star_7[] = {
+static const Gfx gd_dl_silver_star_7[] = {
     gsDPPipeSync(),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_white_star_7),
     gsSPBranchList(gd_dl_star_common),
 };
 
-static Gfx *gd_red_star_dl_array[] = {
+static const Gfx *gd_red_star_dl_array[] = {
     gd_dl_red_star_0,
     gd_dl_red_star_0,
     gd_dl_red_star_1,
@@ -397,7 +397,7 @@ static Gfx *gd_red_star_dl_array[] = {
     gd_dl_red_star_7,
 };
 
-static Gfx *gd_silver_star_dl_array[] = {
+static const Gfx *gd_silver_star_dl_array[] = {
     gd_dl_silver_star_0,
     gd_dl_silver_star_0,
     gd_dl_silver_star_1,
@@ -416,37 +416,37 @@ static Gfx *gd_silver_star_dl_array[] = {
     gd_dl_silver_star_7,
 };
 
-ALIGNED8 static Texture gd_texture_sparkle_0[] = {
+ALIGNED8 const static Texture gd_texture_sparkle_0[] = {
 #include "textures/intro_raw/sparkle_0.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_sparkle_1[] = {
+ALIGNED8 const static Texture gd_texture_sparkle_1[] = {
 #include "textures/intro_raw/sparkle_1.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_sparkle_2[] = {
+ALIGNED8 const static Texture gd_texture_sparkle_2[] = {
 #include "textures/intro_raw/sparkle_2.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_sparkle_3[] = {
+ALIGNED8 const static Texture gd_texture_sparkle_3[] = {
 #include "textures/intro_raw/sparkle_3.rgba16.inc.c"
 };
 
-ALIGNED8 static Texture gd_texture_sparkle_4[] = {
+ALIGNED8 const static Texture gd_texture_sparkle_4[] = {
 #include "textures/intro_raw/sparkle_4.rgba16.inc.c"
 };
 
-static Vtx_t gd_vertex_sparkle[] = {
+static const Vtx_t gd_vertex_sparkle[] = {
     {{   -32,      0,      0}, 0, {      0,   1984}, {  0x00, 0x00, 0x7F, 0x00}},
     {{    32,      0,      0}, 0, {   1984,   1984}, {  0x00, 0x00, 0x7F, 0x00}},
     {{    32,     64,      0}, 0, {   1984,      0}, {  0x00, 0x00, 0x7F, 0x00}},
     {{   -32,     64,      0}, 0, {      0,      0}, {  0x00, 0x00, 0x7F, 0x00}},
 };
 
-static Gfx gd_dl_sparkle[] = {
+static const Gfx gd_dl_sparkle[] = {
     gsDPSetCombineMode(G_CC_MODULATERGBA_PRIM, G_CC_MODULATERGBA_PRIM),
     gsSPClearGeometryMode(G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR),
-    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_NOOP2),
+    gsDPSetRenderMode(G_RM_RA_ZB_TEX_EDGE, G_RM_NOOP2),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, 
                 G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
@@ -464,12 +464,12 @@ static Gfx gd_dl_sparkle[] = {
     gsSPEndDisplayList(),
 };
 
-static Gfx gd_dl_sparkle_red_color[] = {
+static const Gfx gd_dl_sparkle_red_color[] = {
     gsDPSetPrimColor(0, 0, 255, 0, 0, 255),
     gsSPEndDisplayList(),
 };
 
-static Gfx gd_dl_sparkle_white_color[] = {
+static const Gfx gd_dl_sparkle_white_color[] = {
     gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
     gsSPEndDisplayList(),
 };
@@ -481,84 +481,84 @@ static Gfx gd_dl_red_sparkle_0[] = {
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_red_sparkle_1[] = {
+static const Gfx gd_dl_red_sparkle_1[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_red_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_1),
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_red_sparkle_2[] = {
+static const Gfx gd_dl_red_sparkle_2[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_red_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_2),
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_red_sparkle_3[] = {
+static const Gfx gd_dl_red_sparkle_3[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_red_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_3),
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_red_sparkle_4[] = {
+static const Gfx gd_dl_red_sparkle_4[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_red_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_4),
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_red_sparkle_4_dup[] ={
+static const Gfx gd_dl_red_sparkle_4_dup[] ={
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_red_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_4), // 4 again, correct texture would be 5
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_silver_sparkle_0[] = {
+static const Gfx gd_dl_silver_sparkle_0[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_white_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_0),
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_silver_sparkle_1[] = {
+static const Gfx gd_dl_silver_sparkle_1[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_white_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_1),
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_silver_sparkle_2[] = {
+static const Gfx gd_dl_silver_sparkle_2[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_white_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_2),
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_silver_sparkle_3[] = {
+static const Gfx gd_dl_silver_sparkle_3[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_white_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_3),
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_silver_sparkle_4[] = {
+static const Gfx gd_dl_silver_sparkle_4[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_white_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_4),
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx gd_dl_silver_sparkle_4_dup[] = {
+static const Gfx gd_dl_silver_sparkle_4_dup[] = {
     gsDPPipeSync(),
     gsSPDisplayList(gd_dl_sparkle_white_color),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, gd_texture_sparkle_4), // 4 again, correct texture would be 5
     gsSPBranchList(gd_dl_sparkle),
 };
 
-static Gfx *gd_red_sparkle_dl_array[] = {
+static const Gfx *gd_red_sparkle_dl_array[] = {
     gd_dl_red_sparkle_4,
     gd_dl_red_sparkle_4,
     gd_dl_red_sparkle_3,
@@ -573,7 +573,7 @@ static Gfx *gd_red_sparkle_dl_array[] = {
     gd_dl_red_sparkle_4_dup,
 };
 
-static Gfx *gd_silver_sparkle_dl_array[] = {
+static const Gfx *gd_silver_sparkle_dl_array[] = {
     gd_dl_silver_sparkle_4,
     gd_dl_silver_sparkle_4,
     gd_dl_silver_sparkle_3,
@@ -588,11 +588,11 @@ static Gfx *gd_silver_sparkle_dl_array[] = {
     gd_dl_silver_sparkle_4_dup,
 };
 
-ALIGNED8 static Texture gd_texture_mario_face_shine[] = {
+ALIGNED8 static const Texture gd_texture_mario_face_shine[] = {
 #include "textures/intro_raw/mario_face_shine.ia8.inc.c"
 };
 
-static Gfx gd_dl_mario_face_shine[] = {
+static const Gfx gd_dl_mario_face_shine[] = {
     gsSPSetGeometryMode(G_TEXTURE_GEN),
     gsSPTexture(0x07C0, 0x07C0, 0, G_TX_RENDERTILE, G_ON),
     gsDPSetTexturePersp(G_TP_PERSP),
@@ -604,13 +604,13 @@ static Gfx gd_dl_mario_face_shine[] = {
     gsSPEndDisplayList(),
 };
 
-static Gfx gd_dl_rsp_init[] = {
+static const Gfx gd_dl_rsp_init[] = {
     gsSPClearGeometryMode(0xFFFFFFFF),
     gsSPSetGeometryMode(G_SHADING_SMOOTH | G_SHADE),
     gsSPEndDisplayList(),
 };
 
-static Gfx gd_dl_rdp_init[] = {
+static const Gfx gd_dl_rdp_init[] = {
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsDPSetCycleType(G_CYC_1CYCLE),
@@ -623,7 +623,6 @@ static Gfx gd_dl_rdp_init[] = {
     gsDPSetCombineKey(G_CK_NONE),
     gsDPSetAlphaCompare(G_AC_NONE),
     gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
-    gsDPNoOp(),
     gsDPSetColorDither(G_CD_MAGICSQ),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -631,13 +630,13 @@ static Gfx gd_dl_rdp_init[] = {
 
 float sGdPerspTimer = 1.0f;
 
-static Gfx gd_dl_sprite_start_tex_block[] = {
+static const Gfx gd_dl_sprite_start_tex_block[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
     gsDPSetAlphaCompare(G_AC_THRESHOLD),
     gsDPSetBlendColor(0, 0, 0, 1),
-    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_NOOP2),
+    gsDPSetRenderMode(G_RM_RA_ZB_TEX_EDGE, G_RM_NOOP2),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
     gsDPSetTextureFilter(G_TF_BILERP),
     gsDPSetTexturePersp(G_TP_NONE),
@@ -1380,7 +1379,7 @@ Vtx *gd_dl_make_vertex(f32 x, f32 y, f32 z, f32 alpha) {
 /* 24E6C0 -> 24E724 */
 void func_8019FEF0(void) {
     sTriangleBufCount++;
-    if (sVertexBufCount >= 54) {
+    if (sVertexBufCount >= 30) {
         gd_dl_flush_vertices();
         func_801A0038();
     }
@@ -1559,6 +1558,8 @@ s32 gd_dl_material_lighting(s32 id, struct GdColour *colour, s32 material) {
             DL_CURRENT_LIGHT(sCurrentGdDl).l[0].l.colc[1] = 0;
             DL_CURRENT_LIGHT(sCurrentGdDl).l[0].l.colc[2] = 0;
 
+            DL_CURRENT_LIGHT(sCurrentGdDl).l[0].l.type = 0;
+
             gSPNumLights(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], NUMLIGHTS_1);
             gSPLight(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&DL_CURRENT_LIGHT(sCurrentGdDl).l), LIGHT_1);
             gSPLight(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&DL_CURRENT_LIGHT(sCurrentGdDl).a), LIGHT_2);
@@ -1599,10 +1600,12 @@ s32 gd_dl_material_lighting(s32 id, struct GdColour *colour, s32 material) {
         lightDir[0] = (s8)sLightDirections[i].x;
         lightDir[1] = (s8)sLightDirections[i].y;
         lightDir[2] = (s8)sLightDirections[i].z;
+
         // 801A141C
         DL_CURRENT_LIGHT(sCurrentGdDl).l[i].l.dir[0] = lightDir[0];
         DL_CURRENT_LIGHT(sCurrentGdDl).l[i].l.dir[1] = lightDir[1];
         DL_CURRENT_LIGHT(sCurrentGdDl).l[i].l.dir[2] = lightDir[2];
+        DL_CURRENT_LIGHT(sCurrentGdDl).l[i].l.type = 0;
         // 801A14C4
         gSPLight(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], osVirtualToPhysical(&DL_CURRENT_LIGHT(sCurrentGdDl).l[i]), i + 1);
     }
@@ -1663,38 +1666,14 @@ static void gd_dl_viewport(void) {
 }
 
 u32 gGoddardRenderTable[] = {
-    G_RM_ZB_XLU_SURF,
-    G_RM_AA_ZB_XLU_SURF,
-    G_RM_AA_ZB_XLU_SURF,
     G_RM_ZB_OPA_SURF,
-    G_RM_RA_ZB_OPA_INTER,
+    G_RM_ZB_OPA_SURF,
     G_RM_AA_ZB_OPA_INTER,
-    G_RM_ZB_XLU_SURF2,
-    G_RM_AA_ZB_XLU_SURF2,
-    G_RM_AA_ZB_XLU_SURF2,
-    G_RM_XLU_SURF,
-    G_RM_AA_XLU_SURF,
-    G_RM_AA_XLU_SURF,
-    G_RM_XLU_SURF2,
-    G_RM_AA_XLU_SURF2,
-    G_RM_AA_XLU_SURF2,
 };
 
 /* 2501D0 -> 250300 */
 static void update_render_mode(void) {
-    if ((sActiveView->flags & VIEW_ALLOC_ZBUF) != 0) {
-        if (sAlpha != 0xff) {
-            gDPSetRenderMode(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], gGoddardRenderTable[0 + gAntiAliasing + 1], gGoddardRenderTable[6 + gAntiAliasing + 1]);
-        } else {
-            gDPSetRenderMode(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], gGoddardRenderTable[3 + gAntiAliasing + 1], G_RM_NOOP2);
-        }
-    } else {
-        if (sAlpha != 0xff) {
-            gDPSetRenderMode(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], gGoddardRenderTable[9 + gAntiAliasing + 1], gGoddardRenderTable[12 + gAntiAliasing + 1]);
-        } else {
-            gDPSetRenderMode(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], gGoddardRenderTable[3 + gAntiAliasing + 1], G_RM_NOOP2);
-        }
-    }
+    gDPSetRenderMode(&sCurrentGdDl->gfx[sCurrentGdDl->curGfxIdx++], gGoddardRenderTable[gAntiAliasing + 1], G_RM_NOOP2);
 }
 
 /* 250300 -> 250640 */

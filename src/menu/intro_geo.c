@@ -155,14 +155,14 @@ static Gfx *intro_backdrop_one_image(s32 index, s8 *backgroundTable) {
                                                   title_screen_bg_dl_0A000160, title_screen_bg_dl_0A000178 };
 
     // intro screen background texture X offsets
-    static float xCoords[] = {
+    static s32 xCoords[] = {
         0, 80, 160, 240,
         0, 80, 160, 240,
         0, 80, 160, 240,
     };
 
     // intro screen background texture Y offsets
-    static float yCoords[] = {
+    static s32 yCoords[] = {
         160, 160, 160, 160,
         80,  80,  80,  80,
         0,   0,   0,   0,
@@ -172,23 +172,19 @@ static Gfx *intro_backdrop_one_image(s32 index, s8 *backgroundTable) {
     static const u8 *const *textureTables[] = { mario_title_texture_table, game_over_texture_table };
 
     Mtx *mtx = alloc_display_list(sizeof(*mtx));
-    Gfx *displayList = alloc_display_list(36 * sizeof(*displayList));
+    Gfx *displayList = alloc_display_list(32 * sizeof(*displayList));
     Gfx *displayListIter = displayList;
     const u8 *const *vIntroBgTable = segmented_to_virtual(textureTables[backgroundTable[index]]);
     s32 i;
 
-    guTranslate(mtx, xCoords[index], yCoords[index], 0.0f);
-    gSPMatrix(displayListIter++, mtx, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
-    gSPDisplayList(displayListIter++, &title_screen_bg_dl_0A000118);
     for (i = 0; i < 4; ++i) {
-        gDPLoadTextureBlock(displayListIter++, vIntroBgTable[i], G_IM_FMT_RGBA, G_IM_SIZ_16b, 80, 20, 0,
-                            G_TX_CLAMP, G_TX_CLAMP, 7, 6, G_TX_NOLOD, G_TX_NOLOD);
-        gSPDisplayList(displayListIter++, introBackgroundDlRows[i]);
+        gDPLoadTextureBlock(displayListIter++, vIntroBgTable[i], G_IM_FMT_RGBA, G_IM_SIZ_16b, 80, 20, 0, G_TX_CLAMP, G_TX_CLAMP, 7, 6, G_TX_NOLOD, G_TX_NOLOD);
+        gSPTextureRectangle(displayListIter++, xCoords[index] << 2, (yCoords[index] + (i * 20)) << 2, (xCoords[index] + 79) << 2, (yCoords[index] + (i * 20) + 19) << 2, G_TX_RENDERTILE, 0, 0, 4 << 10, 1 << 10);
     }
-    gSPPopMatrix(displayListIter++, G_MTX_MODELVIEW);
     gSPEndDisplayList(displayListIter);
     return displayList;
 }
+
 
 static s8 introBackgroundIndexTable[] = {
     INTRO_BACKGROUND_SUPER_MARIO, INTRO_BACKGROUND_SUPER_MARIO, INTRO_BACKGROUND_SUPER_MARIO,
@@ -209,18 +205,23 @@ Gfx *geo_intro_regular_backdrop(s32 state, struct GraphNode *node, UNUSED void *
     s8 *backgroundTable = introBackgroundTables[index];
     Gfx *dl = NULL;
     Gfx *dlIter = NULL;
-    s32 i;
 
     if (state == 1) {  // draw
         dl = alloc_display_list(16 * sizeof(*dl));
         dlIter = dl;
         graphNode->node.flags = (graphNode->node.flags & 0xFF) | (LAYER_OPAQUE << 8);
-        gSPDisplayList(dlIter++, &dl_proj_mtx_fullscreen);
-        gSPDisplayList(dlIter++, &title_screen_bg_dl_0A000100);
-        for (i = 0; i < 12; ++i) {
+        gSPDisplayList(dlIter++, &dl_hud_img_begin);
+        for (s32 i = 0; i < 12; ++i) {
             gSPDisplayList(dlIter++, intro_backdrop_one_image(i, backgroundTable));
         }
-        gSPDisplayList(dlIter++, &title_screen_bg_dl_0A000190);
+        gSPDisplayList(dlIter++, &dl_hud_img_end);
+        /*for (s32 i = 0; i < 3; i++) {
+            gDPLoadTextureBlock(dlIter++, vIntroBgTable[i], G_IM_FMT_RGBA, G_IM_SIZ_16b, 80, 20, 0, G_TX_NOMIRROR, G_TX_NOMIRROR, 7, 6, G_TX_NOLOD, G_TX_NOLOD);
+            for (s32 j = 0; j < 3; j++) {
+                s32 y = (j * 80) + (i * 20);
+                gSPTextureRectangle(dlIter++, 0, y << 2, (gScreenWidth - 1) << 2, (y + 19) << 2, G_TX_RENDERTILE, 0, 0, 4 << 10, 1 << 10);
+            }
+        }*/
         gSPEndDisplayList(dlIter);
     }
     return dl;

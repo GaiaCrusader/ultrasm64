@@ -533,20 +533,20 @@ $(BUILD_DIR)/src/engine/collision_load.o: OPT_FLAGS := -Os -ffast-math
 $(BUILD_DIR)/src/engine/surface_collision.o: OPT_FLAGS := -Os -ffast-math
 $(BUILD_DIR)/src/engine/surface_load.o: OPT_FLAGS := -Os -ffast-math
 
-$(BUILD_DIR)/src/goddard/debug_utils.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/draw_objects.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/dynlist_proc.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/gd_main.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/gd_math.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/gd_memory.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/joints.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/objects.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/particles.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/renderer.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/sfx.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/shape_helper.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/skin.o: OPT_FLAGS := -Os -ffast-math
-$(BUILD_DIR)/src/goddard/skin_movement.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/goddard/debug_utils.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/draw_objects.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/dynlist_proc.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/gd_main.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/gd_math.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/gd_memory.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/joints.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/objects.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/particles.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/renderer.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/sfx.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/shape_helper.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/skin.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/skin_movement.o: OPT_FLAGS := -Ofast -ffast-math
 
 ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) $(GODDARD_SRC_DIRS) $(LIBZ_SRC_DIRS) $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(TEXT_DIRS) $(SOUND_SAMPLE_DIRS) $(addprefix levels/,$(LEVEL_DIRS)) rsp include) $(YAY0_DIR) $(addprefix $(YAY0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
 

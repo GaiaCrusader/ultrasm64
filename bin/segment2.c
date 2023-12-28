@@ -2108,7 +2108,7 @@ const Gfx dl_hud_img_load_tex_block[] = {
 const Gfx dl_hud_img_end[] = {
     gsDPPipeSync(),
     gsDPSetTexturePersp(G_TP_PERSP),
-    gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
+    gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
     gsDPSetAlphaCompare(G_AC_NONE),
     gsDPSetTextureFilter(G_TF_BILERP),
     gsDPSetCycleType(G_CYC_1CYCLE),
