@@ -378,10 +378,8 @@ Gfx *envfx_update_snow(s32 snowMode, Vec3s marioPos, Vec3s camFrom, Vec3s camTo)
     for (i = 0; i < gSnowParticleCount; i += 5) {
         append_snowflake_vertex_buffer(gfx++, i, (s16 *) &vertex1, (s16 *) &vertex2, (s16 *) &vertex3);
 
-        gSP1Triangle(gfx++, 0, 1, 2, 0);
-        gSP1Triangle(gfx++, 3, 4, 5, 0);
-        gSP1Triangle(gfx++, 6, 7, 8, 0);
-        gSP1Triangle(gfx++, 9, 10, 11, 0);
+        gSP2Triangles(gfx++, 0, 1, 2, 0, 3, 4, 5, 0);
+        gSP2Triangles(gfx++, 6, 7, 8, 0, 9, 10, 11, 0);
         gSP1Triangle(gfx++, 12, 13, 14, 0);
     }
 
