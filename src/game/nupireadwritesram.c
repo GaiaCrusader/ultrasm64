@@ -10,7 +10,7 @@
 /* $Id: nupireadwritesram.c,v 1.3 1999/06/09 02:33:22 ohki Exp $		*/
 /*======================================================================*/
 #include <ultra64.h>
-
+#ifdef SRAM
 extern OSPiHandle*		nuPiSramHandle;
 /*----------------------------------------------------------------------*/
 /*	nuPiReadWriteSram  - DMA transfers data to and from SRAM.	*/
@@ -49,4 +49,4 @@ int nuPiReadWriteSram(u32 addr, void* buf_ptr, u32 size, s32 flag)
     (void)osRecvMesg(&dmaMesgQ, &dmaMesgBuf, OS_MESG_BLOCK);
     return 0;
 }
-
+#endif

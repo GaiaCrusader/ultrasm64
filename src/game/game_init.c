@@ -108,46 +108,50 @@ u16 gDemoInputListID = 0;
 // Display
 // ----------------------------------------------------------------------------------------------------
 
+
+Gfx dInitRDP[] = {
+    gsDPPipeSync(),
+    gsDPPipelineMode(G_PM_NPRIMITIVE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+
+    gsDPSetTextureLOD(G_TL_TILE),
+    gsDPSetTextureLUT(G_TT_NONE),
+    gsDPSetTextureDetail(G_TD_CLAMP),
+    gsDPSetTexturePersp(G_TP_PERSP),
+    gsDPSetTextureFilter(G_TF_BILERP),
+    gsDPSetTextureConvert(G_TC_FILT),
+
+    gsDPSetCombineKey(G_CK_NONE),
+    gsDPSetAlphaCompare(G_AC_NONE),
+    gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
+    gsDPSetColorDither(G_CD_MAGICSQ),
+    gsDPSetCycleType(G_CYC_FILL),
+#ifdef VERSION_SH
+    gsDPSetAlphaDither(G_AD_PATTERN),
+#endif
+    gsSPEndDisplayList(),
+};
 /**
  * Sets the initial RDP (Reality Display Processor) rendering settings.
  */
 void init_rdp(void) {
-    gDPPipeSync(gDisplayListHead++);
-    gDPPipelineMode(gDisplayListHead++, G_PM_NPRIMITIVE);
-
+    gSPDisplayList(gDisplayListHead++, dInitRDP);
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, gScreenHeight);
-    gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
-
-    gDPSetTextureLOD(gDisplayListHead++, G_TL_TILE);
-    gDPSetTextureLUT(gDisplayListHead++, G_TT_NONE);
-    gDPSetTextureDetail(gDisplayListHead++, G_TD_CLAMP);
-    gDPSetTexturePersp(gDisplayListHead++, G_TP_PERSP);
-    gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
-    gDPSetTextureConvert(gDisplayListHead++, G_TC_FILT);
-
-    gDPSetCombineKey(gDisplayListHead++, G_CK_NONE);
-    gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
-    gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetColorDither(gDisplayListHead++, G_CD_MAGICSQ);
-    gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
-
-#ifdef VERSION_SH
-    gDPSetAlphaDither(gDisplayListHead++, G_AD_PATTERN);
-#endif
-    gDPPipeSync(gDisplayListHead++);
 }
+
+Gfx dInitRSP[] = {
+    gsSPClearGeometryMode(0xFFFFFFFF),
+    gsSPSetGeometryMode(G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK | G_LIGHTING),
+    gsSPNumLights(NUMLIGHTS_1),
+    gsSPTexture(0, 0, 0, G_TX_RENDERTILE, G_OFF),
+    gsSPEndDisplayList(),
+};
 
 /**
  * Sets the initial RSP (Reality Signal Processor) settings.
  */
 void init_rsp(void) {
-    gSPClearGeometryMode(gDisplayListHead++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BOTH | G_FOG
-                        | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR | G_LOD);
-
-    gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK | G_LIGHTING);
-
-    gSPNumLights(gDisplayListHead++, NUMLIGHTS_1);
-    gSPTexture(gDisplayListHead++, 0, 0, 0, G_TX_RENDERTILE, G_OFF);
+    gSPDisplayList(gDisplayListHead++, dInitRSP);
 }
 
 /**
