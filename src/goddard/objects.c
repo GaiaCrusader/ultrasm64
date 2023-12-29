@@ -1609,18 +1609,13 @@ void move_lights_in_grp(struct ObjGroup *group) {
 
 /* @ 22FB80 for 0xAC; orig name: func_801813B0 */
 void move_group_members(void) {
-    s32 i;
 
     if (gGdMoveScene != 0) {
         reset_gadgets_in_grp(sCurrentMoveGrp);
         move_lights_in_grp(sCurrentMoveGrp);
         move_particles_in_grp(sCurrentMoveGrp);
         move_animators(sCurrentMoveGrp);
-
-        for (i = 0; i <= 0; i++) {
-            move_nets(sCurrentMoveGrp);
-        }
-
+        move_nets(sCurrentMoveGrp);
         move_cameras_in_grp(sCurrentMoveGrp);
     }
 }
