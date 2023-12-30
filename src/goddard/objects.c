@@ -842,14 +842,6 @@ static void reset_joint_or_net(struct GdObj *obj) {
 }
 
 /**
- * called when the user clicks the "Reset Positions" item from the
- * "Dynamics" menu.
- */
-void menu_cb_reset_positions(void) {
-    apply_to_obj_types_in_group(OBJ_TYPE_NETS, (applyproc_t) reset_joint_or_net, sCurrentMoveGrp);
-}
-
-/**
  * Recursively calls `func` on all members of `group` whose type is in the
  * `types` bitmask.
  * Returns the number of objects this function was called on.
@@ -1007,7 +999,7 @@ void func_8017E9EC(struct ObjNet *net) {
 }
 
 /* @ 22D824 for 0x1BC */
-s32 transform_child_objects_recursive(struct GdObj *obj, struct GdObj *parentObj) {
+void transform_child_objects_recursive(struct GdObj *obj, struct GdObj *parentObj) {
     struct ListNode *curLink;
     struct ObjGroup *curGroup;
     Mat4f *parentUnkMtx;
@@ -1055,7 +1047,6 @@ s32 transform_child_objects_recursive(struct GdObj *obj, struct GdObj *parentObj
             curLink = curLink->next;
         }
     }
-    return 0;
 }
 
 /* @ 22D9E0 for 0x1BC */

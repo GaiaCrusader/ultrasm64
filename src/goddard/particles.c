@@ -171,36 +171,6 @@ void func_80182088(struct Connection *cxn) {
     }
 }
 
-/* 230B70 -> 230CC0 */
-void func_801823A0(struct ObjNet *net) {
-    register struct ListNode *link;
-    struct Connection *cxn;
-
-    gGdSkinNet = net;
-    switch (net->unk3C) {
-        case 1: // Shape; Are these flags the same as net->netType (+0x1EC)?
-            net->unk1C8 = net->shapePtr->vtxGroup;
-            net->unk1C0 = make_group(0);
-            D_801B9EF0 = NULL;
-
-            apply_to_obj_types_in_group(OBJ_TYPE_FACES, (applyproc_t) Unknown80181D14,
-                                        net->shapePtr->faceGroup);
-            net->unk3C = 2;
-            break;
-        case 2:
-            link = net->unk1C0->firstMember;
-            while (link != NULL) {
-                // FIXME: types
-                cxn = (struct Connection *) link->obj;
-                func_80182088(cxn);
-                link = link->next;
-            }
-            apply_to_obj_types_in_group(OBJ_TYPE_PARTICLES, (applyproc_t) move_particle, net->unk1C8);
-            apply_to_obj_types_in_group(OBJ_TYPE_PLANES, (applyproc_t) reset_plane, net->unk1CC);
-            break;
-    }
-}
-
 /* 230CC0 -> 230DCC */
 struct ObjParticle *make_particle(u32 flags, s32 colourNum, f32 x, f32 y, f32 z) {
     struct ObjParticle *particle = (struct ObjParticle *) make_object(OBJ_TYPE_PARTICLES);

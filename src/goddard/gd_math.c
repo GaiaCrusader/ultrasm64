@@ -111,7 +111,7 @@ void gd_scale_mat4f_by_vec3f(Mat4f *mtx, struct GdVec3f *vec) {
 /**
  * Rotates the matrix 'mtx' about the vector given.
  */
-void gd_rot_mat_about_vec(Mat4f *mtx, struct GdVec3f *vec) {
+void gd_rot_mat_about_vec(Mat4f *mtx, struct GdVec3f *vec) { //600us
     if (vec->x != 0.0f) {
         gd_absrot_mat4(mtx, GD_X_AXIS, vec->x);
     }
@@ -572,7 +572,7 @@ void gd_create_rot_matrix(Mat4f *mtx, struct GdVec3f *vec, f32 s, f32 c) {
 /**
  * Creates a rotation matrix about vector 'vec' with ang in degrees.
  */
-void gd_create_rot_mat_angular(Mat4f *mtx, struct GdVec3f *vec, f32 ang) {
+void gd_create_rot_mat_angular(Mat4f *mtx, struct GdVec3f *vec, f32 ang) { // 250us
     f32 s;
     f32 c;
 
@@ -668,6 +668,3 @@ void gd_mult_mat4f(const Mat4f *mA, const Mat4f *mB, Mat4f *dst) {
     (*dst)[3][2] += (*mB)[3][2];
     ((u32 *) *dst)[15] = 0x3F800000;
 }
-
-#undef MAT4_MULTIPLY
-#undef MAT4_DOT_PROD

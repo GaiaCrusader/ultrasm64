@@ -813,15 +813,6 @@ f32 func_80190F3C(struct ObjJoint *a0, f32 a1, f32 a2, f32 a3) {
     //return gd_vec3f_magnitude(&sp24);
 }
 
-/* 23F978 -> 23F9F0 */
-void func_801911A8(struct ObjJoint *j) {
-    j->unkCC.x = j->shapeOffset.x;
-    j->unkCC.y = j->shapeOffset.y;
-    j->unkCC.z = j->shapeOffset.z;
-
-    gd_rotate_and_translate_vec3f(&j->unkCC, &gGdSkinNet->mat128);
-}
-
 /* 23F9F0 -> 23FB90 */
 void func_80191220(struct ObjJoint *j) {
     j->unk48.x = j->initPos.x; // storing "attached offset"?

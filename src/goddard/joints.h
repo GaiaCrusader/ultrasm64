@@ -18,7 +18,6 @@ s32 set_skin_weight(struct ObjJoint *j, s32 id, struct ObjVertex *vtx, f32 weigh
 void func_8018FB58(struct ObjBone *b);
 void add_joint2bone(struct ObjBone *b, struct ObjJoint *j);
 struct ObjBone *make_bone(s32 a0, struct ObjJoint *j1, struct ObjJoint *j2, s32 a3);
-void func_801911A8(struct ObjJoint *j);
 void func_80191220(struct ObjJoint *j);
 void func_801913C0(struct ObjJoint *j);
 void func_801913F0(struct ObjJoint *j);
