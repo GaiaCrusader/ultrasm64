@@ -163,7 +163,7 @@ void eye_joint_update_func(struct ObjJoint *self) {
     sp50.x *= 2.0f; //?2.0f
     sp50.y *= 2.0f; //?2.0f
     sp50.z *= 2.0f; //?2.0f
-    if (gd_vec3f_magnitude_sqrtf(&sp50) > 30.0f * 30.0f) {
+    if (gd_vec3f_magnitude(&sp50) > 30.0f * 30.0f) {
         gd_normalize_vec3f(&sp50);
         sp50.x *= 30.0f;
         sp50.y *= 30.0f;
