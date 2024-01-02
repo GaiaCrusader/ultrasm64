@@ -1956,11 +1956,11 @@ void gd_setproperty(enum GdProperty prop, f32 f1, f32 f2, f32 f3) {
             sAmbScaleColour.b = f3;
             break;
         case GD_PROP_LIGHT_DIR:
-            f32 magnitude = sqrtf(f1 * f1 + f2 * f2 + f3 * f3);
+            f32 magnitude = 1.0f / sqrtf(f1 * f1 + f2 * f2 + f3 * f3);
         
-            f1 /= magnitude;
-            f2 /= magnitude;
-            f3 /= magnitude;
+            f1 *= magnitude;
+            f2 *= magnitude;
+            f3 *= magnitude;
             sLightDirections[sLightId].x = (s32)(f1 * 120.f);
             sLightDirections[sLightId].y = (s32)(f2 * 120.f);
             sLightDirections[sLightId].z = (s32)(f3 * 120.f);
