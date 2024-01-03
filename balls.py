@@ -6,7 +6,7 @@ vert_buffer_size = 56
 
 def convert_tris(image_path):
     file = open(image_path, mode = 'r')
-    #print("Processing " + image_path + ".")
+    print("Processing " + image_path + ".")
     lines = file.readlines()
     file.close()
     triIndices = []
@@ -19,16 +19,19 @@ def convert_tris(image_path):
     vBuff = -1
     prevVBuff = 0
     addrFound = False
+    # Read all the lines in the file
     for line in lines:
         lineS = line.strip()
-        if line.find("gsSPVertex") != -1:
+        if line.find("gsSPVertex") != -1: # Found a vertex load call.
             matches = re.findall(r'\d+', lineS)
+            # Note how many verts are loaded.
             count = int(matches[len(matches) - 2])
             vertCount += count
             if (prevVBuff != 0):
                 vBuff += prevVBuff
             prevVBuff = count
             matches2 = re.findall(r'\S+', lineS)
+            # Save the name. If no first name exists, use that, otherwise, save it as a secondary list name.
             vertName = matches2[0][11:]
             #print(vertName)
             if (vertName[-1:] == ','):
@@ -39,13 +42,13 @@ def convert_tris(image_path):
                 #print(vertAddr)
             elif vertName != vertAddr:
                 addrMerge.append(vertName)
-                #print(addrMerge)
             if (lines[lineNum + 1].find("Triangle")) != -1:
                 linesToDestroy.append(lineNum)
             #print(vBuff)
             #print("Prev: " + str(prevVBuff))
-        elif (line.find("gsSP2Triangles")) != -1 or (line.find("gsSP1Triangle")) != -1:
+        elif (line.find("gsSP2Triangles")) != -1 or (line.find("gsSP1Triangle")) != -1: # Found a triangle command
             matches = re.findall(r'\d+', lineS)
+            # Save all the triangle mesh indices into a list. Make sure to add the vertex total too, to prevent the numbers being useless.
             triIndices.append(int(matches[1]) + vBuff)
             triIndices.append(int(matches[2]) + vBuff)
             triIndices.append(int(matches[3]) + vBuff)
@@ -59,29 +62,6 @@ def convert_tris(image_path):
         else:
             if (vertCount > 0):
                 #print(triIndices)
-
-                if (len(addrMerge)) != 0:
-                    baseFound = False
-                    vertLine = 0
-                    addrsNuked = 0
-                    vertLineSnap = False
-                    for vLine in lines:
-                        vLineS = vLine.strip()
-                        #print(vLineS)
-                        if (vLineS.find(vertAddr) != -1 and baseFound == False):
-                            baseFound = True
-                        if (baseFound == True and vLine.find("};") != -1):
-                            vertLineSnap = True
-                        if (vertLineSnap == True):
-                            linesToDestroy.append(vertLine)   
-                            if (vLineS.find(addrMerge[0]) != -1):
-                                del addrMerge[:1]
-                                vertLineSnap = False
-                                if (len(addrMerge) == 0):
-                                    break
-                        vertLine += 1
-
-
                 #print("Triangles: " + str(triIndices))
                 #print("Total Vertices: " + str(vertCount))
                 trisToDraw = 0
@@ -159,6 +139,46 @@ def convert_tris(image_path):
                             lines[linesToDestroy[0]] = ""
                             del linesToDestroy[:1]
                     lines.insert(lineNum, newLine)
+                # Find and merge necessary vertex lists.
+                newVertLine = ""
+                if (len(addrMerge)) != 0:
+                    #print(addrMerge)
+                    baseFound = False
+                    vertLine = 0
+                    addrsNuked = 0
+                    baseLine = 0
+                    vertLineSnap = False
+                    vertBufferLinesToDestroy = []
+                    for vLine in lines:
+                        if (len(addrMerge) <= addrsNuked):
+                            break
+                        vLineS = vLine.strip()
+                        #print(vLineS)
+                        if (vLineS.find(vertAddr) != -1 and baseFound == False):
+                            baseFound = True
+                        elif (baseFound == True and vLineS.find("};") != -1 and baseLine == 0):
+                            baseLine = vertLine
+                        elif any(folder in vLine for folder in addrMerge) and vertLineSnap == False:
+                            vertLineSnap = True
+                            vertBufferLinesToDestroy.append(vertLine)
+                        elif (vertLineSnap == True):
+                            vertBufferLinesToDestroy.append(vertLine)
+                            if vLineS.find("};") != -1:
+                                vertBufferLinesToDestroy.append(vertLine + 1)
+                                #vertBufferLinesToDestroy.append(vertLine + 2)
+                                vertLineSnap = False
+                                addrsNuked += 1
+                            else:
+                                newVertLine += vLine
+                        vertLine += 1
+                    lines.insert(baseLine, newVertLine)
+                    #print(newVertLine)
+                    addrMerge.clear()
+                    numLines = len(vertBufferLinesToDestroy)
+                    while (len(vertBufferLinesToDestroy) > 0):
+                        lines[vertBufferLinesToDestroy[0]] = ""
+                        del vertBufferLinesToDestroy[:1]
+                    i = 0
             vertCount = 0
             vBuff = 0
             prevVBuff = 0
@@ -170,9 +190,10 @@ def convert_tris(image_path):
             newFile = open(image_path, mode = 'w')
             newFile.writelines(lines)
             newFile.close()
+    print("Finished " + image_path + "!")
 
 def job():
-    folder_path = "./actors/goomba"
+    folder_path = "./levels/rr/areas/1/15"
     folder_whitelist = ["./actors", "./levels", "./bin"]
     for root, dirs, files in os.walk(folder_path):
         if any(folder in root for folder in folder_whitelist):
