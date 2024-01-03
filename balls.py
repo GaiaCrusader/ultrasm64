@@ -4,126 +4,6 @@ import threading
 
 vert_buffer_size = 56
 
-# Vanilla SM64 has vertex structures in groups of 16. We need to merge them into one if we are to utilise bigger vertex buffers.
-# Also, this is like, the less stupid thing to do lmao.
-def merge_verts(lines, firstAddr, secondAddrs):
-    #print(addrMerge)
-    newVertLine = ""
-    baseFound = False
-    vertLine = 0
-    addrsNuked = 0
-    baseLine = 0
-    vertLineSnap = False
-    vertBufferLinesToDestroy = []
-    for vLine in lines:
-        if (len(firstAddr) <= addrsNuked):
-            break
-        vLineS = vLine.strip()
-        #print(vLineS)
-        if (vLineS.find(firstAddr) != -1 and baseFound == False):
-            baseFound = True
-        elif (baseFound == True and vLineS.find("};") != -1 and baseLine == 0):
-            baseLine = vertLine
-        elif any(folder in vLine for folder in secondAddrs) and vertLineSnap == False:
-            vertLineSnap = True
-            vertBufferLinesToDestroy.append(vertLine)
-        elif (vertLineSnap == True):
-            vertBufferLinesToDestroy.append(vertLine)
-            if vLineS.find("};") != -1:
-                vertBufferLinesToDestroy.append(vertLine + 1)
-                if (lines[vertLine + 1] == '\n'):
-                    vertBufferLinesToDestroy.append(vertLine + 2)
-                vertLineSnap = False
-                addrsNuked += 1
-            else:
-                newVertLine += vLine
-        vertLine += 1
-    lines.insert(baseLine, newVertLine)
-    #print(newVertLine)
-    secondAddrs.clear()
-    while (len(vertBufferLinesToDestroy) > 0):
-        lines[vertBufferLinesToDestroy[0]] = ""
-        del vertBufferLinesToDestroy[:1]
-
-def write_tris(lines, vertCount, triIndices, vertAddr, lineNum):
-    #print(triIndices)
-    #print("Triangles: " + str(triIndices))
-    #print("Total Vertices: " + str(vertCount))
-    trisToDraw = 0
-    trisLeft = 0
-    vertsIn = 0
-    useVerts = 0
-    trisDrawn = 0
-    totalTri = 0
-    linesToDestroy = []
-    newLine = ""
-    maxVert = 0
-    minVert = 20000
-    triLen = len(triIndices)
-    i = 0
-    while (True):
-        if (trisLeft == 0):
-            useVerts = min(vertCount - vertsIn, vert_buffer_size)
-            #print("Useverts " + str(useVerts))
-            #print("i " + str(i))
-            #print("Len " + str(len(triIndices)))
-            triOffset = 0
-            if (i < len(triIndices)) and triIndices[i] - vertsIn < useVerts and triIndices[i + 1] - vertsIn < useVerts and triIndices[i + 2] - vertsIn < useVerts:
-                offset2 = vertsIn - (maxVert + 1)
-                maxVert = max(max(max(triIndices[i + 0], triIndices[i + 1]), triIndices[i + 2]), maxVert) - vertsIn
-                minVert = min(min(triIndices[i + 0], triIndices[i + 1]), triIndices[i + 2], minVert)
-                i += 3
-                trisToDraw += 1
-            else:
-                #print("min: " + str(minVert))
-                if (minVert - vertsIn < 0):
-                    triOffset = minVert - vertsIn
-                    #print(triOffset)
-                    #allGood = False
-                else:
-                    triOffset = 0
-                i -= 3
-                #print("Use vert: " + str(useVerts))
-                #print("Max vert: " + str(useVerts + 1))
-                newLine += "    gsSPVertex(" + str(vertAddr) + " + " + str(vertsIn) + ", " + str(maxVert + 1) + ", 0),\n"
-                vertsIn += (maxVert + 1)
-                trisLeft = trisToDraw
-                trisToDraw = 0
-                trisDrawn = 0
-                #print("To draw: " + str(trisLeft) + " triangles.")
-                #print("Loaded: " + str(maxVert + 1) + " vertices.")
-        else:
-            offset = vertsIn - (maxVert + 1)
-            #print(offset)
-            #print(triIndices[0])
-            #print(triIndices[1])
-            #print(triIndices[2])
-            if (trisLeft > 1):
-                newLine += "    gsSP2Triangles(" + str(triIndices[0] - offset) + ", " + str(triIndices[1] - offset) + ", " + str(triIndices[2] - offset) + ", 0x0, " + str(triIndices[3] - offset) + ", " + str(triIndices[4] - offset) + ", " + str(triIndices[5] - offset) + ", 0x0),\n"
-                del triIndices[:6]
-                trisLeft -= 2
-                trisDrawn += 6
-                totalTri += 6
-                minVert = 20000
-            else:
-                newLine += "    gsSP1Triangle(" + str(triIndices[0] - offset) + ", " + str(triIndices[1] - offset) + ", " + str(triIndices[2] - offset) + ", 0x0),\n"
-                del triIndices[:3]
-                trisLeft -= 1
-                trisDrawn += 3
-                totalTri += 3
-                minVert = 20000
-            i = 0
-            #print("Verts left: " + str(int(vertCount) - int(vertsIn)))
-            #print("Tris left: " + str(trisLeft))
-            #print("Total left: " + str(len(triIndices)))
-            if (totalTri >= triLen):
-                break
-    #print(newLine)
-    while (len(linesToDestroy) > 0):
-        lines[linesToDestroy[0]] = ""
-        del linesToDestroy[:1]
-    lines.insert(lineNum, newLine)
-
 def convert_tris(image_path):
     file = open(image_path, mode = 'r')
     print("Processing " + image_path + ".")
@@ -181,13 +61,125 @@ def convert_tris(image_path):
             #print(matches)
         else:
             if (vertCount > 0):
+                #print(triIndices)
+                #print("Triangles: " + str(triIndices))
+                #print("Total Vertices: " + str(vertCount))
+                trisToDraw = 0
+                trisLeft = 0
+                vertsIn = 0
+                useVerts = 0
+                trisDrawn = 0
+                totalTri = 0
+                newLine = ""
+                maxVert = 0
+                minVert = 20000
+                triLen = len(triIndices)
+                i = 0
+                if (len(triIndices) != 0):
+                    while (True):
+                        if (trisLeft == 0):
+                            useVerts = min(vertCount - vertsIn, vert_buffer_size)
+                            #print("Useverts " + str(useVerts))
+                            #print("i " + str(i))
+                            #print("Len " + str(len(triIndices)))
+                            triOffset = 0
+                            if (i < len(triIndices)) and triIndices[i] - vertsIn < useVerts and triIndices[i + 1] - vertsIn < useVerts and triIndices[i + 2] - vertsIn < useVerts:
+                                offset2 = vertsIn - (maxVert + 1)
+                                maxVert = max(max(max(triIndices[i + 0], triIndices[i + 1]), triIndices[i + 2]), maxVert) - vertsIn
+                                minVert = min(min(triIndices[i + 0], triIndices[i + 1]), triIndices[i + 2], minVert)
+                                i += 3
+                                trisToDraw += 1
+                            else:
+                                #print("min: " + str(minVert))
+                                if (minVert - vertsIn < 0):
+                                    triOffset = minVert - vertsIn
+                                    #print(triOffset)
+                                    #allGood = False
+                                else:
+                                    triOffset = 0
+                                i -= 3
+                                #print("Use vert: " + str(useVerts))
+                                #print("Max vert: " + str(useVerts + 1))
+                                newLine += "    gsSPVertex(" + str(vertAddr) + " + " + str(vertsIn) + ", " + str(maxVert + 1) + ", 0),\n"
+                                vertsIn += (maxVert + 1)
+                                trisLeft = trisToDraw
+                                trisToDraw = 0
+                                trisDrawn = 0
+                                #print("To draw: " + str(trisLeft) + " triangles.")
+                                #print("Loaded: " + str(maxVert + 1) + " vertices.")
+                        else:
+                            offset = vertsIn - (maxVert + 1)
+                            #print(offset)
+                            #print(triIndices[0])
+                            #print(triIndices[1])
+                            #print(triIndices[2])
+                            if (trisLeft > 1):
+                                newLine += "    gsSP2Triangles(" + str(triIndices[0] - offset) + ", " + str(triIndices[1] - offset) + ", " + str(triIndices[2] - offset) + ", 0x0, " + str(triIndices[3] - offset) + ", " + str(triIndices[4] - offset) + ", " + str(triIndices[5] - offset) + ", 0x0),\n"
+                                del triIndices[:6]
+                                trisLeft -= 2
+                                trisDrawn += 6
+                                totalTri += 6
+                                minVert = 20000
+                            else:
+                                newLine += "    gsSP1Triangle(" + str(triIndices[0] - offset) + ", " + str(triIndices[1] - offset) + ", " + str(triIndices[2] - offset) + ", 0x0),\n"
+                                del triIndices[:3]
+                                trisLeft -= 1
+                                trisDrawn += 3
+                                totalTri += 3
+                                minVert = 20000
+                            i = 0
+                            #print("Verts left: " + str(int(vertCount) - int(vertsIn)))
+                            #print("Tris left: " + str(trisLeft))
+                            #print("Total left: " + str(len(triIndices)))
+                            if (totalTri >= triLen):
+                                break
+                    #print(newLine)
+                    if (allGood == True):
+                        while (len(linesToDestroy) > 0):
+                            lines[linesToDestroy[0]] = ""
+                            del linesToDestroy[:1]
+                    lines.insert(lineNum, newLine)
                 # Find and merge necessary vertex lists.
-                if (len(addrMerge) != 0 and len(triIndices) != 0):
-                    while (len(linesToDestroy) > 0):
-                        lines[linesToDestroy[0]] = ""
-                        del linesToDestroy[:1]
-                    write_tris(lines, vertCount, triIndices, vertAddr, lineNum)
-                    merge_verts(lines, vertAddr, addrMerge)
+                newVertLine = ""
+                if (len(addrMerge)) != 0:
+                    #print(addrMerge)
+                    baseFound = False
+                    vertLine = 0
+                    addrsNuked = 0
+                    baseLine = 0
+                    vertLineSnap = False
+                    vertBufferLinesToDestroy = []
+                    for vLine in lines:
+                        if (len(addrMerge) <= addrsNuked):
+                            break
+                        vLineS = vLine.strip()
+                        #print(vLineS)
+                        if (vLineS.find(vertAddr) != -1 and baseFound == False):
+                            baseFound = True
+                        elif (baseFound == True and vLineS.find("};") != -1 and baseLine == 0):
+                            baseLine = vertLine
+                        elif any(folder in vLine for folder in addrMerge) and vertLineSnap == False:
+                            vertLineSnap = True
+                            vertBufferLinesToDestroy.append(vertLine)
+                        elif (vertLineSnap == True):
+                            vertBufferLinesToDestroy.append(vertLine)
+                            if vLineS.find("};") != -1:
+                                vertBufferLinesToDestroy.append(vertLine + 1)
+                                if (lines[vertLine + 1] == '\n'):
+                                    vertBufferLinesToDestroy.append(vertLine + 2)
+                                vertLineSnap = False
+                                addrsNuked += 1
+                            else:
+                                newVertLine += vLine
+                        vertLine += 1
+                    lines.insert(baseLine, newVertLine)
+                    #print(newVertLine)
+                    addrMerge.clear()
+                    numLines = len(vertBufferLinesToDestroy)
+                    while (len(vertBufferLinesToDestroy) > 0):
+                        lines[vertBufferLinesToDestroy[0]] = ""
+                        del vertBufferLinesToDestroy[:1]
+                    i = 0
             vertCount = 0
             vBuff = 0
             prevVBuff = 0
@@ -202,7 +194,7 @@ def convert_tris(image_path):
     print("Finished " + image_path + "!")
 
 def job():
-    folder_path = "./actors/goomba"
+    folder_path = "./levels/rr"
     folder_whitelist = ["./actors", "./levels", "./bin"]
     for root, dirs, files in os.walk(folder_path):
         if any(folder in root for folder in folder_whitelist):
