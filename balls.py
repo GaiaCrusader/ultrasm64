@@ -3,12 +3,10 @@ import re
 import threading
 
 vert_buffer_size = 56
-taskID = 0
-fileList = []
 
 def convert_tris(image_path):
     file = open(image_path, mode = 'r')
-    print("Processing " + image_path + ".")
+    #print("Processing " + image_path + ".")
     lines = file.readlines()
     file.close()
     triIndices = []
@@ -31,11 +29,16 @@ def convert_tris(image_path):
                 vBuff += prevVBuff
             prevVBuff = count
             matches2 = re.findall(r'\S+', lineS)
+            vertName = matches2[0][11:]
+            #print(vertName)
+            if (vertName[-1:] == ','):
+                vertName = vertName[:-1]
             if (addrFound == False):
                 addrFound = True
-                vertAddr = matches2[0][11:-1]
-            else:
-                addrMerge.append(matches2[0][11:-1])
+                vertAddr = vertName
+                #print(vertAddr)
+            elif vertName != vertAddr:
+                addrMerge.append(vertName)
                 #print(addrMerge)
             if (lines[lineNum + 1].find("Triangle")) != -1:
                 linesToDestroy.append(lineNum)
