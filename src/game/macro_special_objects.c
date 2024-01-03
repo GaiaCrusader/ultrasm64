@@ -79,19 +79,6 @@ void spawn_macro_abs_special(s32 model, const BehaviorScript *behavior, s16 x, s
     newObj->oMacroUnk110 = (f32) unkC;
 }
 
-UNUSED static void spawn_macro_coin_unknown(const BehaviorScript *behavior, s16 a1[]) {
-    struct Object *sp3C;
-    s16 model;
-
-    model = bhvYellowCoin == behavior ? MODEL_YELLOW_COIN : MODEL_NONE;
-
-    sp3C = spawn_object_abs_with_rot(&gMacroObjectDefaultParent, 0, model, behavior,
-                                     a1[1], a1[2], a1[3], 0, convert_rotation(a1[0]), 0);
-
-    sp3C->oUnk1A8 = a1[4];
-    sp3C->oBehParams = (a1[4] & 0xFF) >> 16;
-}
-
 struct LoadedPreset {
     /*0x00*/ const BehaviorScript *behavior;
     /*0x04*/ s16 param; // huh? why does the below function swap these.. just use the struct..
@@ -105,7 +92,6 @@ struct LoadedPreset {
 #define MACRO_OBJ_PARAMS 4
 
 void spawn_macro_objects(s16 areaIndex, s16 *macroObjList) {
-    UNUSED u8 filler[4];
     s32 presetID;
 
     s16 macroObject[5]; // see the 5 #define statements above
@@ -172,7 +158,6 @@ void spawn_macro_objects(s16 areaIndex, s16 *macroObjList) {
 }
 
 void spawn_macro_objects_hardcoded(s16 areaIndex, s16 *macroObjList) {
-    UNUSED u8 filler1[8];
 
     // This version of macroObjList has the preset and Y-Rotation separated,
     // and lacks behavior params. Might be an early version of the macro object list?
@@ -181,8 +166,6 @@ void spawn_macro_objects_hardcoded(s16 areaIndex, s16 *macroObjList) {
     s16 macroObjZ;
     s16 macroObjPreset;
     s16 macroObjRY; // Y Rotation
-
-    UNUSED u8 filler2[10];
 
     gMacroObjectDefaultParent.header.gfx.areaIndex = areaIndex;
     gMacroObjectDefaultParent.header.gfx.activeAreaIndex = areaIndex;
@@ -323,49 +306,3 @@ void spawn_special_objects(s16 areaIndex, s16 **specialObjList) {
         }
     }
 }
-
-#ifdef NO_SEGMENTED_MEMORY
-u32 get_special_objects_size(s16 *data) {
-    s16 *startPos = data;
-    s32 numOfSpecialObjects;
-    s32 i;
-    u8 presetID;
-    s32 offset;
-
-    numOfSpecialObjects = *data++;
-
-    for (i = 0; i < numOfSpecialObjects; i++) {
-        presetID = (u8) *data++;
-        data += 3;
-        offset = 0;
-
-        while (TRUE) {
-            if (SpecialObjectPresets[offset].preset_id == presetID) {
-                break;
-            }
-            offset++;
-        }
-
-        switch (SpecialObjectPresets[offset].type) {
-            case SPTYPE_NO_YROT_OR_PARAMS:
-                break;
-            case SPTYPE_YROT_NO_PARAMS:
-                data++;
-                break;
-            case SPTYPE_PARAMS_AND_YROT:
-                data += 2;
-                break;
-            case SPTYPE_UNKNOWN:
-                data += 3;
-                break;
-            case SPTYPE_DEF_PARAM_AND_YROT:
-                data++;
-                break;
-            default:
-                break;
-        }
-    }
-
-    return data - startPos;
-}
-#endif

@@ -1,10 +1,6 @@
 // Not a traditional model file. The vertexes are generated in src/geo_misc.c.
 
 // 0x07019230 - 0x07019248
-static const Lights1 rr_seg7_lights_07019230 = gdSPDefLights1(
-    0x5f, 0x5f, 0x5f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x07019248 - 0x070192F0
 const s16 flying_carpet_static_vertex_data[] = {
@@ -35,7 +31,7 @@ const s16 flying_carpet_static_vertex_data[] = {
 // 0x070192F0 - 0x07019360
 const Gfx dl_flying_carpet_begin[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -45,8 +41,8 @@ const Gfx dl_flying_carpet_begin[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, texture_quarter_flying_carpet),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&rr_seg7_lights_07019230.l, 1),
-    gsSPLight(&rr_seg7_lights_07019230.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x5f5f5fff),
     gsSPEndDisplayList(),
 };
 
@@ -65,7 +61,7 @@ const Gfx dl_flying_carpet_model_half[] = {
 const Gfx dl_flying_carpet_end[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSPEndDisplayList(),
 };

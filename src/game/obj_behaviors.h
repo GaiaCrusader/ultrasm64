@@ -7,6 +7,12 @@
 #include "macros.h"
 #include "types.h"
 
+#define OBJ_COL_FLAG_GROUNDED   (1 << 0)
+#define OBJ_COL_FLAG_HIT_WALL   (1 << 1)
+#define OBJ_COL_FLAG_UNDERWATER (1 << 2)
+#define OBJ_COL_FLAG_NO_Y_VEL   (1 << 3)
+#define OBJ_COL_FLAGS_LANDED    (OBJ_COL_FLAG_GROUNDED | OBJ_COL_FLAG_NO_Y_VEL)
+
 void set_yoshi_as_not_dead(void);
 s32 coin_step(s16 *collisionFlagsPtr);
 void moving_coin_flicker(void);
@@ -16,10 +22,6 @@ void bhv_moving_yellow_coin_loop(void);
 void bhv_moving_blue_coin_init(void);
 void bhv_moving_blue_coin_loop(void);
 void bhv_blue_coin_sliding_jumping_init(void);
-void blue_coin_sliding_away_from_mario(void); /* likely unused */
-void blue_coin_sliding_slow_down(void); /* likely unused */
-void bhv_blue_coin_sliding_loop(void); /* likely unused */
-void bhv_blue_coin_jumping_loop(void); /* likely unused */
 void bhv_seaweed_init(void);
 void bhv_seaweed_bundle_init(void);
 void bhv_bobomb_init(void);
@@ -75,8 +77,6 @@ void hoot_action_loop(void);
 void hoot_turn_to_home(void);
 void hoot_awake_loop(void);
 void bhv_hoot_loop(void);
-void bhv_beta_holdable_object_init(void); /* unused */
-void bhv_beta_holdable_object_loop(void); /* unused */
 void bhv_object_bubble_init(void);
 void bhv_object_bubble_loop(void);
 void bhv_object_water_wave_init(void);
@@ -112,7 +112,6 @@ void water_ring_set_scale(f32 avgScale);
 void water_ring_act_collected(void);
 void water_ring_act_not_collected(void);
 void bhv_jet_stream_water_ring_loop(void);
-void spawn_manta_ray_ring_manager(void); /* unused */
 void water_ring_spawner_act_inactive(void);
 void bhv_jet_stream_ring_spawner_loop(void);
 void bhv_manta_ray_water_ring_init(void);
@@ -155,11 +154,29 @@ void bhv_generic_bowling_ball_spawner_loop(void);
 void bhv_thi_bowling_ball_spawner_loop(void);
 void bhv_bob_pit_bowling_ball_init(void);
 void bhv_bob_pit_bowling_ball_loop(void);
-void bhv_free_bowling_ball_init(void); /* likely unused */
-void bhv_free_bowling_ball_roll_loop(void); /* likely unused */
-void bhv_free_bowling_ball_loop(void); /* likely unused */
 void bhv_rr_cruiser_wing_init(void);
 void bhv_rr_cruiser_wing_loop(void);
 void spawn_default_star(f32 sp20, f32 sp24, f32 sp28);
+s8 obj_lava_death(void);
+void obj_check_floor_death(s16 collisionFlags, struct Surface *floor);
+s8 obj_check_if_facing_toward_angle(u32 base, u32 goal, s16 range);
+s8 obj_return_home_if_safe(struct Object *obj, f32 homeX, f32 y, f32 homeZ, s32 dist);
+void obj_spawn_yellow_coins(struct Object *obj, s8 nCoins);
+void set_object_visibility(struct Object *obj, s32 dist);
+s32 object_step(void);
+s32 is_point_within_radius_of_mario(f32 x, f32 y, f32 z, s32 dist);
+void spawn_orange_number(s8 behParam, s16 relX, s16 relY, s16 relZ);
+s32 obj_flicker_and_disappear(struct Object *obj, s16 lifeSpan);
+void obj_move_xyz_using_fvel_and_yaw(struct Object *obj);
+f32 absf_2(f32 f);
+s32 is_point_close_to_object(struct Object *obj, f32 x, f32 y, f32 z, s32 dist);
+void obj_return_and_displace_home(struct Object *obj, f32 homeX, UNUSED f32 homeY, f32 homeZ, s32 baseDisp);
+s32 object_step_without_floor_orient(void);
+s32 trigger_obj_dialog_when_facing(s32 *inDialog, s16 dialogID, f32 dist, s32 actionArg);
+void obj_orient_graph(struct Object *obj, f32 normalX, f32 normalY, f32 normalZ);
+s32 obj_find_wall_displacement(Vec3f dist, f32 x, f32 y, f32 z, f32 radius);
+void adjust_rolling_face_pitch(f32 f12);
+void set_rolling_sphere_hitbox(void);
+s32 current_mario_room_check(s16 room);
 
 #endif // OBJ_BEHAVIORS_H

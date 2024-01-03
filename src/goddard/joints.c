@@ -18,6 +18,8 @@
 #include "sfx.h"
 #include "skin.h"
 #include "skin_movement.h"
+#include "game/game_init.h"
+#include "engine/math_util.h"
 
 // data
 static s32 D_801A82D0 = 0;
@@ -47,13 +49,9 @@ void set_joint_vecs(struct ObjJoint *, f32, f32, f32);
  * Controls movement of grabbable joints
  */
 void grabbable_joint_update_func(struct ObjJoint *self) {
-    UNUSED u8 filler1[80];
     Mat4f *attObjMtx;
-    UNUSED u8 filler2[4];
     struct GdVec3f offset;  // difference between current position and initial position
-    UNUSED u8 filler3[16];
     register struct ListNode *att;
-    UNUSED u8 filler4[8];
     struct GdObj *attobj;
 
     // The joint acts somewhat like a spring in that the further it is moved
@@ -64,28 +62,32 @@ void grabbable_joint_update_func(struct ObjJoint *self) {
     offset.z = self->mat128[3][2] - self->initPos.z;
 
     if (self->header.drawFlags & OBJ_PICKED) {
-        self->velocity.x = offset.x * -0.25;
-        self->velocity.y = offset.y * -0.25;
-        self->velocity.z = offset.z * -0.25;
+        self->velocity.x = offset.x * -0.25f;
+        self->velocity.y = offset.y * -0.25f;
+        self->velocity.z = offset.z * -0.25f;
 
         self->flags |= 0x2000;
         ;  // needed to match
     } else {
         if (gGdCtrl.trgR == FALSE) { // R trigger is released
             // Set velocity so that the joint approaches its initial position
-            self->velocity.x -= offset.x * 0.5; //? 0.5f
-            self->velocity.y -= offset.y * 0.5; //? 0.5f
-            self->velocity.z -= offset.z * 0.5; //? 0.5f
+            self->velocity.x -= (offset.x * 0.5f) * gLerpSpeed; //? 0.5f
+            self->velocity.y -= (offset.y * 0.5f) * gLerpSpeed; //? 0.5f
+            self->velocity.z -= (offset.z * 0.5f) * gLerpSpeed; //? 0.5f
 
             // Decay the velocity
-            self->velocity.x *= 0.8; //? 0.8f
-            self->velocity.y *= 0.8; //? 0.8f
-            self->velocity.z *= 0.8; //? 0.8f
+            //self->velocity.x *= 0.8f; //? 0.8f
+            //self->velocity.y *= 0.8f; //? 0.8f
+            //self->velocity.z *= 0.8f; //? 0.8f
+
+            self->velocity.x -= (self->velocity.x * 0.2f) * gLerpSpeed;
+            self->velocity.y -= (self->velocity.y * 0.2f) * gLerpSpeed;
+            self->velocity.z -= (self->velocity.z * 0.2f) * gLerpSpeed;
 
             // If the joint's velocity has decayed enough and it is very close
             // to its original position, stop its movement altogether
-            if (ABS(self->velocity.x) + ABS(self->velocity.y) + ABS(self->velocity.z) < 1.0) {
-                if (ABS(offset.x) + ABS(offset.y) + ABS(offset.z) < 1.0) {
+            if (ABS(self->velocity.x) + ABS(self->velocity.y) + ABS(self->velocity.z) < 1.0f) {
+                if (ABS(offset.x) + ABS(offset.y) + ABS(offset.z) < 1.0f) {
                     self->velocity.x = self->velocity.y = self->velocity.z = 0.0f;
                     self->mat128[3][0] -= offset.x;
                     self->mat128[3][1] -= offset.y;
@@ -106,13 +108,13 @@ void grabbable_joint_update_func(struct ObjJoint *self) {
     }
 
     // update position
-    self->mat128[3][0] += self->velocity.x;
-    self->mat128[3][1] += self->velocity.y;
-    self->mat128[3][2] += self->velocity.z;
+    self->mat128[3][0] += (self->velocity.x) * gLerpSpeed;
+    self->mat128[3][1] += (self->velocity.y) * gLerpSpeed;
+    self->mat128[3][2] += (self->velocity.z) * gLerpSpeed;
 
     if (self->header.drawFlags & OBJ_PICKED) {
-        gGdCtrl.csrX -= (gGdCtrl.csrX - gGdCtrl.dragStartX) * 0.2;
-        gGdCtrl.csrY -= (gGdCtrl.csrY - gGdCtrl.dragStartY) * 0.2;
+        gGdCtrl.csrX -= ((gGdCtrl.csrX - gGdCtrl.dragStartX) * 0.2f) * gLerpSpeed;
+        gGdCtrl.csrY -= ((gGdCtrl.csrY - gGdCtrl.dragStartY) * 0.2f) * gLerpSpeed;
     }
 
     // update position of attached objects
@@ -134,7 +136,6 @@ void eye_joint_update_func(struct ObjJoint *self) {
     Mat4f *sp5C;
     struct GdVec3f sp50;
     struct GdVec3f sp44;
-    UNUSED u8 filler[24];
     register struct ListNode *att;
     struct GdObj *attobj;
 
@@ -159,10 +160,10 @@ void eye_joint_update_func(struct ObjJoint *self) {
     sp50.y = -(gGdCtrl.csrY - sp44.y);
     sp50.z = 0.0f;
 
-    sp50.x *= 2.0; //?2.0f
-    sp50.y *= 2.0; //?2.0f
-    sp50.z *= 2.0; //?2.0f
-    if (gd_vec3f_magnitude(&sp50) > 30.0f) {
+    sp50.x *= 2.0f; //?2.0f
+    sp50.y *= 2.0f; //?2.0f
+    sp50.z *= 2.0f; //?2.0f
+    if (gd_vec3f_magnitude(&sp50) > 30.0f * 30.0f) {
         gd_normalize_vec3f(&sp50);
         sp50.x *= 30.0f;
         sp50.y *= 30.0f;
@@ -174,29 +175,6 @@ void eye_joint_update_func(struct ObjJoint *self) {
         set_cur_dynobj(attobj);
         sp5C = d_get_rot_mtx_ptr();
         gd_add_vec3f_to_mat4f_offset(sp5C, &sp50);
-    }
-}
-
-/* 23D62C -> 23D748; not called */
-void func_8018EE5C(struct ObjJoint *j1, struct ObjJoint *j2, struct ObjJoint *j3) {
-    struct GdVec3f vec;
-    struct ObjJoint *curj;
-
-    if (j3 == NULL) {
-        return;
-    }
-
-    vec.z = j3->worldPos.x;
-    vec.y = j3->worldPos.y;
-    vec.x = j3->worldPos.z;
-
-    curj = j1;
-    while (curj != NULL) {
-        set_joint_vecs(curj, curj->worldPos.x + vec.z, curj->worldPos.y + vec.y, curj->worldPos.z + vec.x);
-        if (curj == j2) {
-            break;
-        }
-        curj = curj->prevjoint;
     }
 }
 
@@ -227,7 +205,6 @@ void set_joint_vecs(struct ObjJoint *j, f32 x, f32 y, f32 z) {
 struct ObjJoint *make_joint(s32 flags, f32 x, f32 y, f32 z) {
     struct ObjJoint *j; // sp24
     struct ObjJoint *oldhead;
-    UNUSED u8 filler[4];
 
     j = (struct ObjJoint *) make_object(OBJ_TYPE_JOINTS);
     sJointCount++;
@@ -241,7 +218,6 @@ struct ObjJoint *make_joint(s32 flags, f32 x, f32 y, f32 z) {
     gd_set_identity_mat4(&j->matE8);
     gd_set_identity_mat4(&j->mat128);
     set_joint_vecs(j, x, y, z);
-    j->type = 0;
     j->id = sJointCount;
     j->flags = flags;
 
@@ -278,7 +254,6 @@ struct ObjJoint *make_grabber_joint(struct ObjShape *shape, s32 flags, f32 x, f3
 
     j = make_joint(0, x, y, z);
     j->shapePtr = shape;
-    j->type = 5;
     j->flags |= flags;
     j->colourNum = COLOUR_PINK;
     j->header.drawFlags |= OBJ_IS_GRABBABLE;
@@ -303,9 +278,9 @@ void func_8018F328(struct ObjBone *b) {
     joint2 = (struct ObjJoint *) link->obj;
 
     // bone position is average of two connecting joints
-    b->worldPos.x = (joint1->worldPos.x + joint2->worldPos.x) / 2.0; //?2.0f
-    b->worldPos.y = (joint1->worldPos.y + joint2->worldPos.y) / 2.0; //?2.0f
-    b->worldPos.z = (joint1->worldPos.z + joint2->worldPos.z) / 2.0; //?2.0f
+    b->worldPos.x = (joint1->worldPos.x + joint2->worldPos.x) / 2.0f; //?2.0f
+    b->worldPos.y = (joint1->worldPos.y + joint2->worldPos.y) / 2.0f; //?2.0f
+    b->worldPos.z = (joint1->worldPos.z + joint2->worldPos.z) / 2.0f; //?2.0f
 
     b->unk58.x = joint2->worldPos.x - joint1->worldPos.x;
     b->unk58.y = joint2->worldPos.y - joint1->worldPos.y;
@@ -328,7 +303,6 @@ void func_8018F4CC(struct ObjJoint *j) {
 void func_8018F520(struct ObjBone *b) {
     struct ObjJoint *joint1;
     struct ObjJoint *joint2;
-    UNUSED u8 filler[12];
     struct GdVec3f sp90;
     struct GdVec3f sp84;
     struct GdVec3f sp78;
@@ -346,9 +320,9 @@ void func_8018F520(struct ObjBone *b) {
     joint2 = (struct ObjJoint *) link->obj;
 
     // bone position is average of two connecting joints
-    b->worldPos.x = (joint1->worldPos.x + joint2->worldPos.x) / 2.0; //? 2.0f;
-    b->worldPos.y = (joint1->worldPos.y + joint2->worldPos.y) / 2.0; //? 2.0f;
-    b->worldPos.z = (joint1->worldPos.z + joint2->worldPos.z) / 2.0; //? 2.0f;
+    b->worldPos.x = (joint1->worldPos.x + joint2->worldPos.x) / 2.0f; //? 2.0f;
+    b->worldPos.y = (joint1->worldPos.y + joint2->worldPos.y) / 2.0f; //? 2.0f;
+    b->worldPos.z = (joint1->worldPos.z + joint2->worldPos.z) / 2.0f; //? 2.0f;
 
     sp90.x = b->unk58.x;
     sp90.y = b->unk58.y;
@@ -365,7 +339,7 @@ void func_8018F520(struct ObjBone *b) {
     b->unk64.y = sp90.y;
     b->unk64.z = sp90.z;
 
-    sp68 = 5.4 / b->unkF8; //? 5.4f
+    sp68 = sqr(5.4f) / b->unkF8; //? 5.4f
     sp6C.x *= sp68;
     sp6C.y *= sp68;
     sp6C.z *= sp68;
@@ -379,7 +353,7 @@ void func_8018F520(struct ObjBone *b) {
     sp84.z = sp78.z;
 
     gd_normalize_vec3f(&sp84);
-    sp64 = gd_vec3f_magnitude(&sp78);
+    sp64 = gd_vec3f_magnitude_sqrtf(&sp78);
     gd_create_rot_mat_angular(&mtx, &sp84, sp64);
     gd_mult_mat4f(&b->mat70, &mtx, &b->mat70);
     D_801BA968.x = b->mat70[2][0];
@@ -394,7 +368,6 @@ void func_8018F520(struct ObjBone *b) {
 void func_8018F89C(struct ObjBone *b) {
     struct ObjJoint *spAC;
     struct ObjJoint *spA8;
-    UNUSED u8 filler[68];
     struct ObjGroup *grp; // sp60
     struct ListNode *link;   // sp5c
     Mat4f mtx;            // sp1c
@@ -405,9 +378,9 @@ void func_8018F89C(struct ObjBone *b) {
     link = link->next;
     spA8 = (struct ObjJoint *) link->obj;
 
-    b->worldPos.x = (spAC->worldPos.x + spA8->worldPos.x) / 2.0; //? 2.0f;
-    b->worldPos.y = (spAC->worldPos.y + spA8->worldPos.y) / 2.0; //? 2.0f;
-    b->worldPos.z = (spAC->worldPos.z + spA8->worldPos.z) / 2.0; //? 2.0f;
+    b->worldPos.x = (spAC->worldPos.x + spA8->worldPos.x) / 2.0f; //? 2.0f;
+    b->worldPos.y = (spAC->worldPos.y + spA8->worldPos.y) / 2.0f; //? 2.0f;
+    b->worldPos.z = (spAC->worldPos.z + spA8->worldPos.z) / 2.0f; //? 2.0f;
 
     gd_mult_mat4f(&b->matB0, &gGdSkinNet->mat128, &mtx);
     gd_copy_mat4f(&mtx, &b->mat70);
@@ -460,17 +433,12 @@ void func_8018FB58(struct ObjBone *b) {
     vec.y = j1->worldPos.y - j2->worldPos.y;
     vec.z = j1->worldPos.z - j2->worldPos.z;
 
-    b->unkF8 = gd_sqrt_d((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
-    b->unkF4 = b->unkF8;
-    b->unkFC = b->unkF8;
+    b->unkF8 = ((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
     func_8018F328(b);
 }
 
 /* 23E474 -> 23E56C */
 void add_joint2bone(struct ObjBone *b, struct ObjJoint *j) {
-    if (j->header.type != OBJ_TYPE_JOINTS) {
-        fatal_printf("add_joint2bone(): Can only add Joints to Bones");
-    }
 
     if (b->unk10C == NULL) {
         b->unk10C = make_group(0);
@@ -491,7 +459,6 @@ void add_joint2bone(struct ObjBone *b, struct ObjJoint *j) {
 struct ObjBone *make_bone(s32 a0, struct ObjJoint *j1, struct ObjJoint *j2, UNUSED s32 a3) {
     struct ObjBone *b; // sp34
     struct ObjBone *oldhead;
-    UNUSED u8 filler[20];
 
     b = (struct ObjBone *) make_object(OBJ_TYPE_BONES);
     sBoneCount++;
@@ -510,7 +477,7 @@ struct ObjBone *make_bone(s32 a0, struct ObjJoint *j1, struct ObjJoint *j2, UNUS
     gd_set_identity_mat4(&b->mat70);
     b->spring = 0.8f;
     b->unk114 = 0.9f;
-    b->unkF8 = 100.0f;
+    b->unkF8 = sqr(100.0f);
 
     if (j1 != NULL && j2 != NULL) {
         add_joint2bone(b, j1);
@@ -519,19 +486,6 @@ struct ObjBone *make_bone(s32 a0, struct ObjJoint *j1, struct ObjJoint *j2, UNUS
 
     printf("Made bone %d\n", b->id);
     return b;
-}
-
-/* 23E6E4 -> 23E6F8; not called */
-void stub_joints_1(UNUSED u32 a0) {
-}
-
-/* 23E6F8 -> 23E758; not called */
-void func_8018FF28(struct ObjJoint *a0, struct ObjJoint *a1) {
-    if (a1->flags & 0x1) {
-        a0->unk84.x -= a1->unk84.x;
-        a0->unk84.y -= a1->unk84.y;
-        a0->unk84.z -= a1->unk84.z;
-    }
 }
 
 /* 23E7B8 -> 23E938 */
@@ -581,11 +535,9 @@ s32 func_8018FFE8(struct ObjBone **a0, struct ObjJoint **a1, struct ObjJoint *a2
 void func_80190168(struct ObjBone *b, UNUSED struct ObjJoint *a1, UNUSED struct ObjJoint *a2,
                    struct GdVec3f *a3) {
     struct GdVec3f sp7C;
-    UNUSED u8 filler1[24];
     f32 sp60;
     f32 sp5C;
     f32 sp58;
-    UNUSED u8 filler2[60];
 
     return;
 
@@ -599,10 +551,11 @@ void func_80190168(struct ObjBone *b, UNUSED struct ObjJoint *a1, UNUSED struct 
             sp58 = 1.0f;
         }
         sp60 = (b->unkF8 / sp58) * b->spring;
+        sp60 *= sp60;
     }
 
     if (b->unk104 & 0x4) {
-        if (sp60 > (sp58 = gd_vec3f_magnitude(&sp7C))) {
+        if (sp60 > (gd_vec3f_magnitude(&sp7C))) {
             sp5C = b->spring;
             a3->x *= sp5C;
             a3->y *= sp5C;
@@ -615,7 +568,7 @@ void func_80190168(struct ObjBone *b, UNUSED struct ObjJoint *a1, UNUSED struct 
     }
 
     if (b->unk104 & 0x2) {
-        if (sp60 < (sp58 = gd_vec3f_magnitude(&sp7C))) {
+        if (sp60 < (gd_vec3f_magnitude(&sp7C))) {
             sp5C = b->spring;
             a3->x *= sp5C;
             a3->y *= sp5C;
@@ -661,16 +614,11 @@ void func_80190574(s32 a0, struct ObjJoint *a1, struct ObjJoint *a2, f32 x, f32 
     struct ObjJoint *sp274; // = a2?
     struct ObjJoint *sp270; // mid-point of stack array?
     struct ObjJoint *sp26C; // jointstackarr[i]? curjoint?
-    UNUSED u8 filler1[4];
-    UNUSED u32 unused = 0;
-    UNUSED u8 filler2[12]; // unused vec?
     struct GdVec3f sp24C;
     struct GdVec3f sp240;
-    UNUSED u8 filler3[8];
     s32 sp234; // i?
     s32 sp230;
     s32 sp22C = 1;
-    UNUSED u8 filler4[4];
     s32 sp224;
     s32 sp220;
     struct ObjJoint *sp120[0x40];
@@ -678,10 +626,6 @@ void func_80190574(s32 a0, struct ObjJoint *a1, struct ObjJoint *a2, f32 x, f32 
 
     for (sp230 = 1; sp230 < a0; sp230 *= 2) {
         sp22C = sp22C * 2 + 1;
-    }
-
-    if (a0 & 0x8000) {
-        fatal_print("Too many nestings!\n");
     }
 
     printf("\n");
@@ -769,42 +713,14 @@ void func_801909B4(void) {
     }
 }
 
-/* 23F1F0 -> 23F324; not called */
-void func_80190A20(void) {
-    struct ObjJoint *j; // sp3c
-    UNUSED u8 filler[4];
-    struct GdVec3f vec; // sp2C
-    struct ObjGroup *grp;
-    struct ListNode *link;
-    struct ObjBone *b;
-
-    j = gGdJointList;
-    while (j != NULL) {
-        if (j->flags & 0x40) {
-            grp = j->unk1C4;
-            link = grp->firstMember;
-            b = (struct ObjBone *) link->obj;
-
-            vec.z = b->unk40.x * 100.0f;
-            vec.y = b->unk40.y * 100.0f;
-            vec.x = b->unk40.z * 100.0f;
-            func_80190574(1, NULL, j, vec.z, vec.y, vec.x);
-        }
-
-        j = j->nextjoint;
-    }
-}
-
 /* 23F324 -> 23F638 */
 void func_80190B54(struct ObjJoint *a0, struct ObjJoint *a1, struct GdVec3f *a2) { // b0
     struct GdVec3f spA4;
-    UNUSED u8 filler1[12];
     struct GdVec3f sp8C;
     struct GdVec3f sp80;
     f32 sp7C;
     f32 sp78;
     Mat4f sp38;
-    UNUSED u8 filler2[28];
 
     if (a1 != NULL) {
         spA4.x = a1->unk3C.x;
@@ -826,7 +742,7 @@ void func_80190B54(struct ObjJoint *a0, struct ObjJoint *a1, struct GdVec3f *a2)
         D_801BAAE0.y = spA4.y - (sp8C.y * sp7C);
         D_801BAAE0.z = spA4.z - (sp8C.z * sp7C);
 
-        sp78 = 5.4 / sp7C; //? 5.4f
+        sp78 = 5.4f / sp7C; //? 5.4f
         D_801BAAD0.x *= sp78;
         D_801BAAD0.y *= sp78;
         D_801BAAD0.z *= sp78;
@@ -836,7 +752,7 @@ void func_80190B54(struct ObjJoint *a0, struct ObjJoint *a1, struct GdVec3f *a2)
         spA4.z *= sp78;
 
         gd_cross_vec3f(&spA4, &D_801BAAD0, &sp80);
-        sp78 = gd_vec3f_magnitude(&sp80);
+        sp78 = gd_vec3f_magnitude_sqrtf(&sp80);
         gd_normalize_vec3f(&sp80);
         gd_create_rot_mat_angular(&sp38, &sp80, sp78);
         gd_mult_mat4f(&a0->matE8, &sp38, &a0->matE8);
@@ -854,30 +770,6 @@ void func_80190B54(struct ObjJoint *a0, struct ObjJoint *a1, struct GdVec3f *a2)
     D_801BAAD0.x = D_801BAAE0.x;
     D_801BAAD0.y = D_801BAAE0.y;
     D_801BAAD0.z = D_801BAAE0.z;
-}
-
-/* 23F638 -> 23F70C; not called */
-void func_80190E68(struct GdObj *obj, f32 x, f32 y, f32 z) {
-    struct ObjJoint *sp44;
-    struct GdObj *sp40;
-    struct GdVec3f vec;
-    UNUSED u8 filler[24];
-
-    vec.x = x;
-    vec.y = y;
-    vec.z = z;
-
-    sp44 = NULL;
-    sp40 = obj;
-    while (sp40 != NULL) {
-        if (sp40->type != OBJ_TYPE_JOINTS) {
-            break;
-        }
-
-        func_80190B54(((struct ObjJoint *) sp40), sp44, &vec);
-        sp44 = ((struct ObjJoint *) sp40);
-        sp40 = ((struct ObjJoint *) sp40)->attachedToObj;
-    }
 }
 
 /* 23F70C -> 23F978 */
@@ -916,16 +808,9 @@ f32 func_80190F3C(struct ObjJoint *a0, f32 a1, f32 a2, f32 a3) {
     sp24.y -= a0->unk3C.y;
     sp24.z -= a0->unk3C.z;
 
-    return gd_vec3f_magnitude(&sp24);
-}
+    return 0.0f;
 
-/* 23F978 -> 23F9F0 */
-void func_801911A8(struct ObjJoint *j) {
-    j->unkCC.x = j->shapeOffset.x;
-    j->unkCC.y = j->shapeOffset.y;
-    j->unkCC.z = j->shapeOffset.z;
-
-    gd_rotate_and_translate_vec3f(&j->unkCC, &gGdSkinNet->mat128);
+    //return gd_vec3f_magnitude(&sp24);
 }
 
 /* 23F9F0 -> 23FB90 */
@@ -951,7 +836,6 @@ void func_80191220(struct ObjJoint *j) {
 
 /* 23FB90 -> 23FBC0 */
 void func_801913C0(struct ObjJoint *j) {
-    UNUSED u8 filler[16];
     func_80181894(j);
 }
 
@@ -971,24 +855,6 @@ void func_801913F0(struct ObjJoint *j) {
     j->unk30.z = j->worldPos.z;
 
     gd_copy_mat4f(&gGdSkinNet->mat128, &j->matE8);
-}
-
-/* 23FCC8 -> 23FCDC */
-void stub_joints_2(UNUSED struct ObjJoint *j) {
-}
-
-/* 23FCDC -> 23FDD4; not called */
-void func_8019150C(Mat4f *a0, struct GdVec3f *a1) {
-    struct GdVec3f sp1C;
-
-    sp1C.x = (*a0)[3][0] / 10.0; //? 10.0f
-    sp1C.y = (*a0)[3][1] / 10.0; //? 10.0f
-    sp1C.z = (*a0)[3][2] / 10.0; //? 10.0f
-
-    a1->x += sp1C.x;
-    a1->y += sp1C.y;
-    a1->z += sp1C.z;
-    gd_mat4f_mult_vec3f(a1, a0);
 }
 
 /* 23FDD4 -> 23FFF4 */
@@ -1022,10 +888,7 @@ void reset_joint(struct ObjJoint *j) {
 
 /* 23FFF4 -> 2400C4 */
 void func_80191824(struct ObjJoint *j) {
-    UNUSED struct ObjNet *sp14;
-    UNUSED u8 filler[16];
 
-    sp14 = gGdSkinNet->unk1F0;
     if (j->flags & 0x1) {
         j->worldPos.x = gGdSkinNet->worldPos.x;
         j->worldPos.y = gGdSkinNet->worldPos.y;
@@ -1035,69 +898,6 @@ void func_80191824(struct ObjJoint *j) {
         j->unk3C.y = gGdSkinNet->worldPos.y;
         j->unk3C.z = gGdSkinNet->worldPos.z;
     }
-}
-
-/* 2400C4 -> 2401EC; not called */
-void func_801918F4(struct ObjJoint *j) {
-    f32 sp4;
-
-    j->velocity.x = j->unk3C.x;
-    j->velocity.y = j->unk3C.y;
-    j->velocity.z = j->unk3C.z;
-
-    j->velocity.x -= j->unk30.x;
-    j->velocity.y -= j->unk30.y;
-    j->velocity.z -= j->unk30.z;
-
-    j->unk30.x = j->unk3C.x;
-    j->unk30.y = j->unk3C.y;
-    j->unk30.z = j->unk3C.z;
-
-    sp4 = -4.0f;
-
-    if (!(j->flags & 0x41)) {
-        j->velocity.y += sp4 * 0.2; //? 0.2f
-
-        j->unk3C.x += j->velocity.x;
-        j->unk3C.y += j->velocity.y;
-        j->unk3C.z += j->velocity.z;
-    }
-}
-
-/* 2401EC -> 2403C8; not called */
-void func_80191A1C(struct ObjBone *a0) {
-    f32 sp3C;
-    f32 sp38 = 0.0f;
-    struct GdObj *argjoint;
-    struct GdObj *tempjoint;
-    struct GdVec3f sp24;
-    struct GdVec3f sp18;
-
-    if (gGdTempBone == NULL) {
-        gGdTempBone = a0;
-    }
-    sp3C = gd_dot_vec3f(&gGdTempBone->unk40, &a0->unk40);
-    a0->unk118 = sp3C;
-
-    if ((sp3C -= sp38) < 0.0f) {
-        tempjoint = gGdTempBone->unk10C->firstMember->obj;
-        argjoint = a0->unk10C->firstMember->next->obj;
-        set_cur_dynobj(argjoint);
-        d_get_rel_pos(&sp24);
-        set_cur_dynobj(tempjoint);
-        d_get_rel_pos(&sp18);
-
-        sp24.x -= sp18.x;
-        sp24.y -= sp18.y;
-        sp24.z -= sp18.z;
-        gd_normalize_vec3f(&sp24);
-
-        sp3C = -sp3C * 50.0; //? 50.0f
-        if (!(((struct ObjJoint *) argjoint)->flags & 0x1)) {
-            func_80190F3C((struct ObjJoint *) argjoint, sp24.x * sp3C, sp24.y * sp3C, sp24.z * sp3C);
-        }
-    }
-    gGdTempBone = a0;
 }
 
 /* 2403C8 -> 240530 */
@@ -1111,8 +911,8 @@ void func_80191BF8(struct ObjJoint *j) {
 
     if ((sp1C = j->unk3C.y - (D_801A8058 + 30.0f)) < 0.0f && j->velocity.y < 0.0f) {
         sp1C += j->velocity.y;
-        sp1C *= 0.8; //? 0.8f
-        func_80190F3C(j, -j->velocity.x * 0.7, -sp1C, -j->velocity.z * 0.7);
+        sp1C *= 0.8f; //? 0.8f
+        func_80190F3C(j, -j->velocity.x * 0.7f, -sp1C, -j->velocity.z * 0.7f);
     }
 
     func_80190F3C(j, 0.0f, 0.0f, 0.0f);
@@ -1124,9 +924,9 @@ void func_80191D60(struct ObjJoint *j) {
     j->velocity.y += j->unk3C.y - j->worldPos.y;
     j->velocity.z += j->unk3C.z - j->worldPos.z;
 
-    j->velocity.x *= 0.9; //? 0.9f
-    j->velocity.y *= 0.9; //? 0.9f
-    j->velocity.z *= 0.9; //? 0.9f
+    j->velocity.x *= 0.9f; //? 0.9f
+    j->velocity.y *= 0.9f; //? 0.9f
+    j->velocity.z *= 0.9f; //? 0.9f
 
     j->worldPos.x += j->velocity.x;
     j->worldPos.y += j->velocity.y;

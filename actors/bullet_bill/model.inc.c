@@ -1,10 +1,6 @@
 // Bullet Bill
 
 // 0x0500BA90
-static const Lights1 bullet_bill_seg5_lights_0500BA90 = gdSPDefLights1(
-    0x06, 0x07, 0x14,
-    0x19, 0x1c, 0x52, 0x28, 0x28, 0x28
-);
 
 // 0x0500BAA8
 ALIGNED8 static const Texture bullet_bill_seg5_texture_0500BAA8[] = {
@@ -255,8 +251,8 @@ const Gfx bullet_bill_seg5_dl_0500E5E8[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 64 * 32 - 1, CALC_DXT(64, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&bullet_bill_seg5_lights_0500BA90.l, 1),
-    gsSPLight(&bullet_bill_seg5_lights_0500BA90.a, 2),
+    gsSPLightColor(LIGHT_1, 0x191c52ff),
+    gsSPLightColor(LIGHT_2, 0x60714ff),
     gsSPVertex(bullet_bill_seg5_vertex_0500DAA8, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  7,  8, 0x0,  9, 10, 11, 0x0),
@@ -327,7 +323,7 @@ const Gfx bullet_bill_seg5_dl_0500E730[] = {
 // 0x0500E8A8 - 0x0500E918
 const Gfx bullet_bill_seg5_dl_0500E8A8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_BLENDRGBA, G_CC_BLENDRGBA),
+    gsDPSetCombineMode(G_CC_BLENDRGBA, G_CC_PASS2),
     gsSPNumLights(NUMLIGHTS_1),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -337,7 +333,7 @@ const Gfx bullet_bill_seg5_dl_0500E8A8[] = {
     gsSPDisplayList(bullet_bill_seg5_dl_0500E678),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(bullet_bill_seg5_dl_0500E730),
     gsSPEndDisplayList(),
 };

@@ -12,64 +12,8 @@
 #include "object_list_processor.h"
 #include "spawn_object.h"
 #include "types.h"
+#include "rendering_graph_node.h"
 
-/**
- * An unused linked list struct that seems to have been replaced by ObjectNode.
- */
-struct LinkedList {
-    struct LinkedList *next;
-    struct LinkedList *prev;
-};
-
-/**
- * Clear the doubly linked usedList. Singly link each item in the pool into
- * a list, and return this list in pFreeList.
- * Appears to have been replaced by init_free_object_list.
- */
-void unused_init_free_list(struct LinkedList *usedList, struct LinkedList **pFreeList,
-                           struct LinkedList *pool, s32 itemSize, s32 poolLength) {
-    s32 i;
-    struct LinkedList *node = pool;
-
-    usedList->next = usedList;
-    usedList->prev = usedList;
-
-    *pFreeList = pool;
-
-    for (i = 0; i < poolLength - 1; i++) {
-        // Add next node to free list
-        node = (struct LinkedList *) ((u8 *) node + itemSize);
-        pool->next = node;
-        pool = node;
-    }
-
-    // End the list
-    pool->next = NULL;
-}
-
-/**
- * Attempt to allocate a node from freeList (singly linked) and append it
- * to the end of destList (doubly linked). Return the object, or NULL if
- * freeList is empty.
- * Appears to have been replaced by try_allocate_object.
- */
-struct LinkedList *unused_try_allocate(struct LinkedList *destList,
-                                       struct LinkedList *freeList) {
-    struct LinkedList *node = freeList->next;
-
-    if (node != NULL) {
-        // Remove from free list
-        freeList->next = node->next;
-
-        // Insert at the end of destination list
-        node->prev = destList->prev;
-        node->next = destList;
-        destList->prev->next = node;
-        destList->prev = node;
-    }
-
-    return node;
-}
 
 /**
  * Attempt to allocate an object from freeList (singly linked) and append it
@@ -98,20 +42,6 @@ struct Object *try_allocate_object(struct ObjectNode *destList, struct ObjectNod
     return (struct Object *) nextObj;
 }
 
-/**
- * Remove the node from the doubly linked list it's in, and place it in the
- * singly linked freeList.
- * This function seems to have been replaced by deallocate_object.
- */
-void unused_deallocate(struct LinkedList *freeList, struct LinkedList *node) {
-    // Remove from doubly linked list
-    node->next->prev = node->prev;
-    node->prev->next = node->next;
-
-    // Insert at beginning of singly linked list
-    node->next = freeList->next;
-    freeList->next = node;
-}
 /**
  * Remove the given object from the object list that it's currently in, and
  * insert it at the beginning of the free list (singly linked).
@@ -160,29 +90,6 @@ void clear_object_lists(struct ObjectNode *objLists) {
 }
 
 /**
- * This function looks broken, but it appears to attempt to delete the leaf
- * graph nodes under obj and obj's siblings.
- */
-UNUSED static void unused_delete_leaf_nodes(struct Object *obj) {
-    struct Object *children;
-    struct Object *sibling;
-    struct Object *obj0 = obj;
-
-    if ((children = (struct Object *) obj->header.gfx.node.children) != NULL) {
-        unused_delete_leaf_nodes(children);
-    } else {
-        // No children
-        mark_obj_for_deletion(obj);
-    }
-
-    // Probably meant to be !=
-    while ((sibling = (struct Object *) obj->header.gfx.node.next) == obj0) {
-        unused_delete_leaf_nodes(sibling);
-        obj = (struct Object *) sibling->header.gfx.node.next;
-    }
-}
-
-/**
  * Free the given object.
  */
 void unload_object(struct Object *obj) {
@@ -190,12 +97,15 @@ void unload_object(struct Object *obj) {
     obj->prevObj = NULL;
 
     obj->header.gfx.throwMatrix = NULL;
+    obj->header.gfx.matrixID[0] = MATRIX_NULL;
+    obj->header.gfx.matrixID[1] = MATRIX_NULL;
     stop_sounds_from_source(obj->header.gfx.cameraToObject);
     geo_remove_child(&obj->header.gfx.node);
     geo_add_child(&gObjParentGraphNode, &obj->header.gfx.node);
 
     obj->header.gfx.node.flags &= ~GRAPH_RENDER_BILLBOARD;
     obj->header.gfx.node.flags &= ~GRAPH_RENDER_ACTIVE;
+    //obj->shadow.hasShadow = FALSE;
 
     deallocate_object(&gFreeObjectList, &obj->header);
 }
@@ -242,17 +152,9 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->collidedObjInteractTypes = 0;
     obj->numCollidedObjs = 0;
 
-#if IS_64_BIT
-    for (i = 0; i < 0x50; i++) {
-        obj->rawData.asS32[i] = 0;
-        obj->ptrData.asVoidPtr[i] = NULL;
-    }
-#else
     // -O2 needs everything until = on the same line
     for (i = 0; i < 0x50; i++) obj->rawData.asS32[i] = 0;
-#endif
 
-    obj->unused1 = 0;
     obj->bhvStackIndex = 0;
     obj->bhvDelayTimer = 0;
 
@@ -261,7 +163,6 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->hurtboxRadius = 0.0f;
     obj->hurtboxHeight = 0.0f;
     obj->hitboxDownOffset = 0.0f;
-    obj->unused2 = 0;
 
     obj->platform = NULL;
     obj->collisionData = NULL;
@@ -289,6 +190,11 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->header.gfx.pos[1] = -10000.0f;
     obj->header.gfx.pos[2] = -10000.0f;
     obj->header.gfx.throwMatrix = NULL;
+    obj->header.gfx.matrixID[0] = MATRIX_NULL;
+    obj->header.gfx.matrixID[1] = MATRIX_NULL;
+    obj->header.gfx.bothMats = 0;
+    obj->header.gfx.animInfo.animPosStackNum = 0;
+    //obj->shadow.hasShadow = FALSE;
 
     return obj;
 }

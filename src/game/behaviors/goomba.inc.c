@@ -67,9 +67,7 @@ static u8 sGoombaAttackHandlers[][6] = {
  * Update function for goomba triplet spawner.
  */
 void bhv_goomba_triplet_spawner_update(void) {
-    UNUSED u8 filler1[4];
     s16 goombaFlag;
-    UNUSED u8 filler2[2];
     s32 angle;
 
     // If mario is close enough and the goombas aren't currently loaded, then
@@ -247,16 +245,6 @@ static void goomba_act_jump(void) {
     } else {
         cur_obj_rotate_yaw_toward(o->oGoombaTargetYaw, 0x800);
     }
-}
-
-/**
- * Attack handler for when mario attacks a huge goomba with an attack that
- * doesn't kill it.
- * From the goomba's perspective, this is the same as the goomba attacking
- * mario.
- */
-void huge_goomba_weakly_attacked(void) {
-    o->oAction = GOOMBA_ACT_ATTACKED_MARIO;
 }
 
 /**

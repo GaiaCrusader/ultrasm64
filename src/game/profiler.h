@@ -18,6 +18,7 @@ struct ProfilerFrameData {
     // 3: display lists
     // 4: thread 4 end (0 terminated)
     /* 0x08 */ OSTime gameTimes[5];
+    /* 0x08 */ OSTime videoTimes[5];
     // gfxTimes:
     // 0: processors queued
     // 1: rsp completed
@@ -36,16 +37,30 @@ enum ProfilerGameEvent {
     THREAD5_END
 };
 
+enum ProfilerGameEvent9 {
+    THREAD9_START,
+    THREAD9_END
+};
+
 enum ProfilerGfxEvent {
     TASKS_QUEUED,
     RSP_COMPLETE,
     RDP_COMPLETE
 };
 
+#ifdef PUPPYPRINT_DEBUG
 void profiler_log_thread5_time(enum ProfilerGameEvent eventID);
+void profiler_log_thread9_time(enum ProfilerGameEvent9 eventID);
 void profiler_log_thread4_time(void);
 void profiler_log_gfx_time(enum ProfilerGfxEvent eventID);
 void profiler_log_vblank_time(void);
 void draw_profiler(void);
+#else
+#define profiler_log_thread5_time(x);
+#define profiler_log_thread9_time(x);
+#define profiler_log_thread4_time(x);
+#define profiler_log_gfx_time(x);
+#define profiler_log_vblank_time();
+#endif
 
 #endif // PROFILER_H

@@ -115,7 +115,7 @@ static void klepto_change_target(void) {
         newTarget = random_u16() % 3;
     }
 
-    o->oKleptoUnkF8 = 400 * absi(newTarget - o->oKleptoTargetNumber);
+    o->oKleptoUnkF8 = 400 * ABS(newTarget - o->oKleptoTargetNumber);
     o->oKleptoTargetNumber = newTarget;
 
     o->oHomeX = sKleptoTargetPositions[o->oKleptoTargetNumber][0];
@@ -315,12 +315,7 @@ static void klepto_act_reset_position(void) {
     }
 }
 
-void obj_set_speed_to_zero(void) {
-    o->oForwardVel = o->oVelY = 0.0f;
-}
-
 void bhv_klepto_update(void) {
-    UNUSED u8 filler[4];
 
     cur_obj_update_floor_and_walls();
 

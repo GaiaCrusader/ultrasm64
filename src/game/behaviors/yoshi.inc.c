@@ -18,11 +18,10 @@ void bhv_yoshi_init(void) {
 }
 
 void yoshi_walk_loop(void) {
-    UNUSED s16 collisionFlags;
     s16 animFrame = o->header.gfx.animInfo.animFrame;
 
     o->oForwardVel = 10.0f;
-    collisionFlags = object_step();
+    object_step();
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oYoshiTargetYaw, 0x500);
 
     if (is_point_close_to_object(o, o->oHomeX, 3174.0f, o->oHomeZ, 200)) {
@@ -47,7 +46,6 @@ void yoshi_walk_loop(void) {
 
 void yoshi_idle_loop(void) {
     s16 chosenHome;
-    UNUSED s16 animFrame = o->header.gfx.animInfo.animFrame;
 
     if (o->oTimer > 90) {
         chosenHome = random_float() * 3.99;
@@ -132,7 +130,7 @@ void yoshi_finish_jumping_and_despawn_loop(void) {
     cur_obj_extend_animation_if_at_end();
     obj_move_xyz_using_fvel_and_yaw(o);
 
-    o->oVelY -= 2.0;
+    o->oVelY -= 2.0f;
 
     if (o->oPosY < 2100.0f) {
         set_mario_npc_dialog(MARIO_DIALOG_STOP);

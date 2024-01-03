@@ -1,8 +1,4 @@
 // 0x070222A0 - 0x070222B8
-static const Lights1 ssl_seg7_lights_070222A0 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x070222B8 - 0x070223B8
 static const Vtx ssl_seg7_vertex_070222B8[] = {
@@ -104,8 +100,8 @@ static const Gfx ssl_seg7_dl_07022728[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, generic_09002000),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&ssl_seg7_lights_070222A0.l, 1),
-    gsSPLight(&ssl_seg7_lights_070222A0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(ssl_seg7_vertex_070222B8, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  4, 0x0),
     gsSP2Triangles( 0,  5,  6, 0x0,  0,  7,  8, 0x0),
@@ -144,12 +140,7 @@ static const Gfx ssl_seg7_dl_070227F0[] = {
 // 0x070228A8 - 0x07022970
 const Gfx ssl_seg7_dl_070228A8[] = {
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_2CYCLE),
-    gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2),
     gsDPSetDepthSource(G_ZS_PIXEL),
-    gsDPSetFogColor(0, 0, 0, 255),
-    gsSPFogFactor(0x0E49, 0xF2B7), // This isn't gsSPFogPosition since there is no valid min/max pair that corresponds to 0x0E49F2B7
-    gsSPSetGeometryMode(G_FOG),
     gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -163,10 +154,7 @@ const Gfx ssl_seg7_dl_070228A8[] = {
     gsSPDisplayList(ssl_seg7_dl_070227F0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_1CYCLE),
-    gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_NOOP2),
-    gsSPClearGeometryMode(G_FOG),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 
@@ -191,12 +179,7 @@ static const Gfx ssl_seg7_dl_070229B0[] = {
 // 0x070229E8 - 0x07022AA0
 const Gfx ssl_seg7_dl_070229E8[] = {
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_2CYCLE),
-    gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2),
     gsDPSetDepthSource(G_ZS_PIXEL),
-    gsDPSetFogColor(0, 0, 0, 255),
-    gsSPFogFactor(0x0E49, 0xF2B7), // This isn't gsSPFogPosition since there is no valid min/max pair that corresponds to 0x0E49F2B7
-    gsSPSetGeometryMode(G_FOG),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
@@ -207,10 +190,7 @@ const Gfx ssl_seg7_dl_070229E8[] = {
     gsSPDisplayList(ssl_seg7_dl_070229B0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_1CYCLE),
-    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_NOOP2),
-    gsSPClearGeometryMode(G_FOG),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };

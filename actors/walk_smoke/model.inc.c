@@ -45,8 +45,11 @@ ALIGNED8 static const Texture smoke_seg4_texture_04020EA0[] = {
 
 // 0x040216A0 - 0x04021718
 const Gfx smoke_seg4_dl_040216A0[] = {
+    gsDPLoadSync(),
     gsSPClearGeometryMode(G_LIGHTING),
-    gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA),
+    gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_PASS2),
+    gsDPSetEnvColor(255, 255, 255, 0x64),
+    gsDPSetPrimColor(0, 0, 255, 255, 255, 0x64),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -56,8 +59,11 @@ const Gfx smoke_seg4_dl_040216A0[] = {
     gsSPVertex(smoke_seg4_vertex_0401DE60, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsSPSetGeometryMode(G_LIGHTING),
+    gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
+    gsDPSetEnvColor(255, 255, 255, 255),
+    gsDPPipeSync(),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 

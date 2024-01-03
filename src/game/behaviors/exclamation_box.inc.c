@@ -1,5 +1,11 @@
 // exclamation_box.inc.c
 
+static s32 sCapSaveFlags[] = {
+    SAVE_FLAG_HAVE_WING_CAP,
+    SAVE_FLAG_HAVE_METAL_CAP,
+    SAVE_FLAG_HAVE_VANISH_CAP,
+};
+
 struct ObjectHitbox sExclamationBoxHitbox = {
     /* interactType:      */ INTERACT_BREAKABLE,
     /* downOffset:        */ 5,
@@ -48,12 +54,16 @@ void bhv_rotating_exclamation_box_loop(void) {
 void exclamation_box_act_0(void) {
     if (o->oBehParams2ndByte < 3) {
         o->oAnimState = o->oBehParams2ndByte;
+#ifndef UNLOCK_ALL
         if ((save_file_get_flags() & sCapSaveFlags[o->oBehParams2ndByte])
             || ((o->oBehParams >> 24) & 0xFF)) {
             o->oAction = 2;
         } else {
             o->oAction = 1;
         }
+#else
+    o->oAction = 2;
+#endif
     } else {
         o->oAnimState = 3;
         o->oAction = 2;
@@ -97,15 +107,14 @@ void exclamation_box_act_2(void) {
 }
 
 void exclamation_box_act_3(void) {
-    UNUSED u8 filler[4];
     cur_obj_move_using_fvel_and_gravity();
     if (o->oVelY < 0.0f) {
         o->oVelY = 0.0f;
         o->oGravity = 0.0f;
     }
-    o->oExclamationBoxUnkF8 = (sins(o->oExclamationBoxUnkFC) + 1.0) * 0.3 + 0.0;
-    o->oExclamationBoxUnkF4 = (-sins(o->oExclamationBoxUnkFC) + 1.0) * 0.5 + 1.0;
-    o->oGraphYOffset = (-sins(o->oExclamationBoxUnkFC) + 1.0) * 26.0;
+    o->oExclamationBoxUnkF8 = (sins(o->oExclamationBoxUnkFC) + 1.0f) * 0.3f + 0.0f;
+    o->oExclamationBoxUnkF4 = (-sins(o->oExclamationBoxUnkFC) + 1.0f) * 0.5f + 1.0f;
+    o->oGraphYOffset = (-sins(o->oExclamationBoxUnkFC) + 1.0f) * 26.0f;
     o->oExclamationBoxUnkFC += 0x1000;
     o->header.gfx.scale[0] = o->oExclamationBoxUnkF4 * 2.0f;
     o->header.gfx.scale[1] = o->oExclamationBoxUnkF8 * 2.0f;

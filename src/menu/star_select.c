@@ -60,17 +60,17 @@ void bhv_act_selector_star_type_loop(void) {
     switch (gCurrentObject->oStarSelectorType) {
         // If a star is not selected, don't rotate or change size
         case STAR_SELECTOR_NOT_SELECTED:
-            gCurrentObject->oStarSelectorSize -= 0.1;
-            if (gCurrentObject->oStarSelectorSize < 1.0) {
-                gCurrentObject->oStarSelectorSize = 1.0;
+            gCurrentObject->oStarSelectorSize -= 0.1f;
+            if (gCurrentObject->oStarSelectorSize < 1.0f) {
+                gCurrentObject->oStarSelectorSize = 1.0f;
             }
             gCurrentObject->oFaceAngleYaw = 0;
             break;
         // If a star is selected, rotate and slightly increase size
         case STAR_SELECTOR_SELECTED:
-            gCurrentObject->oStarSelectorSize += 0.1;
-            if (gCurrentObject->oStarSelectorSize > 1.3) {
-                gCurrentObject->oStarSelectorSize = 1.3;
+            gCurrentObject->oStarSelectorSize += 0.1f;
+            if (gCurrentObject->oStarSelectorSize > 1.3f) {
+                gCurrentObject->oStarSelectorSize = 1.3f;
             }
             gCurrentObject->oFaceAngleYaw += 0x800;
             break;
@@ -91,9 +91,8 @@ void bhv_act_selector_star_type_loop(void) {
 void render_100_coin_star(u8 stars) {
     if (stars & (1 << 6)) {
         // If the 100 coin star has been collected, create a new star selector next to the coin score.
-        sStarSelectorModels[6] = spawn_object_abs_with_rot(gCurrentObject, 0, MODEL_STAR,
-                                                        bhvActSelectorStarType, 370, 24, -300, 0, 0, 0);
-        sStarSelectorModels[6]->oStarSelectorSize = 0.8;
+        sStarSelectorModels[6] = spawn_object_abs_with_rot(gCurrentObject, 0, MODEL_STAR, bhvActSelectorStarType, 370, 24, -300, 0, 0, 0);
+        sStarSelectorModels[6]->oStarSelectorSize = 0.8f;
         sStarSelectorModels[6]->oStarSelectorType = STAR_SELECTOR_100_COINS;
     }
 }
@@ -147,9 +146,7 @@ void bhv_act_selector_init(void) {
 
     // Render star selector objects
     for (i = 0; i < sVisibleStars; i++) {
-        sStarSelectorModels[i] =
-            spawn_object_abs_with_rot(gCurrentObject, 0, selectorModelIDs[i], bhvActSelectorStarType,
-                                      75 + sVisibleStars * -75 + i * 152, 248, -300, 0, 0, 0);
+        sStarSelectorModels[i] = spawn_object_abs_with_rot(gCurrentObject, 0, selectorModelIDs[i], bhvActSelectorStarType, 75 + sVisibleStars * -75 + i * 152, 248, -300, 0, 0, 0);
         sStarSelectorModels[i]->oStarSelectorSize = 1.0f;
     }
 
@@ -210,7 +207,7 @@ void print_course_number(void) {
 #endif
     u8 courseNum[4];
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, 158.0f, 81.0f, 0.0f);
+    create_dl_translation_matrix(MENU_MTX_PUSH, (gScreenWidth / 2) - 2.0f, 81.0f * ((f32) gScreenHeight / (f32) SCREEN_HEIGHT), 0.0f);
 
     // Full wood texture in JP & US, lower part of it on EU
     gSPDisplayList(gDisplayListHead++, dl_menu_rgba16_wood_course);
@@ -239,18 +236,18 @@ void print_course_number(void) {
     int_to_str(gCurrCourseNum, courseNum);
 
     if (gCurrCourseNum < 10) { // 1 digit number
-        print_hud_lut_string(HUD_LUT_GLOBAL, 152, 158, courseNum);
+        print_hud_lut_string(HUD_LUT_GLOBAL, (gScreenWidth / 2) - 8, 158, courseNum);
     } else { // 2 digit number
-        print_hud_lut_string(HUD_LUT_GLOBAL, 143, 158, courseNum);
+        print_hud_lut_string(HUD_LUT_GLOBAL, (gScreenWidth / 2) - 17, 158, courseNum);
     }
 
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 }
 
 #ifdef VERSION_JP
-#define ACT_NAME_X 158
+#define ACT_NAME_X (gScreenWidth / 2) - 2
 #else
-#define ACT_NAME_X 163
+#define ACT_NAME_X (gScreenWidth / 2) + 3
 #endif
 
 /**
@@ -282,6 +279,10 @@ void print_act_selector_strings(void) {
 #endif
 
     create_dl_ortho_matrix();
+    if (gScreenHeight <= 240) {
+        f32 scaleValX = (f32) SCREEN_WIDTH / (f32)gScreenWidth;
+        create_dl_scale_matrix(MENU_MTX_PUSH, scaleValX, 1.0f, 1.0f);
+    }
 
 #ifdef VERSION_EU
     switch (language) {
@@ -304,7 +305,7 @@ void print_act_selector_strings(void) {
     // Print the coin highscore.
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    print_hud_my_score_coins(1, gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum), 155, 106);
+    print_hud_my_score_coins(1, gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum), (gScreenWidth / 2) - 5, 106);
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
@@ -312,13 +313,13 @@ void print_act_selector_strings(void) {
     // Print the "MY SCORE" text if the coin score is more than 0
     if (save_file_get_course_coin_score(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(gCurrCourseNum)) != 0) {
 #ifdef VERSION_EU
-        print_generic_string(95, 118, myScore[language]);
+        print_generic_string((gScreenWidth / 2) - 65, 118, myScore[language]);
 #else
-        print_generic_string(102, 118, myScore);
+        print_generic_string((gScreenWidth / 2) - 58, 118, myScore);
 #endif
     }
 
-    lvlNameX = get_str_x_pos_from_center(160, currLevelName + 3, 10.0f);
+    lvlNameX = get_str_x_pos_from_center((gScreenWidth / 2), currLevelName + 3, 10.0f);
     print_generic_string(lvlNameX, 33, currLevelName + 3);
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
@@ -343,9 +344,9 @@ void print_act_selector_strings(void) {
     for (i = 1; i <= sVisibleStars; i++) {
         starNumbers[0] = i;
 #ifdef VERSION_EU
-        print_menu_generic_string(143 - sVisibleStars * 15 + i * 30, 38, starNumbers);
+        print_menu_generic_string(((gScreenWidth/2) - 17) - sVisibleStars * 15 + i * 30, 38, starNumbers);
 #else
-        print_menu_generic_string(139 - sVisibleStars * 17 + i * 34, 38, starNumbers);
+        print_menu_generic_string(((gScreenWidth/2) - 21) - sVisibleStars * 17 + i * 34, 38, starNumbers);
 #endif
     }
 
@@ -362,8 +363,14 @@ Gfx *geo_act_selector_strings(s16 callContext, UNUSED struct GraphNode *node, UN
 Gfx *geo_act_selector_strings(s16 callContext, UNUSED struct GraphNode *node) {
 #endif
     if (callContext == GEO_CONTEXT_RENDER) {
+        // Horrible hack that fixes file select text positioning without having to rewrite the whole damn thing.
+        s32 prevRes = gScreenWidth;
+        if (gScreenHeight > 240) {
+            gScreenWidth = 320;
+        }
         print_act_selector_strings();
-    }
+        gScreenWidth = prevRes;
+        }
     return NULL;
 }
 
@@ -400,11 +407,11 @@ s32 lvl_update_obj_and_load_act_button_actions(UNUSED s32 arg, UNUSED s32 unused
     if (sActSelectorMenuTimer > 10) {
         // If any of these buttons are pressed, play sound and go to course act
 #ifndef VERSION_EU
-        if ((gPlayer3Controller->buttonPressed & A_BUTTON)
-         || (gPlayer3Controller->buttonPressed & START_BUTTON)
-         || (gPlayer3Controller->buttonPressed & B_BUTTON)) {
+        if ((gPlayer1Controller->buttonPressed & A_BUTTON)
+         || (gPlayer1Controller->buttonPressed & START_BUTTON)
+         || (gPlayer1Controller->buttonPressed & B_BUTTON)) {
 #else
-        if ((gPlayer3Controller->buttonPressed & (A_BUTTON | START_BUTTON | B_BUTTON | Z_TRIG))) {
+        if ((gPlayer1Controller->buttonPressed & (A_BUTTON | START_BUTTON | B_BUTTON | Z_TRIG))) {
 #endif
 #ifdef VERSION_JP
             play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
@@ -423,6 +430,7 @@ s32 lvl_update_obj_and_load_act_button_actions(UNUSED s32 arg, UNUSED s32 unused
             gDialogCourseActNum = sSelectedActIndex + 1;
         }
     }
+    gFileSelect = TRUE;
 
     area_update_objects();
     sActSelectorMenuTimer++;

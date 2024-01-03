@@ -14,6 +14,7 @@
 
 #include "make_const_nonconst.h"
 #include "levels/rr/header.h"
+#include "game/farcall_helpers.h"
 
 static const LevelScript script_func_local_1[] = {
     OBJECT(/*model*/ MODEL_RR_SLIDING_PLATFORM,         /*pos*/ -3400, -2038,  6564, /*angle*/  0,   0,   0, /*behParam*/ 0x02560000, /*beh*/ bhvSlidingPlatform2),
@@ -74,9 +75,9 @@ const LevelScript level_rr_entry[] = {
     LOAD_YAY0_TEXTURE(/*seg*/ 0x09, _sky_yay0SegmentRomStart, _sky_yay0SegmentRomEnd),
     LOAD_YAY0(        /*seg*/ 0x0A, _cloud_floor_skybox_yay0SegmentRomStart, _cloud_floor_skybox_yay0SegmentRomEnd),
     LOAD_YAY0(        /*seg*/ 0x05, _group11_yay0SegmentRomStart, _group11_yay0SegmentRomEnd),
-    LOAD_RAW(         /*seg*/ 0x0C, _group11_geoSegmentRomStart,  _group11_geoSegmentRomEnd),
+    LOAD_RAW_WITH_CODE(/*seg*/ 0x0C, _group11_geoSegmentRomStart,  _group11_geoSegmentRomEnd, _group11_geoSegmentBssStart, _group11_geoSegmentBssEnd),
     LOAD_YAY0(        /*seg*/ 0x08, _common0_yay0SegmentRomStart, _common0_yay0SegmentRomEnd),
-    LOAD_RAW(         /*seg*/ 0x0F, _common0_geoSegmentRomStart, _common0_geoSegmentRomEnd),
+    LOAD_RAW_WITH_CODE(/*seg*/ 0x0F, _common0_geoSegmentRomStart, _common0_geoSegmentRomEnd, _common0_geoSegmentBssStart, _common0_geoSegmentBssEnd),
     ALLOC_LEVEL_POOL(),
     MARIO(/*model*/ MODEL_MARIO, /*behParam*/ 0x00000001, /*beh*/ bhvMario),
     JUMP_LINK(script_func_global_12),
@@ -105,10 +106,8 @@ const LevelScript level_rr_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_RR_FLYING_CARPET,            rr_geo_000848),
     LOAD_MODEL_FROM_GEO(MODEL_RR_OCTAGONAL_PLATFORM,       rr_geo_0008A8),
     LOAD_MODEL_FROM_GEO(MODEL_RR_ROTATING_BRIDGE_PLATFORM, rr_geo_000878),
-    LOAD_MODEL_FROM_GEO(MODEL_RR_TRIANGLE_PLATFORM,        rr_geo_0008D8),
     LOAD_MODEL_FROM_GEO(MODEL_RR_CRUISER_WING,             rr_geo_000890),
     LOAD_MODEL_FROM_GEO(MODEL_RR_SEESAW_PLATFORM,          rr_geo_000908),
-    LOAD_MODEL_FROM_GEO(MODEL_RR_L_SHAPED_PLATFORM,        rr_geo_000940),
     LOAD_MODEL_FROM_GEO(MODEL_RR_SWINGING_PLATFORM,        rr_geo_000860),
     LOAD_MODEL_FROM_GEO(MODEL_RR_DONUT_PLATFORM,           rr_geo_000920),
     LOAD_MODEL_FROM_GEO(MODEL_RR_ELEVATOR_PLATFORM,        rr_geo_0008F0),
@@ -144,3 +143,7 @@ const LevelScript level_rr_entry[] = {
     SLEEP_BEFORE_EXIT(/*frames*/ 1),
     EXIT(),
 };
+
+#include "game/behaviors/cruiser.inc.c"
+#include "game/behaviors/swing_platform.inc.c"
+#include "game/behaviors/donut_platform.inc.c"

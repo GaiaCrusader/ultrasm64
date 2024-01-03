@@ -1,7 +1,6 @@
 // whomp.inc.c
 
 void whomp_play_sfx_from_pound_animation(void) {
-    UNUSED s32 animFrame = o->header.gfx.animInfo.animFrame;
     s32 playSound = FALSE;
 
     if (o->oForwardVel < 5.0f) {
@@ -165,12 +164,12 @@ void king_whomp_on_ground(void) {
             if (o->oHealth == 0) {
                 o->oAction = 8;
             } else {
-                vec3f_copy_2(pos, &o->oPosX);
-                vec3f_copy_2(&o->oPosX, &gMarioObject->oPosX);
+                vec3f_copy(pos, &o->oPosX);
+                vec3f_copy(&o->oPosX, &gMarioObject->oPosX);
                 spawn_mist_particles_variable(0, 0, 100.0f);
                 spawn_triangle_break_particles(20, MODEL_DIRT_ANIMATION, 3.0f, 4);
                 cur_obj_shake_screen(SHAKE_POS_SMALL);
-                vec3f_copy_2(&o->oPosX, pos);
+                vec3f_copy(&o->oPosX, pos);
             }
             o->oSubAction++;
         }

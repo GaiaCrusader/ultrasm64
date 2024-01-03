@@ -1,10 +1,6 @@
 // Star
 
 // 0x0302A6D8
-static const Lights1 star_seg3_lights_0302A6D8 = gdSPDefLights1(
-    0x3f, 0x3f, 0x3f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x0302A6F0
 ALIGNED8 static const Texture star_seg3_texture_0302A6F0[] = {
@@ -34,8 +30,8 @@ static const Vtx star_seg3_vertex_0302B6F0[] = {
 
 // 0x0302B7B0 - 0x0302B870
 const Gfx star_seg3_dl_0302B7B0[] = {
-    gsSPLight(&star_seg3_lights_0302A6D8.l, 1),
-    gsSPLight(&star_seg3_lights_0302A6D8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(star_seg3_vertex_0302B6F0, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 2,  1,  4, 0x0,  1,  3,  4, 0x0),
@@ -55,7 +51,7 @@ const Gfx star_seg3_dl_0302B870[] = {
     gsDPPipeSync(),
     gsSPSetGeometryMode(G_TEXTURE_GEN),
     gsDPSetEnvColor(255, 255, 255, 255),
-    gsDPSetCombineMode(G_CC_DECALFADE, G_CC_DECALFADE),
+    gsDPSetCombineMode(G_CC_DECALFADE, G_CC_PASS2),
     gsDPLoadTextureBlock(star_seg3_texture_0302A6F0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 64, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_WRAP | G_TX_NOMIRROR, 5, 6, G_TX_NOLOD, G_TX_NOLOD), //! Dimensions loaded as 32x64 despite this texture having only 32x32 dimensions, harmless due to environment mapping (G_TEXTURE_GEN & gsSPTexture values)
     gsSPTexture(0x07C0, 0x07C0, 0, G_TX_RENDERTILE, G_ON),
     gsSPDisplayList(star_seg3_dl_0302B7B0),
@@ -63,15 +59,11 @@ const Gfx star_seg3_dl_0302B870[] = {
     gsSPTexture(0x07C0, 0x07C0, 0, G_TX_RENDERTILE, G_OFF),
     gsSPClearGeometryMode(G_TEXTURE_GEN),
     gsDPSetEnvColor(255, 255, 255, 255),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 
 // 0x0302B908
-static const Lights1 star_seg3_lights_0302B908 = gdSPDefLights1(
-    0x3f, 0x3f, 0x3f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x0302B920
 static const Vtx star_seg3_vertex_0302B920[] = {
@@ -92,8 +84,8 @@ const Gfx star_seg3_dl_0302B9C0[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, star_seg3_texture_0302AEF0),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&star_seg3_lights_0302B908.l, 1),
-    gsSPLight(&star_seg3_lights_0302B908.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(star_seg3_vertex_0302B920, 10, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 4,  5,  6, 0x0,  7,  8,  9, 0x0),
@@ -103,7 +95,7 @@ const Gfx star_seg3_dl_0302B9C0[] = {
 // 0x0302BA18 - 0x0302BA88
 const Gfx star_seg3_dl_0302BA18[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -113,7 +105,7 @@ const Gfx star_seg3_dl_0302BA18[] = {
     gsSPDisplayList(star_seg3_dl_0302B9C0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };

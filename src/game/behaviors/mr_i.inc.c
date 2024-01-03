@@ -85,7 +85,6 @@ void mr_i_act_3(void) {
     s16 sp34;
     f32 sp30;
     f32 sp2C;
-    UNUSED u8 filler[8];
     f32 sp20;
     f32 sp1C;
 
@@ -111,7 +110,7 @@ void mr_i_act_3(void) {
             cur_obj_play_sound_2(SOUND_OBJ2_MRI_SPINNING);
         }
 
-        o->oMoveAnglePitch = (1.0 - coss(0x4000 * sp2C)) * -0x4000;
+        o->oMoveAnglePitch = (1.0f - coss(0x4000 * sp2C)) * -0x4000;
         cur_obj_shake_y(4.0f);
     } else if (o->oTimer < 96) {
         if (o->oTimer == 64) {
@@ -120,10 +119,10 @@ void mr_i_act_3(void) {
 
         sp30 = (f32)(o->oTimer - 63) / 32;
         o->oMoveAngleYaw += sp34 * coss(0x4000 * sp2C);
-        o->oMoveAnglePitch = (1.0 - coss(0x4000 * sp2C)) * -0x4000;
+        o->oMoveAnglePitch = (1.0f - coss(0x4000 * sp2C)) * -0x4000;
 
         cur_obj_shake_y((s32)((1.0f - sp30) * 4)); // trucating the f32?
-        sp20 = coss(0x4000 * sp30) * 0.4 + 0.6;
+        sp20 = coss(0x4000 * sp30) * 0.4f + 0.6f;
         cur_obj_scale(sp20 * sp1C);
     } else if (o->oTimer < 104) {
         // do nothing
@@ -131,7 +130,7 @@ void mr_i_act_3(void) {
         if (o->oTimer == 104) {
             cur_obj_become_intangible();
             spawn_mist_particles();
-            o->oMrIScale = sp1C * 0.6;
+            o->oMrIScale = sp1C * 0.6f;
             if (o->oBehParams2ndByte != 0) {
                 o->oPosY += 100.0f;
                 spawn_default_star(1370, 2000.0f, -320.0f);
@@ -141,7 +140,7 @@ void mr_i_act_3(void) {
             }
         }
 
-        o->oMrIScale -= 0.2 * sp1C;
+        o->oMrIScale -= 0.2f * sp1C;
 
         if (o->oMrIScale < 0) {
             o->oMrIScale = 0;

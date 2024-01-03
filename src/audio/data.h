@@ -5,6 +5,7 @@
 
 #include "internal.h"
 #include "types.h"
+#include "synthesis.h"
 
 #define AUDIO_LOCK_UNINITIALIZED 0
 #define AUDIO_LOCK_NOT_LOADING 0x76557364
@@ -15,10 +16,11 @@
 // constant .data
 #if defined(VERSION_EU) || defined(VERSION_SH)
 extern struct AudioSessionSettingsEU gAudioSessionPresets[];
+extern struct ReverbSettingsEU sReverbSettings[8];
 #else
-extern struct AudioSessionSettings gAudioSessionPresets[18];
+extern struct AudioSessionSettings gAudioSessionPresets[1];
+extern struct ReverbSettingsUS gReverbSettings[18];
 #endif
-extern u16 D_80332388[128]; // unused
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
 extern f32 gPitchBendFrequencyScale[256];
@@ -41,19 +43,10 @@ extern s16 *gWaveSamples[4];
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
 extern u8 euUnknownData_8030194c[4];
-#ifdef VERSION_EU
-extern u16 gHeadsetPanQuantization[0x10];
-#else
-extern u16 gHeadsetPanQuantization[0x40];
-#endif
 extern s16 euUnknownData_80301950[64];
 extern struct NoteSubEu gZeroNoteSub;
 extern struct NoteSubEu gDefaultNoteSub;
-#else
-extern u16 gHeadsetPanQuantization[10];
 #endif
-extern f32 gHeadsetPanVolume[128];
-extern f32 gStereoPanVolume[128];
 extern f32 gDefaultPanVolume[128];
 
 extern f32 gVolRampingLhs136[128];
@@ -65,7 +58,6 @@ extern f32 gVolRampingRhs128[128];
 
 // non-constant .data
 extern s16 gTatumsPerBeat;
-extern s8 gUnusedCount80333EE8;
 extern s32 gAudioHeapSize; // AUDIO_HEAP_SIZE
 extern s32 gAudioInitPoolSize; // AUDIO_INIT_POOL_SIZE
 extern volatile s32 gAudioLoadLock;
@@ -104,9 +96,6 @@ extern s16 gAiBufferLengths[NUMAIBUFFERS];
 #define AIBUFFER_LEN (0xa0 * 16)
 #endif
 
-extern u32 gUnused80226E58[0x10];
-extern u16 gUnused80226E98[0x10];
-
 extern u32 gAudioRandom;
 
 #ifdef VERSION_SH
@@ -135,12 +124,10 @@ extern OSMesgQueue *D_SH_80350FA8;
 #endif
 
 #if defined(VERSION_EU) || defined(VERSION_SH)
-#define UNUSED_COUNT_80333EE8 24
-#define AUDIO_HEAP_SIZE 0x2c500
+#define AUDIO_HEAP_SIZE 0x40000
 #define AUDIO_INIT_POOL_SIZE 0x2c00
 #else
-#define UNUSED_COUNT_80333EE8 16
-#define AUDIO_HEAP_SIZE 0x31150
+#define AUDIO_HEAP_SIZE 0x34000
 #define AUDIO_INIT_POOL_SIZE 0x2500
 #endif
 

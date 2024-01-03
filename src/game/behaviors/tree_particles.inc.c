@@ -4,8 +4,8 @@ void bhv_tree_snow_or_leaf_loop(void) {
     cur_obj_update_floor_height();
 
     if (o->oTimer == 0) {
-        o->oAngleVelPitch = (random_float() - 0.5) * 0x1000;
-        o->oAngleVelRoll = (random_float() - 0.5) * 0x1000;
+        o->oAngleVelPitch = (random_float() - 0.5f) * 0x1000;
+        o->oAngleVelRoll = (random_float() - 0.5f) * 0x1000;
         o->oTreeSnowOrLeafUnkF8 = 4;
         o->oTreeSnowOrLeafUnkFC = random_float() * 0x400 + 0x600;
     }
@@ -32,7 +32,7 @@ void bhv_tree_snow_or_leaf_loop(void) {
     }
 
     if (o->oForwardVel > 0) {
-        o->oForwardVel -= 0.3;
+        o->oForwardVel -= 0.3f;
     } else {
         o->oForwardVel = 0;
     }
@@ -45,10 +45,8 @@ void bhv_tree_snow_or_leaf_loop(void) {
 
 void bhv_snow_leaf_particle_spawn_init(void) {
     struct Object *obj; // Either snow or leaf
-    UNUSED u8 filler1[4];
     s32 isSnow;
     f32 scale;
-    UNUSED u8 filler2[4];
 
     gMarioObject->oActiveParticleFlags &= ~ACTIVE_PARTICLE_LEAF;
 
@@ -59,7 +57,7 @@ void bhv_snow_leaf_particle_spawn_init(void) {
     }
 
     if (isSnow) {
-        if (random_float() < 0.5) {
+        if (random_float() < 0.5f) {
             obj = spawn_object(o, MODEL_WHITE_PARTICLE_DL, bhvTreeSnow);
             scale = random_float();
             obj_scale_xyz(obj, scale, scale, scale);
@@ -68,7 +66,7 @@ void bhv_snow_leaf_particle_spawn_init(void) {
             obj->oVelY = random_float() * 15.0f;
         }
     } else {
-        if (random_float() < 0.3) {
+        if (random_float() < 0.3f) {
             obj = spawn_object(o, MODEL_LEAVES, bhvTreeLeaf);
             scale = random_float() * 3.0f;
             obj_scale_xyz(obj, scale, scale, scale);

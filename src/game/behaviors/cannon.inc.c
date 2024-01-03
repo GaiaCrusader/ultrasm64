@@ -1,9 +1,5 @@
 // cannon.inc.c
 
-void bhv_cannon_base_unused_loop(void) {
-    o->oPosY += o->oVelY;
-}
-
 void opened_cannon_act_0(void) {
     if (o->oTimer == 0) {
         o->oInteractStatus = 0;
@@ -42,12 +38,12 @@ void opened_cannon_act_4(void) {
     }
 
     o->oPosY += 5.0f;
-    o->oPosX += (f32)((o->oTimer / 2 & 1) - 0.5) * 2;
-    o->oPosZ += (f32)((o->oTimer / 2 & 1) - 0.5) * 2;
+    o->oPosX += (f32)((o->oTimer / 2 & 1) - 0.5f) * 2;
+    o->oPosZ += (f32)((o->oTimer / 2 & 1) - 0.5f) * 2;
 
     if (o->oTimer > 67) {
-        o->oPosX += (f32)((o->oTimer / 2 & 1) - 0.5) * 4;
-        o->oPosZ += (f32)((o->oTimer / 2 & 1) - 0.5) * 4;
+        o->oPosX += (f32)((o->oTimer / 2 & 1) - 0.5f) * 4;
+        o->oPosZ += (f32)((o->oTimer / 2 & 1) - 0.5f) * 4;
         o->oAction = 6;
     }
 }
@@ -58,8 +54,8 @@ void opened_cannon_act_6(void) {
     }
 
     if (o->oTimer < 4) {
-        o->oPosX += (f32)((o->oTimer / 2 & 1) - 0.5) * 4.0f;
-        o->oPosZ += (f32)((o->oTimer / 2 & 1) - 0.5) * 4.0f;
+        o->oPosX += (f32)((o->oTimer / 2 & 1) - 0.5f) * 4.0f;
+        o->oPosZ += (f32)((o->oTimer / 2 & 1) - 0.5f) * 4.0f;
     } else {
         if (o->oTimer < 6) {
         } else {
@@ -94,7 +90,6 @@ void opened_cannon_act_5(void) {
 }
 
 void opened_cannon_act_1(void) {
-    UNUSED u8 filler[4];
 
     cur_obj_become_intangible();
     cur_obj_disable_rendering();
@@ -108,7 +103,6 @@ void opened_cannon_act_2(void) {
 }
 
 void opened_cannon_act_3(void) {
-    UNUSED u8 filler[4];
     if (o->oTimer > 3) {
         o->oAction = 0;
     }

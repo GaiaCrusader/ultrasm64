@@ -87,9 +87,8 @@ Gfx *geo_draw_mario_head_goddard(s32 callContext, struct GraphNode *node, Mat4 *
     Gfx *gfx = NULL;
     s16 sfx = 0;
     struct GraphNodeGenerated *asGenerated = (struct GraphNodeGenerated *) node;
-    UNUSED Mat4 *transform = c;
 
-    if (callContext == GEO_CONTEXT_RENDER) {
+    if (callContext == GEO_CONTEXT_RENDER && gGoddardReady) {
         if (gPlayer1Controller->controllerData != NULL && !gWarpTransition.isActive) {
             gd_copy_p1_contpad(gPlayer1Controller->controllerData);
         }
@@ -240,9 +239,7 @@ void bhv_unlock_door_star_init(void) {
 }
 
 void bhv_unlock_door_star_loop(void) {
-    UNUSED u8 filler1[4];
     s16 prevYaw = gCurrentObject->oMoveAngleYaw;
-    UNUSED u8 filler2[4];
 
     // Speed up the star every frame
     if (gCurrentObject->oUnlockDoorStarYawVel < 0x2400) {
@@ -323,12 +320,10 @@ static Gfx *make_gfx_mario_alpha(struct GraphNodeGenerated *node, s16 alpha) {
  * Sets the correct blend mode and color for mirror Mario.
  */
 Gfx *geo_mirror_mario_set_alpha(s32 callContext, struct GraphNode *node, UNUSED Mat4 *c) {
-    UNUSED u8 filler1[4];
     Gfx *gfx = NULL;
     struct GraphNodeGenerated *asGenerated = (struct GraphNodeGenerated *) node;
     struct MarioBodyState *bodyState = &gBodyStates[asGenerated->parameter];
     s16 alpha;
-    UNUSED u8 filler2[4];
 
     if (callContext == GEO_CONTEXT_RENDER) {
         alpha = (bodyState->modelState & 0x100) ? (bodyState->modelState & 0xFF) : 255;
@@ -571,18 +566,35 @@ Gfx *geo_switch_mario_hand_grab_pos(s32 callContext, struct GraphNode *b, Mat4 *
             }
         }
     } else if (callContext == GEO_CONTEXT_HELD_OBJ) {
-        // ! The HOLP is set here, which is why it only updates when the held object is drawn.
-        // This is why it won't update during a pause buffered hitstun or when the camera is very far
-        // away.
-        get_pos_from_transform_mtx(marioState->marioBodyState->heldObjLastPosition, *curTransform,
-                                   *gCurGraphNodeCamera->matrixPtr);
+        float translation[3];
+        vec3f_copy(translation, (*curTransform)[3]);
+        translation[1] += asHeldObj->translation[1] + marioState->heldObj->oGraphYOffset;
+        translation[0] += asHeldObj->translation[0] * sins(marioState->faceAngle[1]) + asHeldObj->translation[2] * sins(marioState->faceAngle[1] + 0x4000);
+        translation[2] += asHeldObj->translation[0] * coss(marioState->faceAngle[1]) + asHeldObj->translation[2] * coss(marioState->faceAngle[1] + 0x4000);
+
+        marioState->heldObj->oFaceAnglePitch = -marioState->faceAngle[0];
+        marioState->heldObj->oFaceAngleYaw = marioState->faceAngle[1];
+        marioState->heldObj->oFaceAngleRoll = 0;
+
+        marioState->heldObj->oFloorHeight = marioState->floorHeight;
+        marioState->heldObj->oFloor = marioState->floor;
+        for (u32 i = 0; i < 3; i++) {
+            marioState->marioBodyState->heldObjLastPosition[i] = translation[i];
+
+            marioState->heldObj->header.gfx.pos[i] = translation[i];
+            marioState->heldObj->header.gfx.posLerp[i] = translation[i];
+            marioState->heldObj->OBJECT_FIELD_F32(O_POS_INDEX + i) = translation[i];
+                
+            marioState->heldObj->header.gfx.angle[i] = marioState->heldObj->OBJECT_FIELD_S16(O_MOVE_ANGLE_INDEX + 1, i + 1);
+            marioState->heldObj->header.gfx.angleLerp[i] = marioState->heldObj->OBJECT_FIELD_S16(O_MOVE_ANGLE_INDEX + 1, i + 1);
+            marioState->heldObj->OBJECT_FIELD_S16(O_MOVE_ANGLE_INDEX, i) = marioState->heldObj->OBJECT_FIELD_S16(O_MOVE_ANGLE_INDEX + 1, i + 1);
+        }
     }
     return NULL;
 }
 
 // X position of the mirror
-#define MIRROR_X 4331.53
-
+#define MIRROR_X 4331.53f
 /**
  * Geo node that creates a clone of Mario's geo node and updates it to becomes
  * a mirror image of the player.

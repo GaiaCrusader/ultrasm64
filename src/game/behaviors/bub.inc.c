@@ -90,7 +90,7 @@ void bub_act_1(void) {
     cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x100);
 
     if (o->oDistanceToMario < 200.0f) {
-        if (o->oCheepCheepUnk108 < 0.5) {
+        if (o->oCheepCheepUnk108 < 0.5f) {
             o->oAction = 2;
         }
     }

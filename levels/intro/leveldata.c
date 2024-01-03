@@ -3301,6 +3301,7 @@ static const Gfx intro_seg7_dl_0700ADC0[] = {
 const Gfx intro_seg7_dl_0700B3A0[] = {
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCycleType(G_CYC_1CYCLE),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -3313,6 +3314,7 @@ const Gfx intro_seg7_dl_0700B3A0[] = {
     gsDPPipeSync(),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsSPDisplayList(intro_seg7_dl_0700ADC0),
+    gsDPSetCycleType(G_CYC_2CYCLE),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -3365,6 +3367,7 @@ ALIGNED8 static const Texture intro_seg7_texture_0700C4A0[] = {
 // 0x0700C6A0 - 0x0700C790
 const Gfx intro_seg7_dl_0700C6A0[] = {
     gsDPPipeSync(),
+    gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPSetCombineMode(G_CC_DECALFADE, G_CC_DECALFADE),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
 
@@ -3381,6 +3384,7 @@ const Gfx intro_seg7_dl_0700C6A0[] = {
     gsSPSetGeometryMode(G_LIGHTING),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsDPSetEnvColor(255, 255, 255, 255),
+    gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
     gsSPEndDisplayList(),
 };
@@ -3418,4 +3422,44 @@ const f32 intro_seg7_table_0700C880[] = {
     0.104000f, 0.104000f, 0.104000f, 0.048600f,
     0.048600f, 0.048600f, 0.012800f, 0.012800f,
     0.012800f, 0.000000f, 0.000000f, 0.000000f,
+};
+
+ALIGNED8 const u8 intro_expansionIcon[] = {
+#include "levels/intro/custom_exppak.rgba16.inc.c"
+};
+
+ALIGNED8 const u8 intro_rumbleIcon[] = {
+#include "levels/intro/custom_rumblepak.rgba16.inc.c"
+};
+
+ALIGNED8 const u8 intro_detectedIcon[] = {
+#include "levels/intro/custom_nonmissingpak.rgba16.inc.c"
+};
+
+ALIGNED8 const u8 intro_missingIcon[] = {
+#include "levels/intro/custom_missingpak.rgba16.inc.c"
+};
+
+const Gfx dIntroExpansionTexture[] = {
+    gsDPLoadSync(),
+    gsDPLoadTextureBlock(intro_expansionIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, 6, 6, G_TX_NOLOD, G_TX_NOLOD),
+    gsSPEndDisplayList(),
+};
+
+const Gfx dIntroRumbleTexture[] = {
+    gsDPLoadSync(),
+    gsDPLoadTextureBlock(intro_rumbleIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, 6, 6, G_TX_NOLOD, G_TX_NOLOD),
+    gsSPEndDisplayList(),
+};
+
+const Gfx dIntroDetectedIcon[] = {
+    gsDPLoadSync(),
+    gsDPLoadTextureBlock(intro_detectedIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD),
+    gsSPEndDisplayList(),
+};
+
+const Gfx dIntroMissingIcon[] = {
+    gsDPLoadSync(),
+    gsDPLoadTextureBlock(intro_missingIcon, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_CLAMP, G_TX_CLAMP, 5, 5, G_TX_NOLOD, G_TX_NOLOD),
+    gsSPEndDisplayList(),
 };

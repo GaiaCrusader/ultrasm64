@@ -19,14 +19,13 @@ void bhv_punch_tiny_triangle_loop(void) {
     cur_obj_scale(o->oCollisionParticleUnkF4);
     o->oCollisionParticleUnkF4 -= 0.2f;
 
-    if (gDebugInfo[DEBUG_PAGE_EFFECTINFO][0] + 6 < o->oTimer) {
+    if (6 < o->oTimer) {
         obj_mark_for_deletion(o);
     }
 }
 
 void bhv_punch_tiny_triangle_init(void) {
     s32 i;
-    UNUSED u8 filler[4];
 
     for (i = 0; i < 6; i++) {
         struct Object *triangle = spawn_object(o, MODEL_DIRT_ANIMATION, bhvPunchTinyTriangle);
@@ -52,7 +51,6 @@ void bhv_wall_tiny_star_particle_loop(void) {
 
 void bhv_tiny_star_particles_init(void) {
     s32 i;
-    UNUSED u8 filler[4];
 
     for (i = 0; i < 7; i++) {
         struct Object *particle = spawn_object(o, MODEL_CARTOON_STAR, bhvWallTinyStarParticle);

@@ -13,7 +13,6 @@ struct ObjectHitbox sKoopaShellHitbox = {
 };
 
 void koopa_shell_spawn_water_drop(void) {
-    UNUSED u8 filler[4];
 
     spawn_object(o, MODEL_WAVE_TRAIL, bhvObjectWaveTrail);
 
@@ -42,7 +41,7 @@ void bhv_koopa_shell_flame_loop(void) {
         obj_mark_for_deletion(o);
     }
 
-    o->oKoopaShellFlameScale += -0.3;
+    o->oKoopaShellFlameScale += -0.3f;
     cur_obj_scale(o->oKoopaShellFlameScale);
 }
 
@@ -82,9 +81,9 @@ void bhv_koopa_shell_loop(void) {
             obj_copy_pos(o, gMarioObject);
             sp34 = cur_obj_update_floor_height_and_get_floor();
 
-            if (absf(find_water_level(o->oPosX, o->oPosZ) - o->oPosY) < 10.0f) {
+            if (ABS(find_water_level(o->oPosX, o->oPosZ) - o->oPosY) < 10.0f) {
                 koopa_shell_spawn_water_drop();
-            } else if (absf(o->oPosY - o->oFloorHeight) < 5.0f) {
+            } else if (ABS(o->oPosY - o->oFloorHeight) < 5.0f) {
                 if (sp34 != NULL && sp34->type == 1) {
                     bhv_koopa_shell_flame_spawn();
                 } else {

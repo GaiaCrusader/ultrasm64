@@ -5,6 +5,7 @@
 #include "make_const_nonconst.h"
 
 #include "common1.h"
+#include "game/farcall_helpers.h"
 
 #include "mist/geo.inc.c"
 #include "explosion/geo.inc.c"
@@ -25,3 +26,4 @@
 #include "white_particle/geo.inc.c"
 #include "wooden_signpost/geo.inc.c"
 #include "tree/geo.inc.c"
+

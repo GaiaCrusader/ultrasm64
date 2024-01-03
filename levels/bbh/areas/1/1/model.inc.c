@@ -1,14 +1,6 @@
 // 0x07004800 - 0x07004818
-static const Lights1 bbh_seg7_lights_07004800 = gdSPDefLights1(
-    0x20, 0x20, 0x20,
-    0x50, 0x50, 0x50, 0x28, 0x28, 0x28
-);
 
 // 0x07004818 - 0x07004830
-static const Lights1 bbh_seg7_lights_07004818 = gdSPDefLights1(
-    0x66, 0x66, 0x66,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x07004830 - 0x07004920
 static const Vtx bbh_seg7_vertex_07004830[] = {
@@ -731,8 +723,8 @@ static const Gfx bbh_seg7_dl_07006AF0[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, spooky_09008800),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&bbh_seg7_lights_07004800.l, 1),
-    gsSPLight(&bbh_seg7_lights_07004800.a, 2),
+    gsSPLightColor(LIGHT_1, 0x505050ff),
+    gsSPLightColor(LIGHT_2, 0x202020ff),
     gsSPVertex(bbh_seg7_vertex_07004830, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  7,  8,  9, 0x0),
@@ -742,8 +734,8 @@ static const Gfx bbh_seg7_dl_07006AF0[] = {
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  7,  8, 0x0,  6,  8,  9, 0x0),
     gsSP1Triangle( 0, 10,  1, 0x0),
-    gsSPLight(&bbh_seg7_lights_07004818.l, 1),
-    gsSPLight(&bbh_seg7_lights_07004818.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x666666ff),
     gsSPVertex(bbh_seg7_vertex_070049D0, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  2,  3,  4, 0x0),
     gsSP2Triangles( 2,  4,  0, 0x0,  4,  3,  5, 0x0),
@@ -976,7 +968,7 @@ static const Gfx bbh_seg7_dl_070074F0[] = {
 // 0x070075A8 - 0x070076C0
 const Gfx bbh_seg7_dl_070075A8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -1007,7 +999,7 @@ const Gfx bbh_seg7_dl_070075A8[] = {
     gsSPDisplayList(bbh_seg7_dl_070074F0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };

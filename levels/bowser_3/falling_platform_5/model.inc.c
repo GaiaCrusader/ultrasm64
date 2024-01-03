@@ -1,14 +1,6 @@
 // 0x07002CE0 - 0x07002CF8
-static const Lights1 bowser_3_seg7_lights_07002CE0 = gdSPDefLights1(
-    0x22, 0x22, 0x22,
-    0x89, 0x89, 0x8a, 0x28, 0x28, 0x28
-);
 
 // 0x07002CF8 - 0x07002D10
-static const Lights1 bowser_3_seg7_lights_07002CF8 = gdSPDefLights1(
-    0x3f, 0x3f, 0x3f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x07002D10 - 0x07002D70
 static const Vtx bowser_3_seg7_vertex_07002D10[] = {
@@ -53,12 +45,12 @@ static const Gfx bowser_3_seg7_dl_07002EB0[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, bowser_3_seg7_texture_07000800),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&bowser_3_seg7_lights_07002CE0.l, 1),
-    gsSPLight(&bowser_3_seg7_lights_07002CE0.a, 2),
+    gsSPLightColor(LIGHT_1, 0x89898aff),
+    gsSPLightColor(LIGHT_2, 0x222222ff),
     gsSPVertex(bowser_3_seg7_vertex_07002D10, 6, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
-    gsSPLight(&bowser_3_seg7_lights_07002CF8.l, 1),
-    gsSPLight(&bowser_3_seg7_lights_07002CF8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(bowser_3_seg7_vertex_07002D70, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSPEndDisplayList(),
@@ -80,7 +72,7 @@ static const Gfx bowser_3_seg7_dl_07002F20[] = {
 // 0x07002F88 - 0x07003018
 const Gfx bowser_3_seg7_dl_07002F88[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -94,7 +86,7 @@ const Gfx bowser_3_seg7_dl_07002F88[] = {
     gsSPDisplayList(bowser_3_seg7_dl_07002F20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };

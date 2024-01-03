@@ -1,10 +1,5 @@
 // Lakitu (Cameraman)
 
-// 0x06000000
-UNUSED ALIGNED8 static const Texture lakitu_seg6_texture_06000000[] = {
-#include "actors/lakitu_cameraman/lakitu_cameraman_cloud_face_unused.rgba16.inc.c"
-};
-
 // 0x06000800
 ALIGNED8 static const Texture lakitu_seg6_texture_06000800[] = {
 #include "actors/lakitu_cameraman/lakitu_cameraman_eyes_open.rgba16.inc.c"
@@ -31,16 +26,8 @@ ALIGNED8 static const Texture lakitu_seg6_texture_06003800[] = {
 };
 
 // 0x06003A00
-static const Lights1 lakitu_seg6_lights_06003A00 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x06003A18
-static const Lights1 lakitu_seg6_lights_06003A18 = gdSPDefLights1(
-    0x79, 0x55, 0x00,
-    0xf2, 0xab, 0x00, 0x28, 0x28, 0x28
-);
 
 // 0x06003A30
 static const Vtx lakitu_seg6_vertex_06003A30[] = {
@@ -96,8 +83,8 @@ const Gfx lakitu_seg6_dl_06003C80[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, lakitu_seg6_texture_06002800),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&lakitu_seg6_lights_06003A00.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06003A00.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(lakitu_seg6_vertex_06003A30, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 4,  6,  7, 0x0,  4,  7,  5, 0x0),
@@ -120,8 +107,8 @@ const Gfx lakitu_seg6_dl_06003C80[] = {
 
 // 0x06003DB0 - 0x06003E30
 const Gfx lakitu_seg6_dl_06003DB0[] = {
-    gsSPLight(&lakitu_seg6_lights_06003A18.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06003A18.a, 2),
+    gsSPLightColor(LIGHT_1, 0xf2ab00ff),
+    gsSPLightColor(LIGHT_2, 0x795500ff),
     gsSPVertex(lakitu_seg6_vertex_06003BD0, 11, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  2,  3,  4, 0x0),
     gsSP2Triangles( 1,  5,  2, 0x0,  4,  0,  2, 0x0),
@@ -135,7 +122,7 @@ const Gfx lakitu_seg6_dl_06003DB0[] = {
 // 0x06003E30 - 0x06003E98
 const Gfx lakitu_seg6_dl_06003E30[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -144,16 +131,12 @@ const Gfx lakitu_seg6_dl_06003E30[] = {
     gsSPDisplayList(lakitu_seg6_dl_06003C80),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(lakitu_seg6_dl_06003DB0),
     gsSPEndDisplayList(),
 };
 
 // 0x06003E98
-static const Lights1 lakitu_seg6_lights_06003E98 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x06003EB0
 static const Vtx lakitu_seg6_vertex_06003EB0[] = {
@@ -270,8 +253,8 @@ const Gfx lakitu_seg6_dl_06004410[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, lakitu_seg6_texture_06003000),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&lakitu_seg6_lights_06003E98.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06003E98.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(lakitu_seg6_vertex_06003EB0, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  1,  4, 0x0),
     gsSP2Triangles( 3,  5,  1, 0x0,  1,  6,  7, 0x0),
@@ -319,7 +302,7 @@ const Gfx lakitu_seg6_dl_06004410[] = {
 // 0x06004680 - 0x060046E0
 const Gfx lakitu_seg6_dl_06004680[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -328,15 +311,11 @@ const Gfx lakitu_seg6_dl_06004680[] = {
     gsSPDisplayList(lakitu_seg6_dl_06004410),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 
 // 0x060046E0
-static const Lights1 lakitu_seg6_lights_060046E0 = gdSPDefLights1(
-    0x79, 0x55, 0x00,
-    0xf2, 0xab, 0x00, 0x28, 0x28, 0x28
-);
 
 // 0x060046F8
 static const Vtx lakitu_seg6_vertex_060046F8[] = {
@@ -359,8 +338,8 @@ static const Vtx lakitu_seg6_vertex_060046F8[] = {
 
 // 0x060047E8 - 0x060048D8
 const Gfx lakitu_seg6_dl_060047E8[] = {
-    gsSPLight(&lakitu_seg6_lights_060046E0.l, 1),
-    gsSPLight(&lakitu_seg6_lights_060046E0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xf2ab00ff),
+    gsSPLightColor(LIGHT_2, 0x795500ff),
     gsSPVertex(lakitu_seg6_vertex_060046F8, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 4,  6,  7, 0x0,  4,  7,  5, 0x0),
@@ -379,10 +358,6 @@ const Gfx lakitu_seg6_dl_060047E8[] = {
 };
 
 // 0x060048D8
-static const Lights1 lakitu_seg6_lights_060048D8 = gdSPDefLights1(
-    0x79, 0x55, 0x00,
-    0xf2, 0xab, 0x00, 0x28, 0x28, 0x28
-);
 
 // 0x060048F0
 static const Vtx lakitu_seg6_vertex_060048F0[] = {
@@ -405,8 +380,8 @@ static const Vtx lakitu_seg6_vertex_060048F0[] = {
 
 // 0x060049E0 - 0x06004AD0
 const Gfx lakitu_seg6_dl_060049E0[] = {
-    gsSPLight(&lakitu_seg6_lights_060048D8.l, 1),
-    gsSPLight(&lakitu_seg6_lights_060048D8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xf2ab00ff),
+    gsSPLightColor(LIGHT_2, 0x795500ff),
     gsSPVertex(lakitu_seg6_vertex_060048F0, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  3,  5, 0x0,  3,  7,  4, 0x0),
@@ -425,10 +400,6 @@ const Gfx lakitu_seg6_dl_060049E0[] = {
 };
 
 // 0x06004AD0
-static const Lights1 lakitu_seg6_lights_06004AD0 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x06004AE8
 static const Vtx lakitu_seg6_vertex_06004AE8[] = {
@@ -448,8 +419,8 @@ static const Vtx lakitu_seg6_vertex_06004AE8[] = {
 
 // 0x06004BA8 - 0x06004BE8
 const Gfx lakitu_seg6_dl_06004BA8[] = {
-    gsSPLight(&lakitu_seg6_lights_06004AD0.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06004AD0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(lakitu_seg6_vertex_06004AE8, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  7,  8, 0x0,  9, 10, 11, 0x0),
@@ -459,7 +430,7 @@ const Gfx lakitu_seg6_dl_06004BA8[] = {
 // 0x06004BE8 - 0x06004C30
 const Gfx lakitu_seg6_dl_06004BE8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -474,7 +445,7 @@ const Gfx lakitu_seg6_dl_06004C30[] = {
     gsSPDisplayList(lakitu_seg6_dl_06004BA8),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };
@@ -498,28 +469,12 @@ const Gfx lakitu_seg6_dl_06004C88[] = {
 };
 
 // 0x06004CB0
-static const Lights1 lakitu_seg6_lights_06004CB0 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x06004CC8
-static const Lights1 lakitu_seg6_lights_06004CC8 = gdSPDefLights1(
-    0x0c, 0x0c, 0x0c,
-    0x19, 0x19, 0x19, 0x28, 0x28, 0x28
-);
 
 // 0x06004CE0
-static const Lights1 lakitu_seg6_lights_06004CE0 = gdSPDefLights1(
-    0x19, 0x22, 0x20,
-    0x32, 0x44, 0x40, 0x28, 0x28, 0x28
-);
 
 // 0x06004CF8
-static const Lights1 lakitu_seg6_lights_06004CF8 = gdSPDefLights1(
-    0x18, 0x18, 0x18,
-    0x30, 0x30, 0x30, 0x28, 0x28, 0x28
-);
 
 // 0x06004D10
 static const Vtx lakitu_seg6_vertex_06004D10[] = {
@@ -630,8 +585,8 @@ const Gfx lakitu_seg6_dl_060051D0[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, lakitu_seg6_texture_06003800),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 16 * 16 - 1, CALC_DXT(16, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&lakitu_seg6_lights_06004CB0.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06004CB0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(lakitu_seg6_vertex_06004D10, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSPEndDisplayList(),
@@ -639,8 +594,8 @@ const Gfx lakitu_seg6_dl_060051D0[] = {
 
 // 0x06005218 - 0x06005360
 const Gfx lakitu_seg6_dl_06005218[] = {
-    gsSPLight(&lakitu_seg6_lights_06004CC8.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06004CC8.a, 2),
+    gsSPLightColor(LIGHT_1, 0x191919ff),
+    gsSPLightColor(LIGHT_2, 0xc0c0cff),
     gsSPVertex(lakitu_seg6_vertex_06004D50, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  7,  8, 0x0,  9, 10, 11, 0x0),
@@ -651,8 +606,8 @@ const Gfx lakitu_seg6_dl_06005218[] = {
     gsSP1Triangle(12, 13, 14, 0x0),
     gsSPVertex(lakitu_seg6_vertex_06004F30, 6, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
-    gsSPLight(&lakitu_seg6_lights_06004CE0.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06004CE0.a, 2),
+    gsSPLightColor(LIGHT_1, 0x324440ff),
+    gsSPLightColor(LIGHT_2, 0x192220ff),
     gsSPVertex(lakitu_seg6_vertex_06004F90, 14, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  0,  7,  1, 0x0),
@@ -661,8 +616,8 @@ const Gfx lakitu_seg6_dl_06005218[] = {
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSP2Triangles( 4,  5,  6, 0x0,  7,  8,  9, 0x0),
     gsSP2Triangles(10, 11, 12, 0x0, 10, 13, 11, 0x0),
-    gsSPLight(&lakitu_seg6_lights_06004CF8.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06004CF8.a, 2),
+    gsSPLightColor(LIGHT_1, 0x303030ff),
+    gsSPLightColor(LIGHT_2, 0x181818ff),
     gsSPVertex(lakitu_seg6_vertex_06005150, 8, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  4, 0x0),
     gsSP2Triangles( 4,  5,  6, 0x0,  7,  1,  6, 0x0),
@@ -672,7 +627,7 @@ const Gfx lakitu_seg6_dl_06005218[] = {
 // 0x06005360 - 0x060053D8
 const Gfx lakitu_seg6_dl_06005360[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -682,47 +637,19 @@ const Gfx lakitu_seg6_dl_06005360[] = {
     gsSPDisplayList(lakitu_seg6_dl_060051D0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(lakitu_seg6_dl_06005218),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };
 
-// Unreferenced light group
-UNUSED static const Lights1 lakitu_cameraman_lights_unused1 = gdSPDefLights1(
-    0x33, 0x1f, 0x0c,
-    0xcc, 0x7f, 0x33, 0x28, 0x28, 0x28
-);
 
 // 0x060053F0
-static const Lights1 lakitu_seg6_lights_060053F0 = gdSPDefLights1(
-    0x29, 0x13, 0x06,
-    0xa5, 0x4f, 0x1b, 0x28, 0x28, 0x28
-);
 
-// Unreferenced light group
-UNUSED static const Lights1 lakitu_cameraman_lights_unused2 = gdSPDefLights1(
-    0x06, 0x06, 0x06,
-    0x19, 0x19, 0x19, 0x28, 0x28, 0x28
-);
 
-// Unreferenced light group
-UNUSED static const Lights1 lakitu_cameraman_lights_unused3 = gdSPDefLights1(
-    0x2c, 0x2c, 0x2c,
-    0xb2, 0xb2, 0xb2, 0x28, 0x28, 0x28
-);
 
 // 0x06005438
-static const Lights1 lakitu_seg6_lights_06005438 = gdSPDefLights1(
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x28, 0x28, 0x28
-);
 
-// Unreferenced light group
-UNUSED static const Lights1 lakitu_cameraman_lights_unused4 = gdSPDefLights1(
-    0x0d, 0x2c, 0x0b,
-    0x34, 0xb2, 0x2c, 0x28, 0x28, 0x28
-);
 
 // 0x06005468
 static const Vtx lakitu_seg6_vertex_06005468[] = {
@@ -757,8 +684,8 @@ static const Vtx lakitu_seg6_vertex_06005568[] = {
 
 // 0x06005598 - 0x060055E8
 const Gfx lakitu_seg6_dl_06005598[] = {
-    gsSPLight(&lakitu_seg6_lights_060053F0.l, 1),
-    gsSPLight(&lakitu_seg6_lights_060053F0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xa54f1bff),
+    gsSPLightColor(LIGHT_2, 0x291306ff),
     gsSPVertex(lakitu_seg6_vertex_06005468, 13, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  0,  2, 0x0,  7,  8,  9, 0x0),
@@ -768,8 +695,8 @@ const Gfx lakitu_seg6_dl_06005598[] = {
 
 // 0x060055E8 - 0x06005610
 const Gfx lakitu_seg6_dl_060055E8[] = {
-    gsSPLight(&lakitu_seg6_lights_06005438.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06005438.a, 2),
+    gsSPLightColor(LIGHT_1, 0xff),
+    gsSPLightColor(LIGHT_2, 0xff),
     gsSPVertex(lakitu_seg6_vertex_06005538, 3, 0),
     gsSP1Triangle( 0,  1,  2, 0x0),
     gsSPEndDisplayList(),
@@ -777,8 +704,8 @@ const Gfx lakitu_seg6_dl_060055E8[] = {
 
 // 0x06005610 - 0x06005638
 const Gfx lakitu_seg6_dl_06005610[] = {
-    gsSPLight(&lakitu_seg6_lights_06005438.l, 1),
-    gsSPLight(&lakitu_seg6_lights_06005438.a, 2),
+    gsSPLightColor(LIGHT_1, 0xff),
+    gsSPLightColor(LIGHT_2, 0xff),
     gsSPVertex(lakitu_seg6_vertex_06005568, 3, 0),
     gsSP1Triangle( 0,  1,  2, 0x0),
     gsSPEndDisplayList(),

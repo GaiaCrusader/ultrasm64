@@ -1,5 +1,7 @@
 // intro_peach.inc.c
 
+#include "engine/graph_node.h"
+
 /**
  * Set peach's location relative to the camera focus.
  * If nonzero, make peach's opacity approach targetOpacity by increment
@@ -7,7 +9,7 @@
 void intro_peach_set_pos_and_opacity(struct Object *obj, f32 targetOpacity, f32 increment) {
     Vec3f newPos;
     s16 focusPitch, focusYaw;
-    f32 UNUSED dist, newOpacity;
+    f32 dist, newOpacity;
 
     vec3f_get_dist_and_angle(gLakituState.pos, gLakituState.focus, &dist, &focusPitch, &focusYaw);
     vec3f_set_dist_and_angle(gLakituState.pos, newPos, obj->oIntroPeachDistToCamera,
@@ -18,6 +20,7 @@ void intro_peach_set_pos_and_opacity(struct Object *obj, f32 targetOpacity, f32 
     newOpacity = obj->oOpacity;
     camera_approach_f32_symmetric_bool(&newOpacity, targetOpacity, increment);
     obj->oOpacity = newOpacity;
+    obj->header.gfx.node.flags |= GRAPH_RENDER_PRIORITY;
 }
 
 void bhv_intro_peach_loop(void) {

@@ -27,6 +27,7 @@ static OSPiHandle	SramHandle;
 /*	IN:	None							*/
 /*	RET:	If detected, return 1, otherwise 0							*/
 /*----------------------------------------------------------------------*/
+#ifdef SRAM
 int nuPiInitSram()
 {
     if (SramHandle.baseAddress == PHYS_TO_K1(SRAM_START_ADDR))
@@ -53,3 +54,4 @@ int nuPiInitSram()
     nuPiSramHandle = &SramHandle;
 	return 1;
 }
+#endif

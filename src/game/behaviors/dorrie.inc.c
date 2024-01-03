@@ -5,7 +5,7 @@ void dorrie_raise_head(void) {
     f32 xzDisp;
     f32 yDisp;
 
-    o->oDorrieNeckAngle -= (s16) absf(370.0f * sins(o->oDorrieHeadRaiseSpeed));
+    o->oDorrieNeckAngle -= (s16) ABS(370.0f * sins(o->oDorrieHeadRaiseSpeed));
 
     xzDisp = 440.0f * (coss(o->oDorrieNeckAngle) - coss(startAngle));
     yDisp = 440.0f * (sins(o->oDorrieNeckAngle) - sins(startAngle));
@@ -109,7 +109,6 @@ void dorrie_act_raise_head(void) {
 
 void bhv_dorrie_update(void) {
     f32 boundsShift;
-    UNUSED u8 filler[8];
     f32 maxOffsetY;
 
     if (!(o->activeFlags & ACTIVE_FLAG_IN_DIFFERENT_ROOM)) {

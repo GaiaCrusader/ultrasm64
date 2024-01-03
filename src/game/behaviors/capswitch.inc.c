@@ -1,6 +1,10 @@
 // capswitch.inc.c
 
-UNUSED u8 sCapSwitchText[] = { DIALOG_010, DIALOG_011, DIALOG_012 };
+static s32 sCapSaveFlags[] = {
+    SAVE_FLAG_HAVE_WING_CAP,
+    SAVE_FLAG_HAVE_METAL_CAP,
+    SAVE_FLAG_HAVE_VANISH_CAP,
+};
 
 void cap_switch_act_0(void) {
     o->oAnimState = o->oBehParams2ndByte;

@@ -5,6 +5,7 @@
 #define INCLUDED_FROM_MEMORY_C
 
 #include "buffers/buffers.h"
+#include "buffers/zbuffer.h"
 #include "slidec.h"
 #include "game/game_init.h"
 #include "game/main.h"
@@ -60,6 +61,7 @@ extern struct MainPoolBlock *sPoolListHeadR;
  * Used for colored text, paintings, and environmental snow and bubbles.
  */
 struct MemoryPool *gEffectsMemoryPool;
+struct MemoryPool *gAnimationsMemoryPool;
 
 uintptr_t sSegmentTable[32];
 u32 sPoolFreeSpace;
@@ -80,7 +82,6 @@ void *get_segment_base_addr(s32 segment) {
     return (void *) (sSegmentTable[segment] | 0x80000000);
 }
 
-#ifndef NO_SEGMENTED_MEMORY
 void *segmented_to_virtual(const void *addr) {
     size_t segment = (uintptr_t) addr >> 24;
     size_t offset = (uintptr_t) addr & 0x00FFFFFF;
@@ -101,18 +102,8 @@ void move_segment_table_to_dmem(void) {
         gSPSegment(gDisplayListHead++, i, sSegmentTable[i]);
     }
 }
-#else
-void *segmented_to_virtual(const void *addr) {
-    return (void *) addr;
-}
 
-void *virtual_to_segmented(u32 segment, const void *addr) {
-    return (void *) addr;
-}
-
-void move_segment_table_to_dmem(void) {
-}
-#endif
+u8 gTlbSegments[32];
 
 /**
  * Initialize the main memory pool. This pool is conceptually a pair of stacks
@@ -130,6 +121,7 @@ void main_pool_init(void *start, void *end) {
     sPoolListHeadL->next = NULL;
     sPoolListHeadR->prev = NULL;
     sPoolListHeadR->next = NULL;
+    bzero(&gTlbSegments, 32);
 }
 
 /**
@@ -271,27 +263,65 @@ void dma_read(u8 *dest, u8 *srcStart, u8 *srcEnd) {
  * Perform a DMA read from ROM, allocating space in the memory pool to write to.
  * Return the destination address.
  */
-static void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side) {
-    void *dest;
+void *dynamic_dma_read(u8 *srcStart, u8 *srcEnd, u32 side, u32 alignment, u32 bssLength) {
     u32 size = ALIGN16(srcEnd - srcStart);
+    u32 offset = 0;
 
-    dest = main_pool_alloc(size, side);
+    if (alignment && side == MEMORY_POOL_LEFT) {
+        offset = ALIGN(((uintptr_t)sPoolListHeadL + 16), alignment) - ((uintptr_t)sPoolListHeadL + 16);
+    }
+
+    void *dest = main_pool_alloc((offset + size + bssLength), side);
     if (dest != NULL) {
-        dma_read(dest, srcStart, srcEnd);
+        dma_read(((u8 *)dest + offset), srcStart, srcEnd);
+        if (bssLength) {
+            bzero(((u8 *)dest + offset + size), bssLength);
+        }
     }
     return dest;
 }
 
-#ifndef NO_SEGMENTED_MEMORY
+
+#define TLB_PAGE_SIZE 4096 //Blocksize of TLB transfers. Larger values can be faster to transfer, but more wasteful of RAM.
+s32 gTlbEntries = 0;
+
+void mapTLBPages(uintptr_t virtualAddress, uintptr_t physicalAddress, s32 length, s32 segment) {
+    while (length > 0) {
+        if (length > TLB_PAGE_SIZE) {
+            osMapTLB(gTlbEntries++, OS_PM_4K, (void *)virtualAddress, physicalAddress, physicalAddress + TLB_PAGE_SIZE, -1);
+            virtualAddress += TLB_PAGE_SIZE;
+            physicalAddress += TLB_PAGE_SIZE;
+            length -= TLB_PAGE_SIZE;
+            gTlbSegments[segment]++;
+        } else {
+            osMapTLB(gTlbEntries++, OS_PM_4K, (void *)virtualAddress, physicalAddress, -1, -1);
+            gTlbSegments[segment]++;
+        }
+        virtualAddress += TLB_PAGE_SIZE;
+        physicalAddress += TLB_PAGE_SIZE;
+        length -= TLB_PAGE_SIZE;
+    }
+}
+
 /**
  * Load data from ROM into a newly allocated block, and set the segment base
  * address to this block.
  */
-void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u32 side) {
-    void *addr = dynamic_dma_read(srcStart, srcEnd, side);
+void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u32 side, u8 *bssStart, u8 *bssEnd) {
+    void *addr;
 
-    if (addr != NULL) {
-        set_segment_base_addr(segment, addr);
+    if (bssStart != NULL && side == MEMORY_POOL_LEFT) {
+        addr = dynamic_dma_read(srcStart, srcEnd, side, TLB_PAGE_SIZE, (uintptr_t)bssEnd - (uintptr_t)bssStart);
+        if (addr != NULL) {
+            u8 *realAddr = (u8 *)ALIGN((uintptr_t)addr, TLB_PAGE_SIZE);
+            set_segment_base_addr(segment, realAddr);
+            mapTLBPages(segment << 24, VIRTUAL_TO_PHYSICAL(realAddr), (srcEnd - srcStart) + ((uintptr_t)bssEnd - (uintptr_t)bssStart), segment);
+        }
+    } else {
+        addr = dynamic_dma_read(srcStart, srcEnd, side, 0, 0);
+        if (addr != NULL) {
+            set_segment_base_addr(segment, addr);
+        }
     }
     return addr;
 }
@@ -379,48 +409,9 @@ void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd) {
     return dest;
 }
 
-void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd) {
-    UNUSED void *dest = NULL;
-
-#ifdef UNCOMPRESSED
-    dma_read(gDecompressionHeap, srcStart, srcEnd);
-    set_segment_base_addr(segment, gDecompressionHeap);
-#else
-#ifdef GZIP
-    u32 compSize = (srcEnd - 4 - srcStart);
-#else
-    u32 compSize = ALIGN16(srcEnd - srcStart);
-#endif
-    u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
-#ifdef GZIP
-    // Decompressed size from end of gzip
-    u32 *size = (u32 *) (compressed + compSize);
-#endif
-    if (compressed != NULL) {
-        dma_read(compressed, srcStart, srcEnd);
-#ifdef GZIP
-        expand_gzip(compressed, gDecompressionHeap, compSize, (u32)size);
-#elif RNC1
-        Propack_UnpackM1(compressed, gDecompressionHeap);
-#elif RNC2
-        Propack_UnpackM2(compressed, gDecompressionHeap);
-#elif YAY0
-        slidstart(compressed, gDecompressionHeap);
-#elif MIO0
-        decompress(compressed, gDecompressionHeap);
-#endif
-        set_segment_base_addr(segment, gDecompressionHeap);
-        main_pool_free(compressed);
-    } else {
-    }
-#endif
-    return gDecompressionHeap;
-}
-
 void load_engine_code_segment(void) {
     void *startAddr = (void *) _engineSegmentStart;
     u32 totalSize = _engineSegmentEnd - _engineSegmentStart;
-    UNUSED u32 alignedSize = ALIGN16(_engineSegmentRomEnd - _engineSegmentRomStart);
 
     bzero(startAddr, totalSize);
     osWritebackDCacheAll();
@@ -428,7 +419,6 @@ void load_engine_code_segment(void) {
     osInvalICache(startAddr, totalSize);
     osInvalDCache(startAddr, totalSize);
 }
-#endif
 
 /**
  * Allocate an allocation-only pool from the main pool. This pool doesn't
@@ -592,13 +582,12 @@ void *alloc_display_list(u32 size) {
 }
 
 static struct DmaTable *load_dma_table_address(u8 *srcAddr) {
-    struct DmaTable *table = dynamic_dma_read(srcAddr, srcAddr + sizeof(u32),
-                                                             MEMORY_POOL_LEFT);
+    struct DmaTable *table = dynamic_dma_read(srcAddr, srcAddr + sizeof(u32), MEMORY_POOL_LEFT, 0, 0);
     u32 size = table->count * sizeof(struct OffsetSizePair) + 
         sizeof(struct DmaTable) - sizeof(struct OffsetSizePair);
     main_pool_free(table);
 
-    table = dynamic_dma_read(srcAddr, srcAddr + size, MEMORY_POOL_LEFT);
+    table = dynamic_dma_read(srcAddr, srcAddr + size, MEMORY_POOL_LEFT, 0, 0);
     table->srcAddr = srcAddr;
     return table;
 }
@@ -617,6 +606,7 @@ s32 load_patchable_table(struct DmaHandlerList *list, s32 index) {
 
     if ((u32)index < table->count) {
         u8 *addr = table->srcAddr + table->anim[index].offset;
+        //s32 size = sizeof(struct Animation);
         s32 size = table->anim[index].size;
 
         if (list->currentAddr != addr) {

@@ -29,7 +29,7 @@ void bobomb_spawn_coin(void) {
 
 void bobomb_act_explode(void) {
     if (o->oTimer < 5) {
-        cur_obj_scale(1.0 + (f32) o->oTimer / 5.0);
+        cur_obj_scale(1.0f + (f32) o->oTimer / 5.0f);
     } else {
         struct Object *explosion = spawn_object(o, MODEL_EXPLOSION, bhvExplosion);
         explosion->oGraphYOffset += 100.0f;
@@ -65,8 +65,6 @@ void bobomb_check_interactions(void) {
 }
 
 void bobomb_act_patrol(void) {
-    UNUSED u8 filler[4];
-    UNUSED s16 animFrame = o->header.gfx.animInfo.animFrame;
     s16 collisionFlags;
 
     o->oForwardVel = 5.0f;
@@ -82,7 +80,6 @@ void bobomb_act_patrol(void) {
 }
 
 void bobomb_act_chase_mario(void) {
-    UNUSED u8 filler[4];
     s16 animFrame = ++o->header.gfx.animInfo.animFrame; 
     s16 collisionFlags;
 
@@ -100,6 +97,9 @@ void bobomb_act_chase_mario(void) {
 void bobomb_act_launched(void) {
     s16 collisionFlags = 0;
     collisionFlags = object_step();
+    
+    o->header.gfx.matrixID[0] = MATRIX_NULL;
+    o->header.gfx.matrixID[1] = MATRIX_NULL;
     if ((collisionFlags & OBJ_COL_FLAG_GROUNDED) == OBJ_COL_FLAG_GROUNDED) {
         o->oAction = BOBOMB_ACT_EXPLODE;
     }
@@ -182,7 +182,7 @@ void bobomb_free_loop(void) {
 void bobomb_held_loop(void) {
     o->header.gfx.node.flags |= GRAPH_RENDER_INVISIBLE;
     cur_obj_init_animation(1);
-    cur_obj_set_pos_relative(gMarioObject, 0, 60.0f, 100.0);
+    cur_obj_set_pos_relative(gMarioObject, 0, 60.0f, 100.0f);
 
     o->oBobombFuseLit = 1;
     if (o->oBobombFuseTimer > 150) {
@@ -213,30 +213,6 @@ void bobomb_thrown_loop(void) {
     o->oForwardVel = 25.0f;
     o->oVelY = 20.0f;
     o->oAction = BOBOMB_ACT_LAUNCHED;
-}
-
-void curr_obj_random_blink(s32 *blinkTimer) {
-    if (*blinkTimer == 0) {
-        if ((s16)(random_float() * 100.0f) == 0) {
-            o->oAnimState = 1;
-            *blinkTimer = 1;
-        }
-    } else {
-        (*blinkTimer)++;
-
-        if (*blinkTimer > 5) {
-            o->oAnimState = 0;
-        }
-
-        if (*blinkTimer > 10) {
-            o->oAnimState = 1;
-        }
-
-        if (*blinkTimer > 15) {
-            o->oAnimState = 0;
-            *blinkTimer = 0;
-        }
-    }
 }
 
 void bhv_bobomb_loop(void) {
@@ -297,15 +273,15 @@ void bhv_bobomb_buddy_init(void) {
 }
 
 void bobomb_buddy_act_idle(void) {
-    UNUSED u8 filler[4];
     s16 animFrame = o->header.gfx.animInfo.animFrame;
-    UNUSED s16 collisionFlags = 0;
 
     o->oBobombBuddyPosXCopy = o->oPosX;
     o->oBobombBuddyPosYCopy = o->oPosY;
     o->oBobombBuddyPosZCopy = o->oPosZ;
 
-    collisionFlags = object_step();
+    object_step();
+    o->header.gfx.matrixID[0] = MATRIX_NULL;
+    o->header.gfx.matrixID[1] = MATRIX_NULL;
 
     if (animFrame == 5 || animFrame == 16) {
         cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);

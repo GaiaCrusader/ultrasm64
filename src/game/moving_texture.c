@@ -197,20 +197,20 @@ struct MovtexObject gMovtexNonColored[] = {
     { MOVTEX_PYRAMID_SAND_PATHWAY_FRONT, TEX_PYRAMID_SAND_SSL, 8,
       ssl_movtex_tris_pyramid_sand_pathway_front, ssl_dl_pyramid_sand_pathway_begin,
       ssl_dl_pyramid_sand_pathway_end, ssl_dl_pyramid_sand_pathway_front_end, 0xff, 0xff, 0xff, 0xff,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
     { MOVTEX_PYRAMID_SAND_PATHWAY_FLOOR, TEX_PYRAMID_SAND_SSL, 8,
       ssl_movtex_tris_pyramid_sand_pathway_floor, ssl_dl_pyramid_sand_pathway_floor_begin,
       ssl_dl_pyramid_sand_pathway_floor_end, ssl_dl_pyramid_sand_pathway_front_end, 0xff, 0xff, 0xff,
-      0xff, LAYER_OPAQUE_INTER },
+      0xff, LAYER_OPAQUE },
     { MOVTEX_PYRAMID_SAND_PATHWAY_SIDE, TEX_PYRAMID_SAND_SSL, 6,
       ssl_movtex_tris_pyramid_sand_pathway_side, ssl_dl_pyramid_sand_pathway_begin,
       ssl_dl_pyramid_sand_pathway_end, ssl_dl_pyramid_sand_pathway_side_end, 0xff, 0xff, 0xff, 0xff,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
 
     // The waterfall outside the castle
     { MOVTEX_CASTLE_WATERFALL, TEXTURE_WATER, 15, castle_grounds_movtex_tris_waterfall,
       dl_waterbox_rgba16_begin, dl_waterbox_end, castle_grounds_dl_waterfall, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
 
     // Bowser in the Fire Sea has lava at 3 heights, lava_floor is the lowest
     // and lava_second_section is the highest
@@ -235,13 +235,13 @@ struct MovtexObject gMovtexNonColored[] = {
       dl_waterbox_end, lll_dl_lava_floor, 0xff, 0xff, 0xff, 0xc8, LAYER_TRANSPARENT },
     { MOVTEX_VOLCANO_LAVA_FALL, TEXTURE_LAVA, 16, lll_movtex_tris_lavafall_volcano,
       dl_waterbox_rgba16_begin, dl_waterbox_end, lll_dl_lavafall_volcano, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
 
     // Cavern of the metal Cap has a waterfall source above the switch platform,
     // the stream, around the switch, and the waterfall that's the same as the one
     // outside the castle. They are all part of the same mesh.
     { MOVTEX_COTMC_WATER, TEXTURE_WATER, 14, cotmc_movtex_tris_water, cotmc_dl_water_begin,
-      cotmc_dl_water_end, cotmc_dl_water, 0xff, 0xff, 0xff, 0xb4, LAYER_TRANSPARENT_INTER },
+      cotmc_dl_water_end, cotmc_dl_water, 0xff, 0xff, 0xff, 0xb4, LAYER_TRANSPARENT },
 
     // Tall Tall mountain has water going from the top to the bottom of the mountain.
     { MOVTEX_TTM_BEGIN_WATERFALL, TEXTURE_WATER, 6, ttm_movtex_tris_begin_waterfall,
@@ -252,13 +252,13 @@ struct MovtexObject gMovtexNonColored[] = {
       LAYER_TRANSPARENT },
     { MOVTEX_TTM_BEGIN_PUDDLE_WATERFALL, TEXTURE_WATER, 4, ttm_movtex_tris_begin_puddle_waterfall,
       dl_waterbox_rgba16_begin, dl_waterbox_end, ttm_dl_bottom_waterfall, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
     { MOVTEX_TTM_END_PUDDLE_WATERFALL, TEXTURE_WATER, 4, ttm_movtex_tris_end_puddle_waterfall,
       dl_waterbox_rgba16_begin, dl_waterbox_end, ttm_dl_bottom_waterfall, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
     { MOVTEX_TTM_PUDDLE_WATERFALL, TEXTURE_WATER, 8, ttm_movtex_tris_puddle_waterfall,
       dl_waterbox_rgba16_begin, dl_waterbox_end, ttm_dl_puddle_waterfall, 0xff, 0xff, 0xff, 0xb4,
-      LAYER_TRANSPARENT_INTER },
+      LAYER_TRANSPARENT },
     { 0x00000000, 0x00000000, 0, NULL, NULL, NULL, NULL, 0x00, 0x00, 0x00, 0x00, 0x00000000 },
 };
 
@@ -303,7 +303,6 @@ struct MovtexObject gMovtexColored2[] = {
  */
 Gfx *geo_wdw_set_initial_water_level(s32 callContext, UNUSED struct GraphNode *node, UNUSED Mat4 mtx) {
     s32 i;
-    UNUSED u8 unused[] = { 1, 0, 4, 0, 7, 0, 10, 0 };
     s16 wdwWaterHeight;
 
     // Why was this global variable needed when they could just check for GEO_CONTEXT_AREA_LOAD?
@@ -311,9 +310,9 @@ Gfx *geo_wdw_set_initial_water_level(s32 callContext, UNUSED struct GraphNode *n
         gWdwWaterLevelSet = FALSE;
     } else if (callContext == GEO_CONTEXT_RENDER && gEnvironmentRegions != NULL
                && !gWdwWaterLevelSet) {
-        if (gPaintingMarioYEntry <= 1382.4) {
+        if (gPaintingMarioYEntry <= 1382.4f) {
             wdwWaterHeight = 31;
-        } else if (gPaintingMarioYEntry >= 1600.0) {
+        } else if (gPaintingMarioYEntry >= 1600.0f) {
             wdwWaterHeight = 2816;
         } else {
             wdwWaterHeight = 1024;
@@ -353,8 +352,8 @@ Gfx *geo_movtex_pause_control(s32 callContext, UNUSED struct GraphNode *node, UN
  */
 void movtex_make_quad_vertex(Vtx *verts, s32 index, s16 x, s16 y, s16 z, s16 rot, s16 rotOffset,
                              f32 scale, u8 alpha) {
-    s16 s = 32.0 * (32.0 * scale - 1.0) * sins(rot + rotOffset);
-    s16 t = 32.0 * (32.0 * scale - 1.0) * coss(rot + rotOffset);
+    s16 s = 32.0f * (32.0f * scale - 1.0f) * sins(rot + rotOffset);
+    s16 t = 32.0f * (32.0f * scale - 1.0f) * coss(rot + rotOffset);
 
     if (gMovtexVtxColor == MOVTEX_VTX_COLOR_YELLOW) {
         make_vertex(verts, index, x, y, z, s, t, 255, 255, 0, alpha);
@@ -644,7 +643,7 @@ Gfx *geo_movtex_draw_water_regions(s32 callContext, struct GraphNode *node, UNUS
         }
         asGenerated = (struct GraphNodeGenerated *) node;
         if (asGenerated->parameter == JRB_MOVTEX_INITIAL_MIST) {
-            if (gLakituState.goalPos[1] < 1024.0) { // if camera under water
+            if (gLakituState.goalPos[1] < 1024.0f) { // if camera under water
                 return NULL;
             }
             if (save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_NUM_TO_INDEX(COURSE_JRB))
@@ -662,7 +661,7 @@ Gfx *geo_movtex_draw_water_regions(s32 callContext, struct GraphNode *node, UNUS
         }
 
         asGenerated->fnNode.node.flags =
-            (asGenerated->fnNode.node.flags & 0xFF) | (LAYER_TRANSPARENT_INTER << 8);
+            (asGenerated->fnNode.node.flags & 0xFF) | (LAYER_TRANSPARENT << 8);
 
         movtex_change_texture_format(asGenerated->parameter, &gfx);
         gMovetexLastTextureId = -1;

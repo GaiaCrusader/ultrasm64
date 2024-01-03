@@ -76,7 +76,13 @@ static u32 perform_water_full_step(struct MarioState *m, Vec3f nextPos) {
 
     wall = resolve_and_return_wall_collisions(nextPos, 10.0f, 110.0f);
     floorHeight = find_floor(nextPos[0], nextPos[1], nextPos[2], &floor);
+    if (floor) {
+        get_surface_normal(m->floorNormals, floor);
+    }
     ceilHeight = vec3f_find_ceil(nextPos, floorHeight, &ceil);
+    if (ceil) {
+        get_surface_normal(m->ceilNormals, ceil);
+    }
 
     if (floor == NULL) {
         return WATER_STEP_CANCELLED;
@@ -165,7 +171,6 @@ static void apply_water_current(struct MarioState *m, Vec3f step) {
 }
 
 static u32 perform_water_step(struct MarioState *m) {
-    UNUSED u8 filler[4];
     u32 stepResult;
     Vec3f nextPos;
     Vec3f step;
@@ -438,7 +443,6 @@ static void surface_swim_bob(struct MarioState *m) {
 
 static void common_swimming_step(struct MarioState *m, s16 swimStrength) {
     s16 floorPitch;
-    UNUSED struct Object *marioObj = m->marioObj;
 
     update_swimming_yaw(m);
     update_swimming_pitch(m);
@@ -1120,7 +1124,7 @@ static void update_metal_water_walking_speed(struct MarioState *m) {
         m->forwardVel += 1.1f;
     } else if (m->forwardVel <= val) {
         m->forwardVel += 1.1f - m->forwardVel / 43.0f;
-    } else if (m->floor->normal.y >= 0.95f) {
+    } else if (m->floorNormals[1] >= 0.95f) {
         m->forwardVel -= 1.0f;
     }
 
@@ -1140,7 +1144,6 @@ static void update_metal_water_walking_speed(struct MarioState *m) {
 }
 
 static s32 update_metal_water_jump_speed(struct MarioState *m) {
-    UNUSED f32 nextY = m->pos[1] + m->vel[1];
     f32 waterSurface = m->waterLevel - 100;
 
     if (m->vel[1] > 0.0f && m->pos[1] > waterSurface) {

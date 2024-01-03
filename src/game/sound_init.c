@@ -18,7 +18,6 @@
 
 #define MUSIC_NONE 0xFFFF
 
-static Vec3f unused80339DC0;
 static OSMesgQueue sSoundMesgQueue;
 static OSMesg sSoundMesgBuf[1];
 static struct VblankHandler sSoundVblankHandler;
@@ -31,8 +30,7 @@ static u16 sCurrentMusic = MUSIC_NONE;
 static u16 sCurrentShellMusic = MUSIC_NONE;
 static u16 sCurrentCapMusic = MUSIC_NONE;
 static u8 sPlayingInfiniteStairs = FALSE;
-UNUSED static u8 unused8032C6D8[16] = { 0 };
-static s16 sSoundMenuModeToSoundMode[] = { SOUND_MODE_STEREO, SOUND_MODE_MONO, SOUND_MODE_HEADSET };
+static s16 sSoundMenuModeToSoundMode[] = { SOUND_MODE_STEREO, SOUND_MODE_MONO };
 // Only the 20th array element is used.
 static u32 sMenuSoundsExtra[] = {
     SOUND_MOVING_TERRAIN_SLIDE + (0 << 16),
@@ -139,7 +137,7 @@ void enable_background_sound(void) {
  * Called from threads: thread5_game_loop
  */
 void set_sound_mode(u16 soundMode) {
-    if (soundMode < 3) {
+    if (soundMode < 2) {
         audio_set_sound_mode(sSoundMenuModeToSoundMode[soundMode]);
     }
 }
@@ -328,16 +326,13 @@ void play_menu_sounds_extra(s32 a, void *b) {
 void audio_game_loop_tick(void) {
     audio_signal_game_loop_tick();
 }
-
+extern u32 gSoundTime;
 /**
  * Sound processing thread. Runs at 60 FPS.
  */
 void thread4_sound(UNUSED void *arg) {
     audio_init();
     sound_init();
-
-    // Zero-out unused vector
-    vec3f_copy(unused80339DC0, gVec3fZero);
 
     osCreateMesgQueue(&sSoundMesgQueue, sSoundMesgBuf, ARRAY_COUNT(sSoundMesgBuf));
     set_vblank_handler(1, &sSoundVblankHandler, &sSoundMesgQueue, (OSMesg) 512);
@@ -346,6 +341,9 @@ void thread4_sound(UNUSED void *arg) {
         OSMesg msg;
 
         osRecvMesg(&sSoundMesgQueue, &msg, OS_MESG_BLOCK);
+#ifdef PUPPYPRINT_DEBUG
+        u32 first = osGetCount();
+#endif
         if (gResetTimer < 25) {
             struct SPTask *spTask;
             profiler_log_thread4_time();
@@ -355,5 +353,8 @@ void thread4_sound(UNUSED void *arg) {
             }
             profiler_log_thread4_time();
         }
+#ifdef PUPPYPRINT_DEBUG
+        gSoundTime = osGetCount() - first;
+#endif
     }
 }

@@ -9,10 +9,13 @@
 #include "buffers/framebuffers.h"
 #include "buffers/zbuffer.h"
 #include "engine/level_script.h"
+#include "engine/math_util.h"
 #include "game_init.h"
+#include "level_update.h"
 #include "main.h"
 #include "memory.h"
 #include "profiler.h"
+#include "rendering_graph_node.h"
 #include "save_file.h"
 #include "seq_ids.h"
 #include "sound_init.h"
@@ -40,6 +43,16 @@ struct SPTask *gGfxSPTask;
 Gfx *gDisplayListHead;
 u8 *gGfxPoolEnd;
 struct GfxPool *gGfxPool;
+u8 gFileSelect;
+
+u32 gMoveSpeed = 1;
+f32 gLerpSpeed = 1;
+u16 gScreenWidth = 320;
+u16 gScreenHeight = 240;
+u8 gScreenSwapTimer;
+f32 gAspectRatio;
+u64 *gTaskBufStart = NULL;
+u64 *gTaskBufEnd = NULL;
 
 // OS Controllers
 OSContStatus gControllerStatuses[4];
@@ -55,12 +68,15 @@ s8 gEepromProbe;
 s8 gSramProbe;
 #endif
 OSMesgQueue gGameVblankQueue;
+OSMesgQueue gVideoVblankQueue;
 OSMesgQueue gGfxVblankQueue;
 OSMesg gGameMesgBuf[1];
+OSMesg gVideoMesgBuf[1];
 OSMesg gGfxMesgBuf[1];
 
 // Vblank Handler
 struct VblankHandler gGameVblankHandler;
+struct VblankHandler gVideoVblankHandler;
 
 // Buffers
 uintptr_t gPhysicalFramebuffers[3];
@@ -71,17 +87,16 @@ void *gMarioAnimsMemAlloc;
 void *gDemoInputsMemAlloc;
 struct DmaHandlerList gMarioAnimsBuf;
 struct DmaHandlerList gDemoInputsBuf;
-
-// fillers
-UNUSED static u8 sfillerGameInit[0x90];
-UNUSED static s32 sUnusedGameInitValue = 0;
+u8 gGoddardReady = FALSE;
 
 // General timer that runs as the game starts
 u32 gGlobalTimer = 0;
+u32 gVideoTimer = 0;
 
 // Framebuffer rendering values (max 3)
 u16 sRenderedFramebuffer = 0;
 u16 sRenderingFramebuffer = 0;
+u8 gPlatform = 0;
 
 // Goddard Vblank Function Caller
 void (*gGoddardVblankCallback)(void) = NULL;
@@ -89,62 +104,58 @@ void (*gGoddardVblankCallback)(void) = NULL;
 // Defined controller slots
 struct Controller *gPlayer1Controller = &gControllers[0];
 struct Controller *gPlayer2Controller = &gControllers[1];
-struct Controller *gPlayer3Controller = &gControllers[2]; // Probably debug only, see note below
 
 // Title Screen Demo Handler
 struct DemoInput *gCurrDemoInput = NULL;
 u16 gDemoInputListID = 0;
-struct DemoInput gRecordedDemoInput = { 0 };
 
 // Display
 // ----------------------------------------------------------------------------------------------------
 
+
+Gfx dInitRDP[] = {
+    gsDPPipeSync(),
+    gsDPPipelineMode(G_PM_NPRIMITIVE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+
+    gsDPSetTextureLOD(G_TL_TILE),
+    gsDPSetTextureLUT(G_TT_NONE),
+    gsDPSetTextureDetail(G_TD_CLAMP),
+    gsDPSetTexturePersp(G_TP_PERSP),
+    gsDPSetTextureFilter(G_TF_BILERP),
+    gsDPSetTextureConvert(G_TC_FILT),
+
+    gsDPSetCombineKey(G_CK_NONE),
+    gsDPSetAlphaCompare(G_AC_NONE),
+    gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
+    gsDPSetColorDither(G_CD_MAGICSQ),
+    gsDPSetCycleType(G_CYC_FILL),
+#ifdef VERSION_SH
+    gsDPSetAlphaDither(G_AD_PATTERN),
+#endif
+    gsSPEndDisplayList(),
+};
 /**
  * Sets the initial RDP (Reality Display Processor) rendering settings.
  */
 void init_rdp(void) {
-    gDPPipeSync(gDisplayListHead++);
-    gDPPipelineMode(gDisplayListHead++, G_PM_1PRIMITIVE);
-
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
-
-    gDPSetTextureLOD(gDisplayListHead++, G_TL_TILE);
-    gDPSetTextureLUT(gDisplayListHead++, G_TT_NONE);
-    gDPSetTextureDetail(gDisplayListHead++, G_TD_CLAMP);
-    gDPSetTexturePersp(gDisplayListHead++, G_TP_PERSP);
-    gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
-    gDPSetTextureConvert(gDisplayListHead++, G_TC_FILT);
-
-    gDPSetCombineKey(gDisplayListHead++, G_CK_NONE);
-    gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
-    gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetColorDither(gDisplayListHead++, G_CD_MAGICSQ);
-    gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
-
-#ifdef VERSION_SH
-    gDPSetAlphaDither(gDisplayListHead++, G_AD_PATTERN);
-#endif
-    gDPPipeSync(gDisplayListHead++);
+    gSPDisplayList(gDisplayListHead++, dInitRDP);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, gScreenHeight);
 }
+
+Gfx dInitRSP[] = {
+    gsSPClearGeometryMode(0xFFFFFFFF),
+    gsSPSetGeometryMode(G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK | G_LIGHTING),
+    gsSPNumLights(NUMLIGHTS_1),
+    gsSPTexture(0, 0, 0, G_TX_RENDERTILE, G_OFF),
+    gsSPEndDisplayList(),
+};
 
 /**
  * Sets the initial RSP (Reality Signal Processor) settings.
  */
 void init_rsp(void) {
-    gSPClearGeometryMode(gDisplayListHead++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BOTH | G_FOG
-                        | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR | G_LOD);
-
-    gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK | G_LIGHTING);
-
-    gSPNumLights(gDisplayListHead++, NUMLIGHTS_1);
-    gSPTexture(gDisplayListHead++, 0, 0, 0, G_TX_RENDERTILE, G_OFF);
-
-    // @bug Failing to set the clip ratio will result in warped triangles in F3DEX2
-    // without this change: https://jrra.zone/n64/doc/n64man/gsp/gSPClipRatio.htm
-#ifdef F3DEX_GBI_2
-    gSPClipRatio(gDisplayListHead++, FRUSTRATIO_1);
-#endif
+    gSPDisplayList(gDisplayListHead++, dInitRSP);
 }
 
 /**
@@ -156,12 +167,10 @@ void init_z_buffer(void) {
     gDPSetDepthSource(gDisplayListHead++, G_ZS_PIXEL);
     gDPSetDepthImage(gDisplayListHead++, gPhysicalZBuffer);
 
-    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH, gPhysicalZBuffer);
-    gDPSetFillColor(gDisplayListHead++,
-                    GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
+    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, gScreenWidth, gPhysicalZBuffer);
+    gDPSetFillColor(gDisplayListHead++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
 
-    gDPFillRectangle(gDisplayListHead++, 0, gBorderHeight, SCREEN_WIDTH - 1,
-                     SCREEN_HEIGHT - 1 - gBorderHeight);
+    gDPFillRectangle(gDisplayListHead++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
 }
 
 /**
@@ -171,10 +180,8 @@ void select_framebuffer(void) {
     gDPPipeSync(gDisplayListHead++);
 
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
-    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH,
-                     gPhysicalFramebuffers[sRenderingFramebuffer]);
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, gBorderHeight, SCREEN_WIDTH,
-                  SCREEN_HEIGHT - gBorderHeight);
+    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, gScreenWidth, gPhysicalFramebuffers[sRenderingFramebuffer]);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, gScreenHeight);
 }
 
 /**
@@ -189,8 +196,8 @@ void clear_framebuffer(s32 color) {
 
     gDPSetFillColor(gDisplayListHead++, color);
     gDPFillRectangle(gDisplayListHead++,
-                     GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), gBorderHeight,
-                     GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - gBorderHeight - 1);
+                     GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), 0,
+                     GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, gScreenHeight - 1);
 
     gDPPipeSync(gDisplayListHead++);
 
@@ -205,11 +212,6 @@ void clear_viewport(Vp *viewport, s32 color) {
     s16 vpUly = (viewport->vp.vtrans[1] - viewport->vp.vscale[1]) / 4 + 1;
     s16 vpLrx = (viewport->vp.vtrans[0] + viewport->vp.vscale[0]) / 4 - 2;
     s16 vpLry = (viewport->vp.vtrans[1] + viewport->vp.vscale[1]) / 4 - 2;
-
-#ifdef WIDESCREEN
-    vpUlx = GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(vpUlx);
-    vpLrx = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(SCREEN_WIDTH - vpLrx);
-#endif
 
     gDPPipeSync(gDisplayListHead++);
 
@@ -230,19 +232,11 @@ void clear_viewport(Vp *viewport, s32 color) {
 void draw_screen_borders(void) {
     gDPPipeSync(gDisplayListHead++);
 
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, gScreenWidth, gScreenHeight);
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
 
     gDPSetFillColor(gDisplayListHead++, GPACK_RGBA5551(0, 0, 0, 0) << 16 | GPACK_RGBA5551(0, 0, 0, 0));
-
-    if (gBorderHeight) {
-        gDPFillRectangle(gDisplayListHead++, GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), 0,
-                        GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, gBorderHeight - 1);
-        gDPFillRectangle(gDisplayListHead++,
-                        GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(0), SCREEN_HEIGHT - gBorderHeight,
-                        GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(0) - 1, SCREEN_HEIGHT - 1);
-    }
 }
 
 /**
@@ -309,9 +303,8 @@ void create_gfx_task_structure(void) {
 #endif
     gGfxSPTask->task.t.dram_stack = (u64 *) gGfxSPTaskStack;
     gGfxSPTask->task.t.dram_stack_size = SP_DRAM_STACK_SIZE8;
-    gGfxSPTask->task.t.output_buff = gGfxSPTaskOutputBuffer;
-    gGfxSPTask->task.t.output_buff_size =
-        (u64 *)((u8 *) gGfxSPTaskOutputBuffer + sizeof(gGfxSPTaskOutputBuffer));
+    gGfxSPTask->task.t.output_buff = gTaskBufStart;
+    gGfxSPTask->task.t.output_buff_size = gTaskBufEnd;
     gGfxSPTask->task.t.data_ptr = (u64 *) &gGfxPool->buffer;
     gGfxSPTask->task.t.data_size = entries * sizeof(Gfx);
     gGfxSPTask->task.t.yield_data_ptr = (u64 *) gGfxSPTaskYieldBuffer;
@@ -334,9 +327,6 @@ void init_rcp(void) {
  */
 void end_master_display_list(void) {
     draw_screen_borders();
-    if (gShowProfiler) {
-        draw_profiler();
-    }
 
     gDPFullSync(gDisplayListHead++);
     gSPEndDisplayList(gDisplayListHead++);
@@ -360,12 +350,12 @@ void draw_reset_bars(void) {
         }
 
         fbPtr = (u64 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[fbNum]);
-        fbPtr += gNmiResetBarsTimer++ * (SCREEN_WIDTH / 4);
+        fbPtr += gNmiResetBarsTimer++ * (gScreenWidth / 4);
 
-        for (width = 0; width < ((SCREEN_HEIGHT / 16) + 1); width++) {
+        for (width = 0; width < ((gScreenHeight / 16) + 1); width++) {
             // Loop must be one line to match on -O2
-            for (height = 0; height < (SCREEN_WIDTH / 4); height++) *fbPtr++ = 0;
-            fbPtr += ((SCREEN_WIDTH / 4) * 14);
+            for (height = 0; height < (gScreenWidth / 4); height++) *fbPtr++ = 0;
+            fbPtr += ((gScreenWidth / 4) * 14);
         }
     }
 
@@ -390,43 +380,35 @@ void check_cache_emulation() {
 }
 
 /**
+ * Selects the location of the F3D output buffer (gDisplayListHead).
+ */
+void select_gfx_pool(void) {
+    gGfxPool = &gGfxPools[gVideoTimer % ARRAY_COUNT(gGfxPools)];
+    set_segment_base_addr(1, gGfxPool->buffer);
+    gGfxSPTask = &gGfxPool->spTask;
+    gDisplayListHead = (Gfx *) ((u32)gGfxPool->buffer);
+    gGfxPoolEnd = (u8 *) (gGfxPool->buffer + GFX_POOL_SIZE);
+}
+
+/**
  * Initial settings for the first rendered frame.
  */
 void render_init(void) {
     if (IO_READ(DPC_PIPEBUSY_REG) == 0) {
         gIsConsole = 0;
-        gBorderHeight = BORDER_HEIGHT_EMULATOR;
         check_cache_emulation();
     } else {
         gIsConsole = 1;
-        gBorderHeight = BORDER_HEIGHT_CONSOLE;
-    }    
-    gGfxPool = &gGfxPools[0];
-    set_segment_base_addr(1, gGfxPool->buffer);
-    gGfxSPTask = &gGfxPool->spTask;
-    gDisplayListHead = gGfxPool->buffer;
-    gGfxPoolEnd = (u8 *)(gGfxPool->buffer + GFX_POOL_SIZE);
+    }
+    select_gfx_pool();
     init_rcp();
     clear_framebuffer(0);
     end_master_display_list();
     exec_display_list(&gGfxPool->spTask);
 
     // Skip incrementing the initial framebuffer index on emulators other than Ares so that they display immediately as the Gfx task finishes
-    if (gIsConsole || gCacheEmulated) { // Read RDP Clock Register, has a value of zero on emulators
         sRenderingFramebuffer++;
-    }
-    gGlobalTimer++;
-}
-
-/**
- * Selects the location of the F3D output buffer (gDisplayListHead).
- */
-void select_gfx_pool(void) {
-    gGfxPool = &gGfxPools[gGlobalTimer % ARRAY_COUNT(gGfxPools)];
-    set_segment_base_addr(1, gGfxPool->buffer);
-    gGfxSPTask = &gGfxPool->spTask;
-    gDisplayListHead = gGfxPool->buffer;
-    gGfxPoolEnd = (u8 *) (gGfxPool->buffer + GFX_POOL_SIZE);
+    gVideoTimer++;
 }
 
 /**
@@ -437,67 +419,27 @@ void select_gfx_pool(void) {
  * - Selects which framebuffer will be rendered and displayed to next time.
  */
 void display_and_vsync(void) {
-    profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
     osRecvMesg(&gGfxVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     if (gGoddardVblankCallback != NULL) {
         gGoddardVblankCallback();
         gGoddardVblankCallback = NULL;
     }
     exec_display_list(&gGfxPool->spTask);
-    profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
-    osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     osViSwapBuffer((void *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[sRenderedFramebuffer]));
-    profiler_log_thread5_time(THREAD5_END);
-    osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     // Skip swapping buffers on emulator other than Ares so that they display immediately as the Gfx task finishes
-    if (gIsConsole || gCacheEmulated) { // Read RDP Clock Register, has a value of zero on emulators
         if (++sRenderedFramebuffer == 3) {
             sRenderedFramebuffer = 0;
         }
         if (++sRenderingFramebuffer == 3) {
             sRenderingFramebuffer = 0;
         }
-    }
-    gGlobalTimer++;
-}
-
-// this function records distinct inputs over a 255-frame interval to RAM locations and was likely
-// used to record the demo sequences seen in the final game. This function is unused.
-UNUSED static void record_demo(void) {
-    // record the player's button mask and current rawStickX and rawStickY.
-    u8 buttonMask =
-        ((gPlayer1Controller->buttonDown & (A_BUTTON | B_BUTTON | Z_TRIG | START_BUTTON)) >> 8)
-        | (gPlayer1Controller->buttonDown & (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS));
-    s8 rawStickX = gPlayer1Controller->rawStickX;
-    s8 rawStickY = gPlayer1Controller->rawStickY;
-
-    // If the stick is in deadzone, set its value to 0 to
-    // nullify the effects. We do not record deadzone inputs.
-    if (rawStickX > -8 && rawStickX < 8) {
-        rawStickX = 0;
-    }
-
-    if (rawStickY > -8 && rawStickY < 8) {
-        rawStickY = 0;
-    }
-
-    // Rrecord the distinct input and timer so long as they are unique.
-    // If the timer hits 0xFF, reset the timer for the next demo input.
-    if (gRecordedDemoInput.timer == 0xFF || buttonMask != gRecordedDemoInput.buttonMask
-        || rawStickX != gRecordedDemoInput.rawStickX || rawStickY != gRecordedDemoInput.rawStickY) {
-        gRecordedDemoInput.timer = 0;
-        gRecordedDemoInput.buttonMask = buttonMask;
-        gRecordedDemoInput.rawStickX = rawStickX;
-        gRecordedDemoInput.rawStickY = rawStickY;
-    }
-    gRecordedDemoInput.timer++;
+    gVideoTimer++;
 }
 
 /**
  * Take the updated controller struct and calculate the new x, y, and distance floats.
  */
 void adjust_analog_stick(struct Controller *controller) {
-    UNUSED u8 filler[8];
 
     // Reset the controller's x and y floats.
     controller->stickX = 0;
@@ -521,8 +463,7 @@ void adjust_analog_stick(struct Controller *controller) {
     }
 
     // Calculate f32 magnitude from the center by vector length.
-    controller->stickMag =
-        sqrtf(controller->stickX * controller->stickX + controller->stickY * controller->stickY);
+    controller->stickMag = sqrtf(controller->stickX * controller->stickX + controller->stickY * controller->stickY);
 
     // Magnitude cannot exceed 64.0f: if it does, modify the values
     // appropriately to flatten the values down to the allowed maximum value.
@@ -533,6 +474,7 @@ void adjust_analog_stick(struct Controller *controller) {
     }
 }
 
+#ifndef DISABLE_DEMOS
 /**
  * If a demo sequence exists, this will run the demo input list until it is complete.
  */
@@ -589,6 +531,7 @@ void run_demo_inputs(void) {
         }
     }
 }
+#endif
 
 /**
  * Update the controller struct with available inputs if present.
@@ -604,7 +547,9 @@ void read_controller_inputs(void) {
         release_rumble_pak_control();
 #endif
     }
+#ifndef DISABLE_DEMOS
     run_demo_inputs();
+#endif
 
     for (i = 0; i < 2; i++) {
         struct Controller *controller = &gControllers[i];
@@ -613,8 +558,7 @@ void read_controller_inputs(void) {
         if (controller->controllerData != NULL) {
             controller->rawStickX = controller->controllerData->stick_x;
             controller->rawStickY = controller->controllerData->stick_y;
-            controller->buttonPressed = controller->controllerData->button
-                                        & (controller->controllerData->button ^ controller->buttonDown);
+            controller->buttonPressed = controller->controllerData->button & (controller->controllerData->button ^ controller->buttonDown);
             // 0.5x A presses are a good meme
             controller->buttonDown = controller->controllerData->button;
             adjust_analog_stick(controller);
@@ -632,13 +576,13 @@ void read_controller_inputs(void) {
     // For some reason, player 1's inputs are copied to player 3's port.
     // This potentially may have been a way the developers "recorded"
     // the inputs for demos, despite record_demo existing.
-    gPlayer3Controller->rawStickX = gPlayer1Controller->rawStickX;
-    gPlayer3Controller->rawStickY = gPlayer1Controller->rawStickY;
-    gPlayer3Controller->stickX = gPlayer1Controller->stickX;
-    gPlayer3Controller->stickY = gPlayer1Controller->stickY;
-    gPlayer3Controller->stickMag = gPlayer1Controller->stickMag;
-    gPlayer3Controller->buttonPressed = gPlayer1Controller->buttonPressed;
-    gPlayer3Controller->buttonDown = gPlayer1Controller->buttonDown;
+    gPlayer1Controller->rawStickX = gPlayer1Controller->rawStickX;
+    gPlayer1Controller->rawStickY = gPlayer1Controller->rawStickY;
+    gPlayer1Controller->stickX = gPlayer1Controller->stickX;
+    gPlayer1Controller->stickY = gPlayer1Controller->stickY;
+    gPlayer1Controller->stickMag = gPlayer1Controller->stickMag;
+    gPlayer1Controller->buttonPressed = gPlayer1Controller->buttonPressed;
+    gPlayer1Controller->buttonDown = gPlayer1Controller->buttonDown;
 }
 
 /**
@@ -652,6 +596,7 @@ void init_controllers(void) {
     gControllers[0].statusData = &gControllerStatuses[0];
     gControllers[0].controllerData = &gControllerPads[0];
     osContInit(&gSIEventMesgQueue, &gControllerBits, &gControllerStatuses[0]);
+    osContSetCh(2);
 
 #ifdef EEP
     // strangely enough, the EEPROM probe for save data is done in this function.
@@ -665,7 +610,7 @@ void init_controllers(void) {
     // Loop over the 4 ports and link the controller structs to the appropriate
     // status and pad. Interestingly, although there are pointers to 3 controllers,
     // only 2 are connected here. The third seems to have been reserved for debug
-    // purposes and was never connected in the retail ROM, thus gPlayer3Controller
+    // purposes and was never connected in the retail ROM, thus gPlayer1Controller
     // cannot be used, despite being referenced in various code.
     for (cont = 0, port = 0; port < 4 && cont < 2; port++) {
         // Is controller plugged in?
@@ -686,41 +631,76 @@ void init_controllers(void) {
 // Game thread core
 // ----------------------------------------------------------------------------------------------------
 
+
+extern struct DmaHandlerList gMarioGfxAnimBuf;
+extern void *gMarioAnimHeap;
 /**
  * Setup main segments and framebuffers.
  */
 void setup_game_memory(void) {
-    UNUSED u8 filler[8];
 
     // Setup general Segment 0
     set_segment_base_addr(0, (void *) 0x80000000);
     // Create Mesg Queues
     osCreateMesgQueue(&gGfxVblankQueue, gGfxMesgBuf, ARRAY_COUNT(gGfxMesgBuf));
     osCreateMesgQueue(&gGameVblankQueue, gGameMesgBuf, ARRAY_COUNT(gGameMesgBuf));
+    osCreateMesgQueue(&gVideoVblankQueue, gVideoMesgBuf, ARRAY_COUNT(gVideoMesgBuf));
     // Setup z buffer and framebuffer
-    gPhysicalZBuffer = VIRTUAL_TO_PHYSICAL(gZBuffer);
-    gPhysicalFramebuffers[0] = VIRTUAL_TO_PHYSICAL(gFramebuffer0);
-    gPhysicalFramebuffers[1] = VIRTUAL_TO_PHYSICAL(gFramebuffer1);
-    gPhysicalFramebuffers[2] = VIRTUAL_TO_PHYSICAL(gFramebuffer2);
+    if (osGetMemSize() == 0x400000) {
+        gPhysicalZBuffer = VIRTUAL_TO_PHYSICAL(gZBuffer);
+        gPhysicalFramebuffers[0] = VIRTUAL_TO_PHYSICAL(gFramebuffer0);
+        gPhysicalFramebuffers[1] = VIRTUAL_TO_PHYSICAL(gFramebuffer1);
+        gPhysicalFramebuffers[2] = VIRTUAL_TO_PHYSICAL(gFramebuffer2);
+        gTaskBufStart = gGfxSPTaskOutputBuffer;
+        gTaskBufEnd = (u64 *)((u8 *) gGfxSPTaskOutputBuffer + sizeof(gGfxSPTaskOutputBuffer));
+    } else {
+        // Expansion memory goes unused, so I just haphazardly pointed FB's here.
+        gPhysicalZBuffer =         (uintptr_t) 0x80400000;
+        gPhysicalFramebuffers[0] = (uintptr_t) 0x80500000;
+        gPhysicalFramebuffers[1] = (uintptr_t) 0x80600000;
+        gPhysicalFramebuffers[2] = (uintptr_t) 0x80700000;
+        gTaskBufStart = (u64 *) 0x80680000;
+        gTaskBufEnd = (u64 *) 0x806E0000;
+    }
     // Setup Mario Animations
     gMarioAnimsMemAlloc = main_pool_alloc(0x4000, MEMORY_POOL_LEFT);
+    gMarioAnimHeap = main_pool_alloc(0x4000, MEMORY_POOL_LEFT);
+    //gMarioAnimsMemAlloc = main_pool_alloc(sizeof(struct Animation), MEMORY_POOL_LEFT);
     set_segment_base_addr(17, (void *) gMarioAnimsMemAlloc);
     setup_dma_table_list(&gMarioAnimsBuf, gMarioAnims, gMarioAnimsMemAlloc);
+    setup_dma_table_list(&gMarioGfxAnimBuf, gMarioAnims, gMarioAnimHeap);
     // Setup Demo Inputs List
     gDemoInputsMemAlloc = main_pool_alloc(0x800, MEMORY_POOL_LEFT);
     set_segment_base_addr(24, (void *) gDemoInputsMemAlloc);
     setup_dma_table_list(&gDemoInputsBuf, gDemoInputs, gDemoInputsMemAlloc);
     // Setup Level Script Entry
-    load_segment(0x10, _entrySegmentRomStart, _entrySegmentRomEnd, MEMORY_POOL_LEFT);
+    load_segment(0x10, _entrySegmentRomStart, _entrySegmentRomEnd, MEMORY_POOL_LEFT, NULL, NULL);
     // Setup Segment 2 (Fonts, Text, etc)
     load_segment_decompress(2, _segment2_mio0SegmentRomStart, _segment2_mio0SegmentRomEnd);
 }
+
+extern u32 gGameTime;
+#define SECONDS_PER_CYCLE 0.00000002133f
+
+void load_config(void) {
+    save_file_get_config();
+    if (gDedither == 0) {
+        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_OFF);
+        osViSetSpecialFeatures(OS_VI_DIVOT_OFF);
+    } else {
+        osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+        osViSetSpecialFeatures(OS_VI_DIVOT_ON);
+    }
+    gScreenSwapTimer = 1;
+}
+
 
 /**
  * Main game loop thread. Runs forever as long as the game continues.
  */
 void thread5_game_loop(UNUSED void *arg) {
     struct LevelCommand *addr;
+    u32 thread9Start = FALSE;
 
     setup_game_memory();
 #if ENABLE_RUMBLE
@@ -742,7 +722,7 @@ void thread5_game_loop(UNUSED void *arg) {
 
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(save_file_get_sound_mode());
-    render_init();
+    load_config();
 
     while (TRUE) {
         // If the reset timer is active, run the process to reset the game.
@@ -750,7 +730,10 @@ void thread5_game_loop(UNUSED void *arg) {
             draw_reset_bars();
             continue;
         }
+#ifdef PUPPYPRINT_DEBUG
+        u32 first = osGetCount();
         profiler_log_thread5_time(THREAD5_START);
+#endif
 
         // If any controllers are plugged in, start read the data for when
         // read_controller_inputs is called later.
@@ -762,28 +745,141 @@ void thread5_game_loop(UNUSED void *arg) {
         }
 
         audio_game_loop_tick();
-        select_gfx_pool();
         read_controller_inputs();
         addr = level_script_execute(addr);
-
-        display_and_vsync();
-
-        // when debug info is enabled, print the "BUF %d" information.
-        if (gShowDebugText) {
-            // subtract the end of the gfx pool with the display list to obtain the
-            // amount of free space remaining.
-            print_text_fmt_int(180, 20, "BUF %d", gGfxPoolEnd - (u8 *) gDisplayListHead);
+        hud_logic();
+        gGlobalTimer++;
+#ifdef PUPPYPRINT_DEBUG
+        profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
+        profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
+        profiler_log_thread5_time(THREAD5_END);
+        gGameTime = osGetCount() - first;
+#endif
+        if (thread9Start == FALSE) {
+            osStartThread(&gVideoLoopThread);
+            thread9Start = TRUE;
         }
 #ifdef UNF
         if (gPlayer1Controller->buttonPressed & L_TRIG) {
             debug_screenshot();
         }
 #endif
+        osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+        osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
 #if 0
         if (gPlayer1Controller->buttonPressed & L_TRIG) {
             osStartThread(&hvqmThread);
             osRecvMesg(&gDmaMesgQueue, NULL, OS_MESG_BLOCK);
         }
 #endif
+    }
+}
+extern u32 gVideoTime;
+u32 lastRenderedFrame = 0xFFFFFFFF;
+u8 gLoadReset = 0;
+
+void change_vi(OSViMode *mode, int width, int height);
+extern OSViMode VI;
+
+void swap_screen(void) {
+    if (gScreenSwapTimer > 0) {
+        gScreenSwapTimer--;
+        if (gScreenSwapTimer == 0) {
+            switch (gScreenMode) {
+            case 0:
+                gScreenWidth = 320;
+                gScreenHeight = 240;
+                break;
+            case 1:
+                gScreenWidth = 384;
+                gScreenHeight = 240;
+                break;
+            case 2:
+                gScreenWidth = 424;
+                gScreenHeight = 240;
+                break;
+            case 3:
+                gScreenWidth = 400;
+                gScreenHeight = 300;
+                break;
+            case 4:
+                gScreenWidth = 480;
+                gScreenHeight = 360;
+                break;
+            }
+            change_vi(&VI, gScreenWidth, gScreenHeight);
+        }
+    }
+}
+
+#ifdef BBPLAYER
+#define ISNOTIQUE 0
+#else
+#define ISNOTIQUE 1
+#endif
+
+void thread9_graphics(UNUSED void *arg) {
+    u32 prevTime = 0;
+    gScreenSwapTimer = 1;
+
+    set_vblank_handler(3, &gVideoVblankHandler, &gVideoVblankQueue, (OSMesg) 1);
+    render_init();
+
+    while (gResetTimer == 0) {
+#ifdef PUPPYPRINT_DEBUG
+        u32 first = osGetCount();
+#endif
+
+        u32 deltaTime = osGetCount() - prevTime;
+        prevTime = osGetCount();
+        gLerpSpeed = OS_CYCLES_TO_USEC(deltaTime) / 33333.33f;
+   
+        if (gDisableDraw) {
+            gDisableDraw = 0;
+            gWarpTransition.isActive = FALSE;
+            if (!gWarpTransition.isActive) {
+                if (gWarpTransition.type & 1) {
+                    gWarpTransition.pauseRendering = TRUE;
+                } else {
+                    set_warp_transition_rgb(0, 0, 0);
+                }
+            }
+        } else {
+            profiler_log_thread9_time(THREAD9_START);
+            if (deltaTime < OS_USEC_TO_CYCLES(33333)) { // > 30 fps
+                if (lastRenderedFrame - gGlobalTimer == 1) {
+                    gMoveSpeed = 0; // Full
+                } else {
+                    gMoveSpeed = 1; // Half
+                }
+            } else {
+                gMoveSpeed = 0;
+            }
+            lastRenderedFrame = gGlobalTimer;
+            if (gLoadReset) {
+                gLoadReset = 0;
+                gLerpSpeed = 1.0f;
+                gMoveSpeed = 1;
+            }
+            if ((gTargetCam && gIsConsole) && ISNOTIQUE) {
+                update_graph_node_camera(gTargetCam);
+            }
+            select_gfx_pool();
+            init_rcp();
+            render_game();
+            end_master_display_list();
+            alloc_display_list(0);
+#ifdef PUPPYPRINT_DEBUG
+            gVideoTime = osGetCount() - first;
+            profiler_log_thread9_time(THREAD9_END);
+#endif      
+            display_and_vsync();
+            swap_screen();
+        }
+
+        osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+        if (gFrameCap) {
+            osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+        }
     }
 }

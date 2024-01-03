@@ -1,8 +1,4 @@
 // 0x070236E8 - 0x07023700
-static const Lights1 lll_seg7_lights_070236E8 = gdSPDefLights1(
-    0x66, 0x66, 0x66,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x07023700 - 0x070237E0
 static const Vtx lll_seg7_vertex_07023700[] = {
@@ -320,8 +316,8 @@ static const Gfx lll_seg7_dl_07024630[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, lll_seg7_texture_0700D400),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&lll_seg7_lights_070236E8.l, 1),
-    gsSPLight(&lll_seg7_lights_070236E8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x666666ff),
     gsSPVertex(lll_seg7_vertex_07023700, 14, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  1,  3,  2, 0x0),
     gsSP2Triangles( 0,  2,  4, 0x0,  0,  4,  5, 0x0),
@@ -450,12 +446,7 @@ static const Gfx lll_seg7_dl_07024B40[] = {
 // 0x07024C18 - 0x07024CD8
 const Gfx lll_seg7_dl_07024C18[] = {
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_2CYCLE),
-    gsDPSetRenderMode(G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2),
     gsDPSetDepthSource(G_ZS_PIXEL),
-    gsDPSetFogColor(0, 0, 0, 255),
-    gsSPFogFactor(0x0855, 0xF8AB), // This isn't gsSPFogPosition since there is no valid min/max pair that corresponds to 0x0855F8AB
-    gsSPSetGeometryMode(G_FOG),
     gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -468,9 +459,6 @@ const Gfx lll_seg7_dl_07024C18[] = {
     gsSPDisplayList(lll_seg7_dl_07024B40),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCycleType(G_CYC_1CYCLE),
-    gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_NOOP2),
-    gsSPClearGeometryMode(G_FOG),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };

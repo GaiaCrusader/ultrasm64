@@ -42,7 +42,7 @@ void bhv_yellow_coin_init(void) {
     bhv_init_room();
     cur_obj_update_floor_height();
 
-    if (500.0f < absf(o->oPosY - o->oFloorHeight)) {
+    if (500.0f < ABS(o->oPosY - o->oFloorHeight)) {
         cur_obj_set_model(MODEL_YELLOW_COIN_NO_SHADOW);
     }
 
@@ -83,14 +83,19 @@ void bhv_coin_loop(void) {
     cur_obj_if_hit_wall_bounce_away();
     cur_obj_move_standard(-62);
 
-    if ((sp1C = o->oFloor) != NULL) {
+    
+
+    if ((sp1C = o->oFloor) != NULL) {        
+    f32 normal[4];
+    get_surface_normal(normal, o->oFloor);
+
         if (o->oMoveFlags & OBJ_MOVE_ON_GROUND) {
             o->oSubAction = 1;
         }
         if (o->oSubAction == 1) {
             o->oBounciness = 0;
-            if (sp1C->normal.y < 0.9) {
-                s16 sp1A = atan2s(sp1C->normal.z, sp1C->normal.x);
+            if (normal[1] < 0.9f) {
+                s16 sp1A = atan2s(normal[2], normal[0]);
                 cur_obj_rotate_yaw_toward(sp1A, 0x400);
             }
         }
@@ -151,13 +156,13 @@ void bhv_coin_formation_spawn_loop(void) {
         } else {
             cur_obj_update_floor_height();
 
-            if (absf(o->oPosY - o->oFloorHeight) > 250.0f) {
+            if (ABS(o->oPosY - o->oFloorHeight) > 250.0f) {
                 cur_obj_set_model(MODEL_YELLOW_COIN_NO_SHADOW);
             }
         }
     } else {
         if (bhv_coin_sparkles_init()) {
-            o->parentObj->oCoinUnkF4 |= bit_shift_left(o->oBehParams2ndByte);
+            o->parentObj->oCoinUnkF4 |= sPowersOfTwo[o->oBehParams2ndByte];
         }
         o->oAnimState++;
     }
@@ -184,7 +189,7 @@ void spawn_coin_in_formation(s32 sp50, s32 sp54) {
             break;
         case 1:
             sp38 = 0;
-            sp40[1] = 160 * sp50 * 0.8; // 128 * sp50
+            sp40[1] = 160 * sp50 * 0.8f; // 128 * sp50
             if (sp50 > 4) {
                 sp3C = 0;
             }
@@ -312,7 +317,6 @@ void bhv_coin_sparkles_loop(void) {
 
 void bhv_golden_coin_sparkles_loop(void) {
     struct Object *sp2C;
-    UNUSED u8 filler[4];
     f32 sp24 = 30.0f;
 
     sp2C = spawn_object(o, MODEL_SPARKLES, bhvCoinSparkles);

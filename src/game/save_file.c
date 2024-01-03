@@ -11,6 +11,7 @@
 #include "level_table.h"
 #include "course_table.h"
 #include "rumble_init.h"
+#include "rendering_graph_node.h"
 #ifdef SRAM
 #include "sram.h"
 #endif
@@ -31,7 +32,6 @@ s8 gSaveFileModified;
 
 u8 gLastCompletedCourseNum = COURSE_NONE;
 u8 gLastCompletedStarNum = 0;
-s8 sUnusedGotGlobalCoinHiScore = FALSE;
 u8 gGotFileCoinHiScore = FALSE;
 u8 gCurrCourseStarFlags = 0;
 
@@ -335,8 +335,7 @@ void save_file_erase(s32 fileIndex) {
 }
 
 //! Needs to be s32 to match on -O2, despite no return value.
-BAD_RETURN(s32) save_file_copy(s32 srcFileIndex, s32 destFileIndex) {
-    UNUSED u8 filler[4];
+void save_file_copy(s32 srcFileIndex, s32 destFileIndex) {
 
     touch_high_score_ages(destFileIndex);
     bcopy(&gSaveBuffer.files[srcFileIndex][0], &gSaveBuffer.files[destFileIndex][0],
@@ -415,21 +414,15 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex) {
     s32 courseIndex = COURSE_NUM_TO_INDEX(gCurrCourseNum);
 
     s32 starFlag = 1 << starIndex;
-    UNUSED s32 flags = save_file_get_flags();
 
     gLastCompletedCourseNum = courseIndex + 1;
     gLastCompletedStarNum = starIndex + 1;
-    sUnusedGotGlobalCoinHiScore = FALSE;
     gGotFileCoinHiScore = FALSE;
 
     if (courseIndex >= COURSE_NUM_TO_INDEX(COURSE_MIN)
         && courseIndex <= COURSE_NUM_TO_INDEX(COURSE_STAGES_MAX)) {
         //! Compares the coin score as a 16 bit value, but only writes the 8 bit
         // truncation. This can allow a high score to decrease.
-
-        if (coinScore > ((u16) save_file_get_max_coin_score(courseIndex) & 0xFFFF)) {
-            sUnusedGotGlobalCoinHiScore = TRUE;
-        }
 
         if (coinScore > save_file_get_course_coin_score(fileIndex, courseIndex)) {
             gSaveBuffer.files[fileIndex][0].courseCoinScores[courseIndex] = coinScore;
@@ -618,7 +611,23 @@ void save_file_set_sound_mode(u16 mode) {
     save_main_menu_data();
 }
 
-u16 save_file_get_sound_mode(void) {
+void save_file_set_config(void) {
+    gSaveBuffer.menuData[0].antiAliasing = gAntiAliasing;
+    gSaveBuffer.menuData[0].dedither = gDedither;
+    gSaveBuffer.menuData[0].screenMode = gScreenMode;
+    gSaveBuffer.menuData[0].frameCap = gFrameCap;
+    gMainMenuDataModified = TRUE;
+    save_main_menu_data();
+}
+
+void save_file_get_config(void) {
+    gAntiAliasing = gSaveBuffer.menuData[0].antiAliasing;
+    gDedither = gSaveBuffer.menuData[0].dedither;
+    gScreenMode = gSaveBuffer.menuData[0].screenMode;
+    gFrameCap = gSaveBuffer.menuData[0].frameCap;
+}
+
+u32 save_file_get_sound_mode(void) {
     return gSaveBuffer.menuData[0].soundMode;
 }
 

@@ -25,8 +25,14 @@ static const Vtx title_screen_bg_vertex_0A000000[] = {
 
 // 0x0A000100 - 0x0A000118
 const Gfx title_screen_bg_dl_0A000100[] = {
+    gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
+    gsDPSetCycleType(G_CYC_COPY),
+    gsDPSetRenderMode(G_RM_NOOP, G_RM_NOOP2),
+
     gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
-    gsDPSetRenderMode(G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2),
+    gsDPSetCycleType(G_CYC_1CYCLE),
+    gsDPSetRenderMode(G_RM_OPA_SURF, G_RM_OPA_SURF2),
+
     gsSPEndDisplayList(),
 };
 
@@ -66,33 +72,34 @@ const Gfx title_screen_bg_dl_0A000190[] = {
     gsDPPipeSync(),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsSPSetGeometryMode(G_LIGHTING),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
     gsSPEndDisplayList(),
 };
 
 // 0x0A0001C0
-ALIGNED8 static const Texture title_texture_0A0001C0[] = {
+ALIGNED8 const Texture title_texture_0A0001C0[] = {
 #include "textures/title_screen_bg/title_screen_bg.001C0.rgba16.inc.c"
 };
 
 // 0x0A000E40
-ALIGNED8 static const Texture title_texture_0A000E40[] = {
+ALIGNED8 const Texture title_texture_0A000E40[] = {
 #include "textures/title_screen_bg/title_screen_bg.00E40.rgba16.inc.c"
 };
 
 // 0x0A001AC0
-ALIGNED8 static const Texture title_texture_0A001AC0[] = {
+ALIGNED8 const Texture title_texture_0A001AC0[] = {
 #include "textures/title_screen_bg/title_screen_bg.01AC0.rgba16.inc.c"
 };
 
 // 0x0A002740
-ALIGNED8 static const Texture title_texture_0A002740[] = {
+ALIGNED8 const Texture title_texture_0A002740[] = {
 #include "textures/title_screen_bg/title_screen_bg.02740.rgba16.inc.c"
 };
 
 // 0x0A0033C0
-ALIGNED8 static const Texture title_texture_0A0033C0[] = {
+ALIGNED8 const Texture title_texture_0A0033C0[] = {
 #include "textures/title_screen_bg/title_screen_bg.033C0.rgba16.inc.c"
 };
 
@@ -120,8 +127,6 @@ const Texture *const mario_title_texture_table[] = {
 const Texture *const game_over_texture_table[] = {
     title_texture_0A0033C0, title_texture_0A004040, title_texture_0A004CC0, title_texture_0A005940,
 };
-
-UNUSED static const u64 title_screen_bg_unused_0 = 0;
 
 #ifdef VERSION_SH
 const Gfx title_screen_bg_dl_0A0065E8[] = {

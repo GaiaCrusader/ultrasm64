@@ -83,7 +83,7 @@ static void homing_amp_appear_loop(void) {
     // evaluates to 0.1, which is the same as it was before. After 30 frames, it ends at
     // a scale factor of 0.97. The amp remains at 97% of its real height for 60 more frames.
     if (o->oTimer < 30) {
-        cur_obj_scale(0.1 + 0.9 * (f32)(o->oTimer / 30.0f));
+        cur_obj_scale(0.1f + 0.9f * (f32)(o->oTimer / 30.0f));
     } else {
         o->oAnimState = 1;
     }
@@ -157,7 +157,6 @@ static void homing_amp_chase_loop(void) {
  * Give up on chasing Mario.
  */
 static void homing_amp_give_up_loop(void) {
-    UNUSED u8 filler[8];
 
     // Move forward for 152 frames
     o->oForwardVel = 15.0f;

@@ -24,14 +24,14 @@ struct ObjectHitbox sTweesterHitbox = {
  */
 void tweester_scale_and_move(f32 preScale) {
     s16 dYaw  = 0x2C00;
-    f32 scale = preScale * 0.4;
+    f32 scale = preScale * 0.4f;
 
     o->header.gfx.scale[0]
-        = (( coss(o->oTweesterScaleTimer) + 1.0) * 0.5 * 0.3 + 1.0) * scale;
+        = (( coss(o->oTweesterScaleTimer) + 1.0f) * 0.5f * 0.3f + 1.0f) * scale;
     o->header.gfx.scale[1]
-        = ((-coss(o->oTweesterScaleTimer) + 1.0) * 0.5 * 0.5 + 0.5) * scale;
+        = ((-coss(o->oTweesterScaleTimer) + 1.0f) * 0.5f * 0.5f + 0.5f) * scale;
     o->header.gfx.scale[2]
-        = (( coss(o->oTweesterScaleTimer) + 1.0) * 0.5 * 0.3 + 1.0) * scale;
+        = (( coss(o->oTweesterScaleTimer) + 1.0f) * 0.5f * 0.3f + 1.0f) * scale;
 
     o->oTweesterScaleTimer += 0x200;
     o->oForwardVel = 14.0f;
@@ -48,9 +48,6 @@ void tweester_act_idle(void) {
         cur_obj_become_tangible();
         cur_obj_set_pos_to_home();
         cur_obj_scale(0.0f);
-
-        // Hard to have any idea of this purpose, only set here.
-        o->oTweesterUnused = 0;
 
         // If Mario is within range, change to the growth sub-action.
         if (o->oDistanceToMario < 1500.0f) {
@@ -82,7 +79,6 @@ void tweester_act_chase(void) {
 
         o->oForwardVel = 20.0f;
         cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x200);
-        print_debug_top_down_objectinfo("off ", 0);
 
         if (gMarioStates[0].action == ACT_TWIRLING) {
             o->oSubAction++;
@@ -156,7 +152,7 @@ void bhv_tweester_sand_particle_loop(void) {
     o->oForwardVel += 15.0f;
     o->oPosY += 22.0f;
 
-    cur_obj_scale(random_float() + 1.0);
+    cur_obj_scale(random_float() + 1.0f);
 
     if (o->oTimer == 0) {
         obj_translate_xz_random(o, 100.0f);

@@ -1,10 +1,6 @@
 // Exclamation Box
 
 // 0x08012E10
-static const Lights1 exclamation_box_seg8_lights_08012E10 = gdSPDefLights1(
-    0x3f, 0x3f, 0x3f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x08012E28
 ALIGNED8 static const Texture exclamation_box_seg8_texture_08012E28[] = {
@@ -80,8 +76,8 @@ static const Vtx exclamation_box_seg8_vertex_08018F28[] = {
 
 // 0x08018FA8 - 0x08019008
 const Gfx exclamation_box_seg8_dl_08018FA8[] = {
-    gsSPLight(&exclamation_box_seg8_lights_08012E10.l, 1),
-    gsSPLight(&exclamation_box_seg8_lights_08012E10.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(exclamation_box_seg8_vertex_08018E28, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  7,  8,  9, 0x0),
@@ -97,7 +93,6 @@ const Gfx exclamation_box_seg8_dl_08019008[] = {
     gsSP2Triangles( 4,  5,  6, 0x0,  4,  6,  7, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };
@@ -105,7 +100,7 @@ const Gfx exclamation_box_seg8_dl_08019008[] = {
 // 0x08019058 - 0x080190A0
 const Gfx exclamation_box_seg8_dl_08019058[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -149,8 +144,8 @@ static const Vtx exclamation_box_seg8_vertex_080191A0[] = {
 
 // 0x08019220 - 0x08019280
 const Gfx exclamation_box_seg8_dl_08019220[] = {
-    gsSPLight(&exclamation_box_seg8_lights_08012E10.l, 1),
-    gsSPLight(&exclamation_box_seg8_lights_08012E10.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(exclamation_box_seg8_vertex_080190A0, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  7,  8,  9, 0x0),
@@ -166,7 +161,6 @@ const Gfx exclamation_box_seg8_dl_08019280[] = {
     gsSP2Triangles( 4,  5,  6, 0x0,  4,  6,  7, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };
@@ -174,7 +168,7 @@ const Gfx exclamation_box_seg8_dl_08019280[] = {
 // 0x080192D0 - 0x08019318
 const Gfx exclamation_box_seg8_dl_080192D0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),

@@ -1,10 +1,6 @@
 // Bomb
 
 // 0x06057AA8
-static const Lights1 bomb_seg6_lights_06057AA8 = gdSPDefLights1(
-    0x3f, 0x3f, 0x3f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x06057AC0
 ALIGNED8 static const Texture bomb_seg6_texture_06057AC0[] = {
@@ -152,7 +148,7 @@ const Gfx bomb_seg6_dl_0605A7F8[] = {
 // 0x0605A830 - 0x0605A8A8
 const Gfx bomb_seg6_dl_0605A830[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -163,7 +159,7 @@ const Gfx bomb_seg6_dl_0605A830[] = {
     gsSPDisplayList(bomb_seg6_dl_0605A7F8),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -173,8 +169,8 @@ const Gfx bomb_seg6_dl_0605A8A8[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, bomb_seg6_texture_06059AC0),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&bomb_seg6_lights_06057AA8.l, 1),
-    gsSPLight(&bomb_seg6_lights_06057AA8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(bomb_seg6_vertex_0605A340, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  7,  8, 0x0,  9, 10, 11, 0x0),
@@ -200,7 +196,7 @@ const Gfx bomb_seg6_dl_0605A8A8[] = {
 // 0x0605A9C0 - 0x0605AA20
 const Gfx bomb_seg6_dl_0605A9C0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -209,6 +205,6 @@ const Gfx bomb_seg6_dl_0605A9C0[] = {
     gsSPDisplayList(bomb_seg6_dl_0605A8A8),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };

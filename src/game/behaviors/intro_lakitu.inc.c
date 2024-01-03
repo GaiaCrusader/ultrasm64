@@ -24,11 +24,9 @@ void intro_lakitu_set_offset_from_camera(struct Object *obj, Vec3f offset) {
 }
 
 void intro_lakitu_set_focus(struct Object *obj, Vec3f newFocus) {
-    UNUSED u8 filler1[12];
     Vec3f origin;
     f32 dist;
     s16 pitch, yaw;
-    UNUSED u8 filler2[4];
 
     // newFocus is an offset from lakitu's origin, not a point in the world.
     vec3f_set(origin, 0.0f, 0.0f, 0.0f);
@@ -73,7 +71,7 @@ s32 intro_lakitu_set_pos_and_focus(struct Object *obj, struct CutsceneSplinePoin
 
 void bhv_intro_lakitu_loop(void) {
     Vec3f sp64, sp58, sp4C;
-    UNUSED u8 filler[16];
+    o->header.gfx.node.flags |= GRAPH_RENDER_PRIORITY;
 
     switch (o->oAction) {
         case 0:
@@ -81,8 +79,9 @@ void bhv_intro_lakitu_loop(void) {
 
             o->oIntroLakituSplineSegment = 0.0f;
             o->oIntroLakituSplineSegmentProgress = 0.0f;
-            o->oIntroLakituCloud =
-                spawn_object_relative_with_scale(1, 0, 0, 0, 2.0f, o, MODEL_MIST, bhvCloud);
+            o->oIntroLakituCloud = spawn_object_relative_with_scale(1, 0, 0, 0, 2.0f, o, MODEL_MIST, bhvCloud);
+            o->oIntroLakituCloud->header.gfx.node.flags |= GRAPH_RENDER_PRIORITY;
+
 
             if (gCamera->cutscene == CUTSCENE_END_WAVING) {
                 o->oAction = 100;

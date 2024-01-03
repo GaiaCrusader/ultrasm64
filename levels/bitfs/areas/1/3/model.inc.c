@@ -174,15 +174,6 @@ static const Vtx bitfs_seg7_vertex_07003340[] = {
     {{{   -81,   1536,   -511}, 0, {     0,  -8208}, {0xac, 0x9d, 0x52, 0xff}}},
 };
 
-// TODO: what is this?
-// Possibly vertices for a perfect triangle, but flag seems to be used here.
-// 0x070033B0 - 0x070033E0
-UNUSED static const s16 bitfs_seg7_todo_070033B0[] = {
-    0x0080, 0x0100, 0x0000, 0x0000, 0x03de, 0x0000, 0xFFFF, 0xFFFF,
-    0xFF81, 0x0100, 0x0000, 0x0000, 0xFBE4, 0x0000, 0xFFFF, 0xFFFF,
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x07DA, 0xFFFF, 0xFFFF,
-};
-
 // 0x070033E0 - 0x07003528
 static const Gfx bitfs_seg7_dl_070033E0[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, bitfs_seg7_texture_07001800),
@@ -248,7 +239,7 @@ static const Gfx bitfs_seg7_dl_07003528[] = {
 // 0x07003670 - 0x07003700
 const Gfx bitfs_seg7_dl_07003670[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -262,7 +253,7 @@ const Gfx bitfs_seg7_dl_07003670[] = {
     gsSPDisplayList(bitfs_seg7_dl_07003528),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };

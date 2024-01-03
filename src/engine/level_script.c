@@ -1,7 +1,4 @@
 #include <ultra64.h>
-#ifdef NO_SEGMENTED_MEMORY
-#include <string.h>
-#endif
 
 #include "sm64.h"
 #include "audio/external.h"
@@ -24,6 +21,8 @@
 #include "math_util.h"
 #include "surface_collision.h"
 #include "surface_load.h"
+#include "game/level_update.h"
+#include "game/main.h"
 
 #define CMD_GET(type, offset) (*(type *) (CMD_PROCESS_OFFSET(offset) + (u8 *) sCurrentCmd))
 
@@ -90,7 +89,7 @@ static s32 eval_script_op(s8 op, s32 arg) {
 
 static void level_cmd_load_and_execute(void) {
     main_pool_push_state();
-    load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8), MEMORY_POOL_LEFT);
+    load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8), MEMORY_POOL_LEFT, CMD_GET(void *, 16), CMD_GET(void *, 20));
 
     *sStackTop++ = (uintptr_t) NEXT_CMD;
     *sStackTop++ = (uintptr_t) sStackBase;
@@ -105,8 +104,7 @@ static void level_cmd_exit_and_execute(void) {
     main_pool_pop_state();
     main_pool_push_state();
 
-    load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8),
-            MEMORY_POOL_LEFT);
+    load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8), MEMORY_POOL_LEFT, CMD_GET(void *, 16), CMD_GET(void *, 20));
 
     sStackTop = sStackBase;
     sCurrentCmd = segmented_to_virtual(targetAddr);
@@ -270,8 +268,7 @@ static void level_cmd_load_to_fixed_address(void) {
 }
 
 static void level_cmd_load_raw(void) {
-    load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8),
-            MEMORY_POOL_LEFT);
+    load_segment(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8), MEMORY_POOL_LEFT, CMD_GET(void *, 12), CMD_GET(void *, 16));
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -280,24 +277,30 @@ static void level_cmd_load_yay0(void) {
     sCurrentCmd = CMD_NEXT;
 }
 
-static void level_cmd_load_mario_head(void) {
 #ifdef GODDARD
-    // TODO: Fix these hardcoded sizes
-    void *addr = main_pool_alloc(DOUBLE_SIZE_ON_64_BIT(0xE1000), MEMORY_POOL_LEFT);
+void load_goddard(void) {
+    void *addr = main_pool_alloc(GODDARD_HEAP_SIZE, MEMORY_POOL_LEFT);
     if (addr != NULL) {
-        gdm_init(addr, DOUBLE_SIZE_ON_64_BIT(0xE1000));
+        gdm_init(addr, GODDARD_HEAP_SIZE);
         gd_add_to_heap(gZBuffer, sizeof(gZBuffer)); // 0x25800
         gd_add_to_heap(gFramebuffer0, 3 * sizeof(gFramebuffer0)); // 0x70800
         gdm_setup();
         gdm_maketestdl(CMD_GET(s16, 2));
-    } else {
+        gGoddardReady = TRUE;
     }
+}
+#endif
+
+static void level_cmd_load_mario_head(void) {
+#ifdef GODDARD
+    // TODO: Fix these hardcoded sizes
+    load_goddard();
 #endif
     sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_load_yay0_texture(void) {
-    load_segment_decompress_heap(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8));
+    load_segment_decompress(CMD_GET(s16, 2), CMD_GET(void *, 4), CMD_GET(void *, 8));
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -307,14 +310,46 @@ static void level_cmd_init_level(void) {
     clear_areas();
     main_pool_push_state();
 
+    gSkipRender = TRUE;
     sCurrentCmd = CMD_NEXT;
 }
 
+extern s32 gTlbEntries;
+extern u8  gTlbSegments[32];
+
+// This clears all the temporary bank TLB maps. group0, common1 and behavourdata are always loaded,
+// and they're also loaded first, so that means we just leave the first 3 indexes mapped.
+void unmap_tlbs(void) {
+    s32 i;
+    for (i = 0; i < 32; i++) {
+        if (gTlbSegments[i]) {
+            if (i != 0x16 && i != 0x17 && i != 0x13) {
+                while (gTlbSegments[i] > 0) {
+                    osUnmapTLB(gTlbEntries);
+                    gTlbSegments[i]--;
+                    gTlbEntries--;
+                }
+            } else {
+                //gTlbEntries -= gTlbSegments[i];
+                //gTlbSegments[i] = 0;
+            }
+        }
+    }
+}
+
 static void level_cmd_clear_level(void) {
+    osRecvMesg(&gVideoVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+    gSkipRender = TRUE;
     clear_objects();
     clear_area_graph_nodes();
     clear_areas();
     main_pool_pop_state();
+    // the game does a push on level load and a pop on level unload, we need to add another push to store state after the level has been loaded, so one more pop is needed
+    if (gCurrDemoInput == FALSE) {
+        main_pool_pop_state();
+    }
+    unmap_tlbs();
+    gTargetCam = NULL;
 
     sCurrentCmd = CMD_NEXT;
 }
@@ -324,21 +359,24 @@ static void level_cmd_alloc_level_pool(void) {
         sLevelPool = alloc_only_pool_init(main_pool_available() - sizeof(struct AllocOnlyPool),
                                           MEMORY_POOL_LEFT);
     }
+    gSkipRender = FALSE;
 
     sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_free_level_pool(void) {
-    s32 i;
 
     alloc_only_pool_resize(sLevelPool, sLevelPool->usedSpace);
     sLevelPool = NULL;
 
-    for (i = 0; i < 8; i++) {
+    for (s32 i = 0; i < 8; i++) {
         if (gAreaData[i].terrainData != NULL) {
             alloc_surface_pools();
             break;
         }
+    }
+    if (gCurrDemoInput == FALSE) {
+        main_pool_push_state();
     }
 
     sCurrentCmd = CMD_NEXT;
@@ -364,6 +402,8 @@ static void level_cmd_begin_area(void) {
         }
     }
 
+    gFileSelect = FALSE;
+
     sCurrentCmd = CMD_NEXT;
 }
 
@@ -376,10 +416,11 @@ static void level_cmd_load_model_from_dl(void) {
     s16 val1 = CMD_GET(s16, 2) & 0x0FFF;
     s16 val2 = ((u16)CMD_GET(s16, 2)) >> 12;
     void *val3 = CMD_GET(void *, 4);
+    void *material = NULL;
 
     if (val1 < 256) {
         gLoadedGraphNodes[val1] =
-            (struct GraphNode *) init_graph_node_display_list(sLevelPool, 0, val2, val3);
+            (struct GraphNode *) init_graph_node_display_list(sLevelPool, 0, val2, val3, material);
     }
 
     sCurrentCmd = CMD_NEXT;
@@ -412,7 +453,7 @@ static void level_cmd_23(void) {
         // GraphNodeScale has a GraphNode at the top. This
         // is being stored to the array, so cast the pointer.
         gLoadedGraphNodes[model] =
-            (struct GraphNode *) init_graph_node_scale(sLevelPool, 0, arg0H, arg1, arg2.f);
+            (struct GraphNode *) init_graph_node_scale(sLevelPool, 0, arg0H, arg1, arg2.f, NULL);
     }
 
     sCurrentCmd = CMD_NEXT;
@@ -543,20 +584,6 @@ static void level_cmd_create_painting_warp_node(void) {
 }
 
 static void level_cmd_3A(void) {
-    struct UnusedArea28 *val4;
-
-    if (sCurrAreaIndex != -1) {
-        if ((val4 = gAreas[sCurrAreaIndex].unused) == NULL) {
-            val4 = gAreas[sCurrAreaIndex].unused =
-                alloc_only_pool_alloc(sLevelPool, sizeof(struct UnusedArea28));
-        }
-
-        val4->unk00 = CMD_GET(s16, 2);
-        val4->unk02 = CMD_GET(s16, 4);
-        val4->unk04 = CMD_GET(s16, 6);
-        val4->unk06 = CMD_GET(s16, 8);
-        val4->unk08 = CMD_GET(s16, 10);
-    }
 
     sCurrentCmd = CMD_NEXT;
 }
@@ -595,18 +622,7 @@ static void level_cmd_set_gamma(void) {
 
 static void level_cmd_set_terrain_data(void) {
     if (sCurrAreaIndex != -1) {
-#ifndef NO_SEGMENTED_MEMORY
         gAreas[sCurrAreaIndex].terrainData = segmented_to_virtual(CMD_GET(void *, 4));
-#else
-        Collision *data;
-        u32 size;
-
-        // The game modifies the terrain data and must be reset upon level reload.
-        data = segmented_to_virtual(CMD_GET(void *, 4));
-        size = get_area_terrain_size(data) * sizeof(Collision);
-        gAreas[sCurrAreaIndex].terrainData = alloc_only_pool_alloc(sLevelPool, size);
-        memcpy(gAreas[sCurrAreaIndex].terrainData, data, size);
-#endif
     }
     sCurrentCmd = CMD_NEXT;
 }
@@ -620,26 +636,13 @@ static void level_cmd_set_rooms(void) {
 
 static void level_cmd_set_macro_objects(void) {
     if (sCurrAreaIndex != -1) {
-#ifndef NO_SEGMENTED_MEMORY
         gAreas[sCurrAreaIndex].macroObjects = segmented_to_virtual(CMD_GET(void *, 4));
-#else
-        // The game modifies the macro object data (for example marking coins as taken),
-        // so it must be reset when the level reloads.
-        MacroObject *data = segmented_to_virtual(CMD_GET(void *, 4));
-        s32 len = 0;
-        while (data[len++] != MACRO_OBJECT_END()) {
-            len += 4;
-        }
-        gAreas[sCurrAreaIndex].macroObjects = alloc_only_pool_alloc(sLevelPool, len * sizeof(MacroObject));
-        memcpy(gAreas[sCurrAreaIndex].macroObjects, data, len * sizeof(MacroObject));
-#endif
     }
     sCurrentCmd = CMD_NEXT;
 }
 
 static void level_cmd_load_area(void) {
     s16 areaIndex = CMD_GET(u8, 2);
-    UNUSED void *unused = (u8 *) sCurrentCmd + 4;
 
     stop_sounds_in_continuous_banks();
     load_area(areaIndex);
@@ -828,10 +831,6 @@ struct LevelCommand *level_script_execute(struct LevelCommand *cmd) {
     }
 
     profiler_log_thread5_time(LEVEL_SCRIPT_EXECUTE);
-    init_rcp();
-    render_game();
-    end_master_display_list();
-    alloc_display_list(0);
 
     return sCurrentCmd;
 }

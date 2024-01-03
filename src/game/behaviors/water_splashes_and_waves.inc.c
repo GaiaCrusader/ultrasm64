@@ -60,7 +60,6 @@ void bhv_water_splash_spawn_droplets(void) {
 }
 
 void bhv_water_droplet_loop(void) {
-    UNUSED u8 filler[4];
     f32 waterLevel = find_water_level(o->oPosX, o->oPosZ);
 
     if (o->oTimer == 0) {
@@ -99,7 +98,7 @@ void bhv_idle_water_wave_loop(void) {
 }
 
 void bhv_water_droplet_splash_init(void) {
-    cur_obj_scale(random_float() + 1.5);
+    cur_obj_scale(random_float() + 1.5f);
 }
 
 void bhv_bubble_splash_init(void) {
@@ -129,7 +128,7 @@ void bhv_wave_trail_shrink(void) {
     }
 
     if (o->oAnimState > 3) {
-        o->oWaveTrailSize = o->oWaveTrailSize - 0.1; // Shrink the wave
+        o->oWaveTrailSize = o->oWaveTrailSize - 0.1f; // Shrink the wave
         if (o->oWaveTrailSize < 0.0f) {
             o->oWaveTrailSize = 0.0f;
         }

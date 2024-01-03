@@ -6,39 +6,6 @@
 
 #include "make_const_nonconst.h"
 
-UNUSED static const u64 effect_unused_0 = 0;
-
-// Flower (Unused)
-// 0x0B000008
-ALIGNED8 static const Texture effect_0B000008[] = {
-#include "textures/effect/flower.00008.rgba16.inc.c"
-};
-
-// 0x0B000808
-ALIGNED8 static const Texture effect_0B000808[] = {
-#include "textures/effect/flower.00808.rgba16.inc.c"
-};
-
-// 0x0B001008
-ALIGNED8 static const Texture effect_0B001008[] = {
-#include "textures/effect/flower.01008.rgba16.inc.c"
-};
-
-// 0x0B001808
-ALIGNED8 static const Texture effect_0B001808[] = {
-#include "textures/effect/flower.01808.rgba16.inc.c"
-};
-
-// 0x0B002008
-const Texture *const flower_bubbles_textures_ptr_0B002008[] = {
-    effect_0B000008,
-    effect_0B000808,
-    effect_0B001008,
-    effect_0B001808,
-    effect_0B001008,
-    effect_0B000808,
-};
-
 // Lava Bubble
 // 0x0B002020
 ALIGNED8 static const Texture effect_0B002020[] = {
@@ -117,7 +84,8 @@ const Gfx tiny_bubble_dl_0B006A50[] = {
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK | G_SHADING_SMOOTH),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
-    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
+    gsDPSetCycleType(G_CYC_1CYCLE),
+    gsDPSetRenderMode(G_RM_RA_ZB_TEX_EDGE, G_RM_RA_ZB_TEX_EDGE2),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, effect_0B00684C),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, 4, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, 4, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -129,8 +97,10 @@ const Gfx tiny_bubble_dl_0B006A50[] = {
 
 // 0x0B006AB0 - 0x0B006AD8
 const Gfx tiny_bubble_dl_0B006AB0[] = {
+    gsDPPipeSync(),
     gsSPTexture(0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF),
     gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCycleType(G_CYC_2CYCLE),
     gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK | G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
@@ -147,7 +117,8 @@ const Gfx tiny_bubble_dl_0B006CD8[] = {
     gsSPClearGeometryMode(G_LIGHTING | G_SHADING_SMOOTH),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, effect_0B006AD8),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
-    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
+    gsDPSetCycleType(G_CYC_1CYCLE),
+    gsDPSetRenderMode(G_RM_RA_ZB_TEX_EDGE, G_RM_RA_ZB_TEX_EDGE2),
     gsSPTexture(0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsDPLoadSync(),
@@ -161,14 +132,16 @@ const Gfx tiny_bubble_dl_0B006CD8[] = {
 const Gfx tiny_bubble_dl_0B006D38[] = {
     gsDPPipeSync(),
     gsSPClearGeometryMode(G_LIGHTING | G_SHADING_SMOOTH),
+    gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
-    gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2),
+    gsDPSetRenderMode(G_RM_RA_ZB_TEX_EDGE, G_RM_RA_ZB_TEX_EDGE2),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsSPEndDisplayList(),
 };
 
 // 0x0B006D68 - 0x0B006D98
 const Gfx tiny_bubble_dl_0B006D68[] = {
+    gsDPPipeSync(),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),

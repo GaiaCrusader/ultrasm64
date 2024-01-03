@@ -1,8 +1,4 @@
 // 0x07007D18 - 0x07007D30
-static const Lights1 ddd_seg7_lights_07007D18 = gdSPDefLights1(
-    0x66, 0x66, 0x66,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x07007D30 - 0x07007E20
 static const Vtx ddd_seg7_vertex_07007D30[] = {
@@ -249,8 +245,8 @@ static const Gfx ddd_seg7_dl_070088F0[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, ddd_seg7_texture_07001000),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&ddd_seg7_lights_07007D18.l, 1),
-    gsSPLight(&ddd_seg7_lights_07007D18.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x666666ff),
     gsSPVertex(ddd_seg7_vertex_07007D30, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  7,  8,  9, 0x0),
@@ -318,7 +314,7 @@ static const Gfx ddd_seg7_dl_070088F0[] = {
 // 0x07008C48 - 0x07008CB8
 const Gfx ddd_seg7_dl_07008C48[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_CULL_BACK | G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -328,7 +324,7 @@ const Gfx ddd_seg7_dl_07008C48[] = {
     gsSPDisplayList(ddd_seg7_dl_070088F0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_CULL_BACK | G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };

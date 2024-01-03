@@ -1,16 +1,8 @@
 // Peach
 
 // 0x050009F8
-static const Lights1 peach_seg5_lights_050009F8 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05000A10
-static const Lights1 peach_seg5_lights_05000A10 = gdSPDefLights1(
-    0x7f, 0x5f, 0x0c,
-    0xff, 0xbf, 0x18, 0x28, 0x28, 0x28
-);
 
 // 0x05000A28
 ALIGNED8 static const Texture peach_seg5_texture_05000A28[] = {
@@ -361,8 +353,8 @@ const Gfx peach_seg5_dl_05005648[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05002A28),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 16 * 16 - 1, CALC_DXT(16, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_050009F8.l, 1),
-    gsSPLight(&peach_seg5_lights_050009F8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05004828, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  1,  0, 0x0),
     gsSP2Triangles( 4,  1,  5, 0x0,  5,  1,  6, 0x0),
@@ -429,8 +421,8 @@ const Gfx peach_seg5_dl_050058B8[] = {
 
 // 0x050058E0 - 0x05005C48
 const Gfx peach_seg5_dl_050058E0[] = {
-    gsSPLight(&peach_seg5_lights_05000A10.l, 1),
-    gsSPLight(&peach_seg5_lights_05000A10.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffbf18ff),
+    gsSPLightColor(LIGHT_2, 0x7f5f0cff),
     gsSPVertex(peach_seg5_vertex_05004E88, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  0,  4, 0x0),
     gsSP2Triangles( 3,  5,  0, 0x0,  6,  4,  0, 0x0),
@@ -496,7 +488,7 @@ const Gfx peach_seg5_dl_050058E0[] = {
 // 0x05005C48 - 0x05005CB0
 const Gfx peach_seg5_dl_05005C48[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -514,7 +506,7 @@ const Gfx peach_seg5_dl_05005C48[] = {
 const Gfx peach_seg5_dl_05005CB0[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_050058E0),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -641,10 +633,6 @@ const Gfx peach_seg5_dl_05005F48[] = {
 };
 
 // 0x05005FA0
-static const Lights1 peach_seg5_lights_05005FA0 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05005FB8
 static const Vtx peach_seg5_vertex_05005FB8[] = {
@@ -665,8 +653,8 @@ const Gfx peach_seg5_dl_05006058[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05000A28),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_05005FA0.l, 1),
-    gsSPLight(&peach_seg5_lights_05005FA0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05005FB8, 10, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  1,  3,  2, 0x0),
     gsSP2Triangles( 1,  4,  3, 0x0,  4,  5,  3, 0x0),
@@ -679,7 +667,7 @@ const Gfx peach_seg5_dl_05006058[] = {
 // 0x050060E0 - 0x05006138
 const Gfx peach_seg5_dl_050060E0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -692,16 +680,8 @@ const Gfx peach_seg5_dl_050060E0[] = {
 };
 
 // 0x05006138
-static const Lights1 peach_seg5_lights_05006138 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05006150
-static const Lights1 peach_seg5_lights_05006150 = gdSPDefLights1(
-    0x6c, 0x54, 0x5f,
-    0xd9, 0xa9, 0xbe, 0x28, 0x28, 0x28
-);
 
 // 0x05006168
 static const Vtx peach_seg5_vertex_05006168[] = {
@@ -832,8 +812,8 @@ const Gfx peach_seg5_dl_05006728[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05002C28),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 16 * 16 - 1, CALC_DXT(16, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_05006138.l, 1),
-    gsSPLight(&peach_seg5_lights_05006138.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05006168, 8, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  1,  4, 0x0),
     gsSP2Triangles( 4,  1,  5, 0x0,  6,  1,  3, 0x0),
@@ -847,13 +827,13 @@ const Gfx peach_seg5_dl_05006798[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05004028),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_05006150.l, 1),
-    gsSPLight(&peach_seg5_lights_05006150.a, 2),
+    gsSPLightColor(LIGHT_1, 0xd9a9beff),
+    gsSPLightColor(LIGHT_2, 0x6c545fff),
     gsSPVertex(peach_seg5_vertex_050061E8, 5, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  0, 0x0),
     gsSP1Triangle( 3,  0,  2, 0x0),
-    gsSPLight(&peach_seg5_lights_05006138.l, 1),
-    gsSPLight(&peach_seg5_lights_05006138.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05006238, 14, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 4,  5,  0, 0x0,  0,  6,  7, 0x0),
@@ -899,7 +879,7 @@ const Gfx peach_seg5_dl_05006798[] = {
 // 0x05006A18 - 0x05006A90
 const Gfx peach_seg5_dl_05006A18[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -916,10 +896,6 @@ const Gfx peach_seg5_dl_05006A18[] = {
 };
 
 // 0x05006A90
-static const Lights1 peach_seg5_lights_05006A90 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05006AA8
 static const Vtx peach_seg5_vertex_05006AA8[] = {
@@ -1026,8 +1002,8 @@ const Gfx peach_seg5_dl_05006FA8[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05004028),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_05006A90.l, 1),
-    gsSPLight(&peach_seg5_lights_05006A90.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05006AA8, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  3,  7, 0x0,  3,  8,  9, 0x0),
@@ -1075,7 +1051,7 @@ const Gfx peach_seg5_dl_05006FA8[] = {
 // 0x05007230 - 0x05007288
 const Gfx peach_seg5_dl_05007230[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1091,9 +1067,8 @@ const Gfx peach_seg5_dl_05007230[] = {
 // 0x05007288 - 0x050072E8
 const Gfx peach_seg5_us_dl_05007288[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
-    gsDPSetRenderMode(G_RM_CUSTOM_AA_ZB_XLU_SURF, G_RM_NOOP2),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, 5, G_TX_NOLOD),
@@ -1106,10 +1081,6 @@ const Gfx peach_seg5_us_dl_05007288[] = {
 #endif
 
 // 0x05007288
-static const Lights1 peach_seg5_lights_05007288 = gdSPDefLights1(
-    0x7f, 0x5f, 0x0c,
-    0xff, 0xbf, 0x18, 0x28, 0x28, 0x28
-);
 
 // 0x050072A0
 static const Vtx peach_seg5_vertex_050072A0[] = {
@@ -1224,8 +1195,8 @@ static const Vtx peach_seg5_vertex_05007780[] = {
 
 // 0x05007810 - 0x05007AB8
 const Gfx peach_seg5_dl_05007810[] = {
-    gsSPLight(&peach_seg5_lights_05007288.l, 1),
-    gsSPLight(&peach_seg5_lights_05007288.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffbf18ff),
+    gsSPLightColor(LIGHT_2, 0x7f5f0cff),
     gsSPVertex(peach_seg5_vertex_050072A0, 14, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  2,  4, 0x0),
     gsSP2Triangles( 2,  1,  4, 0x0,  2,  3,  0, 0x0),
@@ -1277,17 +1248,13 @@ const Gfx peach_seg5_dl_05007810[] = {
 // 0x05007AB8 - 0x05007AE0
 const Gfx peach_seg5_dl_05007AB8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05007810),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x05007AE0
-static const Lights1 peach_seg5_lights_05007AE0 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05007AF8
 static const Vtx peach_seg5_vertex_05007AF8[] = {
@@ -1333,8 +1300,8 @@ const Gfx peach_seg5_dl_05007CE8[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05004028),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_05007AE0.l, 1),
-    gsSPLight(&peach_seg5_lights_05007AE0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05007AF8, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  0, 0x0),
     gsSP2Triangles( 5,  3,  0, 0x0,  4,  6,  0, 0x0),
@@ -1362,7 +1329,7 @@ const Gfx peach_seg5_dl_05007CE8[] = {
 // 0x05007E58 - 0x05007EB0
 const Gfx peach_seg5_dl_05007E58[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1375,10 +1342,6 @@ const Gfx peach_seg5_dl_05007E58[] = {
 };
 
 // 0x05007EB0
-static const Lights1 peach_seg5_lights_05007EB0 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05007EC8
 static const Vtx peach_seg5_vertex_05007EC8[] = {
@@ -1424,8 +1387,8 @@ const Gfx peach_seg5_dl_050080B8[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05004028),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_05007EB0.l, 1),
-    gsSPLight(&peach_seg5_lights_05007EB0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05007EC8, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  2,  3,  0, 0x0),
     gsSP2Triangles( 2,  1,  4, 0x0,  4,  3,  2, 0x0),
@@ -1454,7 +1417,7 @@ const Gfx peach_seg5_dl_050080B8[] = {
 // 0x05008228 - 0x05008280
 const Gfx peach_seg5_dl_05008228[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1467,10 +1430,6 @@ const Gfx peach_seg5_dl_05008228[] = {
 };
 
 // 0x05008280
-static const Lights1 peach_seg5_lights_05008280 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05008298
 static const Vtx peach_seg5_vertex_05008298[] = {
@@ -1510,8 +1469,8 @@ const Gfx peach_seg5_dl_05008428[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05000A28),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_05008280.l, 1),
-    gsSPLight(&peach_seg5_lights_05008280.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05008298, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 4,  3,  0, 0x0,  1,  5,  6, 0x0),
@@ -1540,7 +1499,7 @@ const Gfx peach_seg5_dl_050084C0[] = {
 // 0x05008560 - 0x050085D0
 const Gfx peach_seg5_dl_05008560[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1549,17 +1508,13 @@ const Gfx peach_seg5_dl_05008560[] = {
     gsSPDisplayList(peach_seg5_dl_05008428),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_050084C0),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x050085D0
-static const Lights1 peach_seg5_lights_050085D0 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x050085E8
 static const Vtx peach_seg5_vertex_050085E8[] = {
@@ -1581,8 +1536,8 @@ static const Vtx peach_seg5_vertex_050085E8[] = {
 
 // 0x050086C8 - 0x050087A8
 const Gfx peach_seg5_dl_050086C8[] = {
-    gsSPLight(&peach_seg5_lights_050085D0.l, 1),
-    gsSPLight(&peach_seg5_lights_050085D0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_050085E8, 14, 0),
     gsSP1Triangle( 0,  1,  2, 0x0),
     gsSP2Triangles( 3,  4,  2, 0x0,  2,  5,  3, 0x0),
@@ -1603,17 +1558,13 @@ const Gfx peach_seg5_dl_050086C8[] = {
 // 0x050087A8 - 0x050087D0
 const Gfx peach_seg5_dl_050087A8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_050086C8),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x050087D0
-static const Lights1 peach_seg5_lights_050087D0 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x050087E8
 static const Vtx peach_seg5_vertex_050087E8[] = {
@@ -1653,8 +1604,8 @@ const Gfx peach_seg5_dl_05008978[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05000A28),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_050087D0.l, 1),
-    gsSPLight(&peach_seg5_lights_050087D0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_050087E8, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  1,  0,  3, 0x0),
     gsSP2Triangles( 2,  4,  0, 0x0,  0,  5,  3, 0x0),
@@ -1683,7 +1634,7 @@ const Gfx peach_seg5_dl_05008A10[] = {
 // 0x05008AB0 - 0x05008B20
 const Gfx peach_seg5_dl_05008AB0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -1692,17 +1643,13 @@ const Gfx peach_seg5_dl_05008AB0[] = {
     gsSPDisplayList(peach_seg5_dl_05008978),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05008A10),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x05008B20
-static const Lights1 peach_seg5_lights_05008B20 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05008B38
 static const Vtx peach_seg5_vertex_05008B38[] = {
@@ -1724,8 +1671,8 @@ static const Vtx peach_seg5_vertex_05008B38[] = {
 
 // 0x05008C18 - 0x05008CF8
 const Gfx peach_seg5_dl_05008C18[] = {
-    gsSPLight(&peach_seg5_lights_05008B20.l, 1),
-    gsSPLight(&peach_seg5_lights_05008B20.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05008B38, 14, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  2,  3,  4, 0x0),
     gsSP2Triangles( 2,  5,  0, 0x0,  5,  2,  6, 0x0),
@@ -1745,17 +1692,13 @@ const Gfx peach_seg5_dl_05008C18[] = {
 // 0x05008CF8 - 0x05008D20
 const Gfx peach_seg5_dl_05008CF8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05008C18),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x05008D20
-static const Lights1 peach_seg5_lights_05008D20 = gdSPDefLights1(
-    0x0b, 0x1a, 0x67,
-    0x16, 0x35, 0xce, 0x28, 0x28, 0x28
-);
 
 // 0x05008D38
 static const Vtx peach_seg5_vertex_05008D38[] = {
@@ -1779,8 +1722,8 @@ static const Vtx peach_seg5_vertex_05008D38[] = {
 
 // 0x05008E38 - 0x05008F20
 const Gfx peach_seg5_dl_05008E38[] = {
-    gsSPLight(&peach_seg5_lights_05008D20.l, 1),
-    gsSPLight(&peach_seg5_lights_05008D20.a, 2),
+    gsSPLightColor(LIGHT_1, 0x1635ceff),
+    gsSPLightColor(LIGHT_2, 0xb1a67ff),
     gsSPVertex(peach_seg5_vertex_05008D38, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  1,  0, 0x0),
     gsSP2Triangles( 3,  4,  5, 0x0,  3,  0,  4, 0x0),
@@ -1801,17 +1744,13 @@ const Gfx peach_seg5_dl_05008E38[] = {
 // 0x05008F20 - 0x05008F48
 const Gfx peach_seg5_dl_05008F20[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05008E38),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x05008F48
-static const Lights1 peach_seg5_lights_05008F48 = gdSPDefLights1(
-    0x0b, 0x1a, 0x67,
-    0x16, 0x35, 0xce, 0x28, 0x28, 0x28
-);
 
 // 0x05008F60
 static const Vtx peach_seg5_vertex_05008F60[] = {
@@ -1835,8 +1774,8 @@ static const Vtx peach_seg5_vertex_05008F60[] = {
 
 // 0x05009060 - 0x05009148
 const Gfx peach_seg5_dl_05009060[] = {
-    gsSPLight(&peach_seg5_lights_05008F48.l, 1),
-    gsSPLight(&peach_seg5_lights_05008F48.a, 2),
+    gsSPLightColor(LIGHT_1, 0x1635ceff),
+    gsSPLightColor(LIGHT_2, 0xb1a67ff),
     gsSPVertex(peach_seg5_vertex_05008F60, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 5,  4,  6, 0x0,  7,  3,  5, 0x0),
@@ -1857,17 +1796,13 @@ const Gfx peach_seg5_dl_05009060[] = {
 // 0x05009148 - 0x05009170
 const Gfx peach_seg5_dl_05009148[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05009060),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x05009170
-static const Lights1 peach_seg5_lights_05009170 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05009188
 static const Vtx peach_seg5_vertex_05009188[] = {
@@ -1911,8 +1846,8 @@ static const Vtx peach_seg5_vertex_05009288[] = {
 
 // 0x05009388 - 0x05009500
 const Gfx peach_seg5_dl_05009388[] = {
-    gsSPLight(&peach_seg5_lights_05009170.l, 1),
-    gsSPLight(&peach_seg5_lights_05009170.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05009188, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  0,  2, 0x0),
     gsSP2Triangles( 4,  5,  0, 0x0,  0,  5,  6, 0x0),
@@ -1943,17 +1878,13 @@ const Gfx peach_seg5_dl_05009388[] = {
 // 0x05009500 - 0x05009528
 const Gfx peach_seg5_dl_05009500[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_05009388),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x05009528
-static const Lights1 peach_seg5_lights_05009528 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05009540
 static const Vtx peach_seg5_vertex_05009540[] = {
@@ -2009,8 +1940,8 @@ static const Vtx peach_seg5_vertex_05009740[] = {
 
 // 0x050097C0 - 0x05009940
 const Gfx peach_seg5_dl_050097C0[] = {
-    gsSPLight(&peach_seg5_lights_05009528.l, 1),
-    gsSPLight(&peach_seg5_lights_05009528.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05009540, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  2,  4, 0x0),
     gsSP2Triangles( 5,  0,  2, 0x0,  2,  3,  5, 0x0),
@@ -2042,17 +1973,13 @@ const Gfx peach_seg5_dl_050097C0[] = {
 // 0x05009940 - 0x05009968
 const Gfx peach_seg5_dl_05009940[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(peach_seg5_dl_050097C0),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x05009968
-static const Lights1 peach_seg5_lights_05009968 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05009980
 static const Vtx peach_seg5_vertex_05009980[] = {
@@ -2153,8 +2080,8 @@ const Gfx peach_seg5_dl_05009E20[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, peach_seg5_texture_05004028),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&peach_seg5_lights_05009968.l, 1),
-    gsSPLight(&peach_seg5_lights_05009968.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(peach_seg5_vertex_05009980, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  2,  3,  0, 0x0),
     gsSP2Triangles( 4,  2,  1, 0x0,  5,  2,  4, 0x0),
@@ -2202,7 +2129,7 @@ const Gfx peach_seg5_dl_05009E20[] = {
 // 0x0500A0A8 - 0x0500A128
 const Gfx peach_seg5_dl_0500A0A8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -2212,7 +2139,7 @@ const Gfx peach_seg5_dl_0500A0A8[] = {
     gsSPDisplayList(peach_seg5_dl_05009E20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsDPSetAlphaCompare(G_AC_NONE),
@@ -2223,7 +2150,7 @@ const Gfx peach_seg5_dl_0500A0A8[] = {
 // 0x0500A188 - 0x0500A210
 const Gfx peach_seg5_us_dl_0500A188[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -2233,10 +2160,9 @@ const Gfx peach_seg5_us_dl_0500A188[] = {
     gsSPDisplayList(peach_seg5_dl_05009E20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsDPSetEnvColor(255, 255, 255, 255),
-    gsDPSetRenderMode(G_RM_AA_ZB_XLU_SURF, G_RM_NOOP2),
     gsDPSetAlphaCompare(G_AC_NONE),
     gsSPEndDisplayList(),
 };

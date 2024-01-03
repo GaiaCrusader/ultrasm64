@@ -1,17 +1,5 @@
 // snowman.inc.c
 
-static struct ObjectHitbox sRollingSphereHitbox = {
-    /* interactType:      */ INTERACT_DAMAGE,
-    /* downOffset:        */ 0,
-    /* damageOrCoinValue: */ 3,
-    /* health:            */ 0,
-    /* numLootCoins:      */ 0,
-    /* radius:            */ 210,
-    /* height:            */ 350,
-    /* hurtboxRadius:     */ 0,
-    /* hurtboxHeight:     */ 0,
-};
-
 void bhv_snowmans_bottom_init(void) {
     struct Object *snowmansHead;
 
@@ -34,42 +22,23 @@ void bhv_snowmans_bottom_init(void) {
     spawn_object_abs_with_rot(o, 0, MODEL_NONE, bhvSnowmansBodyCheckpoint, -402, 461, -2898, 0, 0, 0);
 }
 
-void set_rolling_sphere_hitbox(void) {
-    obj_set_hitbox(o, &sRollingSphereHitbox);
-
-    if (o->oInteractStatus & INT_STATUS_INTERACTED) {
-        o->oInteractStatus = 0;
-    }
-}
-
-void adjust_rolling_face_pitch(f32 f12) {
-    o->oFaceAnglePitch += (s16)(o->oForwardVel * (100.0f / f12));
-    o->oSnowmansBottomScale += o->oForwardVel * 0.0001;
-
-    if (o->oSnowmansBottomScale > 1.0) {
-        o->oSnowmansBottomScale = 1.0f;
-    }
-}
-
 void snowmans_bottom_act_1(void) {
-    UNUSED s16 collisionFlags;
     s32 followStatus;
 #ifdef AVOID_UB
     followStatus = 0;
 #endif
 
     o->oPathedStartWaypoint = segmented_to_virtual(&ccm_seg7_trajectory_snowman);
-    collisionFlags = object_step_without_floor_orient();
+    object_step_without_floor_orient();
     followStatus = cur_obj_follow_path(followStatus);
     o->oSnowmansBottomUnkF8 = o->oPathedTargetYaw;
     o->oMoveAngleYaw = approach_s16_symmetric(o->oMoveAngleYaw, o->oSnowmansBottomUnkF8, 0x400);
 
-    if (o->oForwardVel > 70.0) {
+    if (o->oForwardVel > 70.0f) {
         o->oForwardVel = 70.0f;
     }
 
     if (followStatus == PATH_REACHED_END) {
-        UNUSED s16 sp1E = (u16) o->oAngleToMario - (u16) o->oMoveAngleYaw;
         if (obj_check_if_facing_toward_angle(o->oMoveAngleYaw, o->oAngleToMario, 0x2000) == TRUE
             && o->oSnowmansBottomUnk1AC == 1) {
             o->oSnowmansBottomUnkF8 = o->oAngleToMario;
@@ -81,9 +50,9 @@ void snowmans_bottom_act_1(void) {
 }
 
 void snowmans_bottom_act_2(void) {
-    UNUSED s16 collisionFlags = object_step_without_floor_orient();
+    object_step_without_floor_orient();
 
-    if (o->oForwardVel > 70.0) {
+    if (o->oForwardVel > 70.0f) {
         o->oForwardVel = 70.0f;
     }
 
@@ -184,7 +153,6 @@ void bhv_snowmans_head_init(void) {
 }
 
 void bhv_snowmans_head_loop(void) {
-    UNUSED s16 unused;
     s16 collisionFlags;
 
     switch (o->oAction) {

@@ -24,13 +24,7 @@ struct PowerMeterHUD {
     s8 animation;
     s16 x;
     s16 y;
-    f32 unused;
-};
-
-struct UnusedHUDStruct {
-    u32 unused1;
-    u16 unused2;
-    u16 unused3;
+    f32 lerpY;
 };
 
 struct CameraHUD {
@@ -45,15 +39,13 @@ static struct PowerMeterHUD sPowerMeterHUD = {
     POWER_METER_HIDDEN,
     140,
     166,
-    1.0,
+    1.0f,
 };
 
 // Power Meter timer that keeps counting when it's visible.
 // Gets reset when the health is filled and stops counting
 // when the power meter is hidden.
 s32 sPowerMeterVisibleTimer = 0;
-
-UNUSED static struct UnusedHUDStruct sUnusedHUDValues = { 0x00, 0x0A, 0x00 };
 
 static struct CameraHUD sCameraHUD = { CAM_STATUS_NONE };
 
@@ -97,8 +89,7 @@ void render_power_meter_health_segment(s16 numHealthWedges) {
                        (*healthLUT)[numHealthWedges - 1]);
     gDPLoadSync(gDisplayListHead++);
     gDPLoadBlock(gDisplayListHead++, G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES));
-    gSP1Triangle(gDisplayListHead++, 0, 1, 2, 0);
-    gSP1Triangle(gDisplayListHead++, 0, 2, 3, 0);
+    gSP2Triangles(gDisplayListHead++, 0, 1, 2, 0, 0, 2, 3, 0);
 }
 
 /**
@@ -135,7 +126,7 @@ void animate_power_meter_emphasized(void) {
     s16 hudDisplayFlags = gHudDisplay.flags;
 
     if (!(hudDisplayFlags & HUD_DISPLAY_FLAG_EMPHASIZE_POWER)) {
-        if (sPowerMeterVisibleTimer == 45.0) {
+        if (sPowerMeterVisibleTimer == 45) {
             sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
         }
     } else {
@@ -191,6 +182,7 @@ void handle_power_meter_actions(s16 numHealthWedges) {
         && sPowerMeterHUD.animation == POWER_METER_HIDDEN) {
         sPowerMeterHUD.animation = POWER_METER_EMPHASIZED;
         sPowerMeterHUD.y = 166;
+        sPowerMeterHUD.lerpY = 166;
     }
 
     // Show power meter if health is full, has 8
@@ -199,7 +191,7 @@ void handle_power_meter_actions(s16 numHealthWedges) {
     }
 
     // After health is full, hide power meter
-    if (numHealthWedges == 8 && sPowerMeterVisibleTimer > 45.0) {
+    if (numHealthWedges == 8 && sPowerMeterVisibleTimer > 45) {
         sPowerMeterHUD.animation = POWER_METER_HIDING;
     }
 
@@ -212,6 +204,7 @@ void handle_power_meter_actions(s16 numHealthWedges) {
             || sPowerMeterHUD.animation == POWER_METER_EMPHASIZED) {
             sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
             sPowerMeterHUD.y = 166;
+            sPowerMeterHUD.lerpY = 166;
         }
         sPowerMeterVisibleTimer = 0;
     }
@@ -225,31 +218,13 @@ void handle_power_meter_actions(s16 numHealthWedges) {
 void render_hud_power_meter(void) {
     s16 shownHealthWedges = gHudDisplay.wedges;
 
-    if (sPowerMeterHUD.animation != POWER_METER_HIDING) {
-        handle_power_meter_actions(shownHealthWedges);
-    }
-
     if (sPowerMeterHUD.animation == POWER_METER_HIDDEN) {
         return;
     }
 
-    switch (sPowerMeterHUD.animation) {
-        case POWER_METER_EMPHASIZED:
-            animate_power_meter_emphasized();
-            break;
-        case POWER_METER_DEEMPHASIZING:
-            animate_power_meter_deemphasizing();
-            break;
-        case POWER_METER_HIDING:
-            animate_power_meter_hiding();
-            break;
-        default:
-            break;
-    }
+    sPowerMeterHUD.lerpY = approach_f32_asymptotic(sPowerMeterHUD.lerpY, sPowerMeterHUD.y, gLerpSpeed);
 
     render_dl_power_meter(shownHealthWedges);
-
-    sPowerMeterVisibleTimer++;
 }
 
 #ifdef VERSION_JP
@@ -262,18 +237,18 @@ void render_hud_power_meter(void) {
  * Renders the amount of lives Mario has.
  */
 void render_hud_mario_lives(void) {
-    print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(22), HUD_TOP_Y, ","); // 'Mario Head' glyph
-    print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(38), HUD_TOP_Y, "*"); // 'X' glyph
-    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(54), HUD_TOP_Y, "%d", gHudDisplay.lives);
+    print_text(22, HUD_TOP_Y, ","); // 'Mario Head' glyph
+    print_text(38, HUD_TOP_Y, "*"); // 'X' glyph
+    print_text_fmt_int(54, HUD_TOP_Y, "%d", gHudDisplay.lives);
 }
 
 /**
  * Renders the amount of coins collected.
  */
 void render_hud_coins(void) {
-    print_text(168, HUD_TOP_Y, "+"); // 'Coin' glyph
-    print_text(184, HUD_TOP_Y, "*"); // 'X' glyph
-    print_text_fmt_int(198, HUD_TOP_Y, "%d", gHudDisplay.coins);
+    print_text(gScreenWidth - 152, HUD_TOP_Y, "+"); // 'Coin' glyph
+    print_text(gScreenWidth - 136, HUD_TOP_Y, "*"); // 'X' glyph
+    print_text_fmt_int(gScreenWidth - 122, HUD_TOP_Y, "%d", gHudDisplay.coins);
 }
 
 #ifdef VERSION_JP
@@ -297,24 +272,12 @@ void render_hud_stars(void) {
         showX = 1;
     }
 
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "-"); // 'Star' glyph
+    print_text(gScreenWidth - (HUD_STARS_X), HUD_TOP_Y, "-"); // 'Star' glyph
     if (showX == 1) {
-        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X) + 16, HUD_TOP_Y, "*"); // 'X' glyph
+        print_text(gScreenWidth - (HUD_STARS_X) + 16, HUD_TOP_Y, "*"); // 'X' glyph
     }
-    print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16),
+    print_text_fmt_int((showX * 14) + gScreenWidth - (HUD_STARS_X - 16),
                        HUD_TOP_Y, "%d", gHudDisplay.stars);
-}
-
-/**
- * Unused function that renders the amount of keys collected.
- * Leftover function from the beta version of the game.
- */
-void render_hud_keys(void) {
-    s16 i;
-
-    for (i = 0; i < gHudDisplay.keys; i++) {
-        print_text((i * 16) + 220, 142, "/"); // unused glyph - beta key
-    }
 }
 
 /**
@@ -330,26 +293,26 @@ void render_hud_timer(void) {
 #ifdef VERSION_EU
     switch (eu_get_language()) {
         case LANGUAGE_ENGLISH:
-            print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150), 185, "TIME");
+            print_text(gScreenWidth - (150), 185, "TIME");
             break;
         case LANGUAGE_FRENCH:
-            print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(155), 185, "TEMPS");
+            print_text(gScreenWidth - (155), 185, "TEMPS");
             break;
         case LANGUAGE_GERMAN:
-            print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150), 185, "ZEIT");
+            print_text(gScreenWidth - (150), 185, "ZEIT");
             break;
     }
 #else
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150), 185, "TIME");
+    print_text(gScreenWidth - (150), 185, "TIME");
 #endif
 
-    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(91), 185, "%0d", timerMins);
-    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(71), 185, "%02d", timerSecs);
-    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(37), 185, "%d", timerFracSecs);
+    print_text_fmt_int(gScreenWidth - (91), 185, "%0d", timerMins);
+    print_text_fmt_int(gScreenWidth - (71), 185, "%02d", timerSecs);
+    print_text_fmt_int(gScreenWidth - (37), 185, "%d", timerFracSecs);
 
     gSPDisplayList(gDisplayListHead++, dl_hud_img_begin);
-    render_hud_tex_lut(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(81), 32, (*hudLUT)[GLYPH_APOSTROPHE]);
-    render_hud_tex_lut(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(46), 32, (*hudLUT)[GLYPH_DOUBLE_QUOTE]);
+    render_hud_tex_lut(gScreenWidth - (81), 32, (*hudLUT)[GLYPH_APOSTROPHE]);
+    render_hud_tex_lut(gScreenWidth - (46), 32, (*hudLUT)[GLYPH_DOUBLE_QUOTE]);
     gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
 }
 
@@ -367,8 +330,8 @@ void set_hud_camera_status(s16 status) {
  */
 void render_hud_camera_status(void) {
     u8 *(*cameraLUT)[6] = segmented_to_virtual(&main_hud_camera_lut);
-    s32 x = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(54);
-    s32 y = 205;
+    s32 x = gScreenWidth - (54);
+    s32 y = gScreenHeight - 35;
 
     if (sCameraHUD.status == CAM_STATUS_NONE) {
         return;
@@ -399,6 +362,150 @@ void render_hud_camera_status(void) {
     }
 
     gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
+}
+
+#include "profiler.h"
+#define    OS_CLOCK_RATE        62500000LL
+#define    OS_CPU_COUNTER        (OS_CLOCK_RATE*3/4)
+#define OS_CYCLES_TO_USEC(c)    (((u32)(c)*(1000000LL/15625LL))/(OS_CPU_COUNTER/15625LL))
+#define FRAMETIME_COUNT 30
+#define PROFILER_COUNT 60
+#define NUM_PERF_ITERATIONS 30
+#define PERF_AGGREGATE NUM_PERF_ITERATIONS
+#define PERF_TOTAL NUM_PERF_ITERATIONS + 1
+
+
+#ifdef PUPPYPRINT_DEBUG
+u8 gFPS = 30;
+OSTime frameTimes[FRAMETIME_COUNT];
+u8 curFrameTimeIndex = 0;
+extern s16 gCurrentFrameIndex1;
+extern s16 gCurrentFrameIndex3;
+extern struct ProfilerFrameData gProfilerFrameData[2];
+u8 gShowProfilerNew = TRUE;
+u32 gVideoTime = 0;
+u32 gSoundTime = 0;
+u32 gGameTime = 0;
+u32 sNumTris = 0;
+u32 totalCPUReads[PROFILER_COUNT + 2];
+u32 totalRSPReads[PROFILER_COUNT + 2];
+u32 totalRDPReads[PROFILER_COUNT + 2];
+u8 perfIteration = 0;
+
+// Call once per frame
+void calculate_and_update_fps(void) {
+    OSTime newTime = osGetTime();
+    OSTime oldTime = frameTimes[curFrameTimeIndex];
+    frameTimes[curFrameTimeIndex] = newTime;
+
+    curFrameTimeIndex++;
+    if (curFrameTimeIndex >= FRAMETIME_COUNT) {
+        curFrameTimeIndex = 0;
+    }
+    gFPS = (FRAMETIME_COUNT * 1000000.0f) / (s32)OS_CYCLES_TO_USEC(newTime - oldTime);
+}
+
+extern u32 sPoolFreeSpace;
+
+void render_profiler(void) {
+    struct ProfilerFrameData *profilerGfx;
+    profilerGfx = &gProfilerFrameData[gCurrentFrameIndex3 ^ 1];
+    totalRSPReads[PROFILER_COUNT] -= totalRSPReads[perfIteration];
+    totalRSPReads[perfIteration] = OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]);
+    totalRSPReads[PROFILER_COUNT] += OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[1] - profilerGfx->gfxTimes[0]);
+    totalRDPReads[PROFILER_COUNT] -= totalRDPReads[perfIteration];
+    totalRDPReads[perfIteration] = OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]);
+    totalRDPReads[PROFILER_COUNT] += OS_CYCLES_TO_USEC(profilerGfx->gfxTimes[2] - profilerGfx->gfxTimes[0]);
+    totalRSPReads[PROFILER_COUNT + 1] = totalRSPReads[PROFILER_COUNT] / PROFILER_COUNT;
+    totalRDPReads[PROFILER_COUNT + 1] = totalRDPReads[PROFILER_COUNT] / PROFILER_COUNT;
+    calculate_and_update_fps();
+    print_text_fmt_int(32, 240 - 32, "FPS %d", gFPS);
+    print_text_fmt_int(32, 240 - 48, "CPU %d", (u32) totalCPUReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - 64, "RSP %d", (u32) totalRSPReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - 80, "RDP %d", (u32) totalRDPReads[PROFILER_COUNT + 1]);
+    print_text_fmt_int(32, 240 - (gScreenHeight - 24), "RAM %x", (u32) sPoolFreeSpace);
+    print_text_fmt_int(32, 240 - (gScreenHeight - 40), "TRI %d", (u32) sNumTris);
+}
+
+void profiler_logic(void) {
+    struct ProfilerFrameData *profiler;
+    u32 clockStart;
+    u32 levelScriptDuration;
+    u32 renderDuration;
+    u32 soundDuration;
+    u32 taskStart;
+    u32 rdpTime;
+    u32 cpuTime;
+    taskStart = 0;
+    profiler = &gProfilerFrameData[gCurrentFrameIndex1 ^ 1];
+    clockStart = profiler->gameTimes[0] <= profiler->soundTimes[0] ? profiler->gameTimes[0] : profiler->soundTimes[0];
+    levelScriptDuration = profiler->gameTimes[1] - clockStart;
+    renderDuration = profiler->gameTimes[2] - profiler->gameTimes[1];
+    profiler->numSoundTimes &= 0xFFFE;
+    for (s32 i = 0; i < profiler->numSoundTimes; i += 2) {
+        // calculate sound duration of max - min
+        soundDuration = profiler->soundTimes[i + 1] - profiler->soundTimes[i];
+        taskStart += soundDuration;
+        // was the sound time minimum less than level script execution?
+        if (profiler->soundTimes[i] < profiler->gameTimes[1]) {
+            // overlay the levelScriptDuration onto the profiler by subtracting the soundDuration.
+            levelScriptDuration -= soundDuration;
+        } else if (profiler->soundTimes[i] < profiler->gameTimes[2]) {
+            // overlay the renderDuration onto the profiler by subtracting the soundDuration.
+            renderDuration -= soundDuration;
+        }
+    }
+    profiler->numSoundTimes &= 0xFFFE;
+
+    totalCPUReads[PROFILER_COUNT] -= totalCPUReads[perfIteration];
+    cpuTime = MIN(OS_CYCLES_TO_USEC(gVideoTime + (gSoundTime * 2) + gGameTime), 66666);
+    totalCPUReads[perfIteration] = cpuTime;
+    totalCPUReads[PROFILER_COUNT] += cpuTime;
+    totalCPUReads[PROFILER_COUNT + 1] = totalCPUReads[PROFILER_COUNT] / PROFILER_COUNT;
+
+    perfIteration++;
+    if (perfIteration == PROFILER_COUNT) {
+        perfIteration = 0;
+    }
+}
+#endif
+
+void ui_logic(void) {
+    s16 hudDisplayFlags = gHudDisplay.flags;
+    
+#ifdef PUPPYPRINT_DEBUG
+    if (gPlayer1Controller->buttonDown & U_JPAD && gPlayer1Controller->buttonPressed & L_TRIG) {
+        gShowProfilerNew ^= 1;
+    }
+    profiler_logic();
+#endif
+
+    if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
+        s16 shownHealthWedges = gHudDisplay.wedges;
+
+        if (sPowerMeterHUD.animation != POWER_METER_HIDING) {
+            handle_power_meter_actions(shownHealthWedges);
+        }
+
+        if (sPowerMeterHUD.animation == POWER_METER_HIDDEN) {
+            return;
+        }
+
+        switch (sPowerMeterHUD.animation) {
+            case POWER_METER_EMPHASIZED:
+                animate_power_meter_emphasized();
+                break;
+            case POWER_METER_DEEMPHASIZING:
+                animate_power_meter_deemphasizing();
+                break;
+            case POWER_METER_HIDING:
+                animate_power_meter_hiding();
+                break;
+            default:
+                break;
+        }
+        sPowerMeterVisibleTimer++;
+    }
 }
 
 /**
@@ -446,10 +553,6 @@ void render_hud(void) {
             render_hud_stars();
         }
 
-        if (hudDisplayFlags & HUD_DISPLAY_FLAG_KEYS) {
-            render_hud_keys();
-        }
-
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
             render_hud_power_meter();
             render_hud_camera_status();
@@ -459,4 +562,10 @@ void render_hud(void) {
             render_hud_timer();
         }
     }
+
+#ifdef PUPPYPRINT_DEBUG
+    if (gShowProfilerNew) {
+        render_profiler();
+    }
+#endif
 }

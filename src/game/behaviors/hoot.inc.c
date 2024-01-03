@@ -13,7 +13,6 @@ void bhv_hoot_init(void) {
 
 f32 hoot_find_next_floor(struct FloorGeometry **floorGeo, f32 arg1) {
     f32 sp24 = arg1 * sins(o->oMoveAngleYaw) + o->oPosX;
-    UNUSED f32 sp20 = o->oPosY;
     f32 sp1c = arg1 * coss(o->oMoveAngleYaw) + o->oPosZ;
     f32 floorY = find_floor_height_and_data(sp24, 10000.0f, sp1c, floorGeo);
 
@@ -26,12 +25,12 @@ void hoot_floor_bounce(void) {
 
     floorY = hoot_find_next_floor(&floorGeo, 375.0f);
     if (floorY + 75.0f > o->oPosY) {
-        o->oMoveAnglePitch -= 3640.8888;
+        o->oMoveAnglePitch -= 3640.8888f;
     }
 
     floorY = hoot_find_next_floor(&floorGeo, 200.0f);
     if (floorY + 125.0f > o->oPosY) {
-        o->oMoveAnglePitch -= 7281.7776;
+        o->oMoveAnglePitch -= 7281.7776f;
     }
 
     floorY = hoot_find_next_floor(&floorGeo, 0);
@@ -39,7 +38,7 @@ void hoot_floor_bounce(void) {
         o->oPosY = floorY + 125.0f;
     }
 
-    if (o->oMoveAnglePitch < -21845.3328) {
+    if (o->oMoveAnglePitch < -21845.3328f) {
         o->oMoveAnglePitch = -21845;
     }
 }
@@ -60,9 +59,9 @@ void hoot_free_step(s16 fastOscY, s32 speed) {
 
     o->oPosX += o->oVelX;
     if (fastOscY == 0) {
-        o->oPosY -= o->oVelY + coss((s32)(animFrame * 3276.8)) * 50.0f / 4;
+        o->oPosY -= o->oVelY + coss((s32)(animFrame * 3276.8f)) * 50.0f / 4;
     } else {
-        o->oPosY -= o->oVelY + coss((s32)(animFrame * 6553.6)) * 50.0f / 4;
+        o->oPosY -= o->oVelY + coss((s32)(animFrame * 6553.6f)) * 50.0f / 4;
     }
     o->oPosZ += o->oVelZ;
 
@@ -78,9 +77,8 @@ void hoot_free_step(s16 fastOscY, s32 speed) {
 }
 
 void hoot_player_set_yaw(void) {
-    s16 stickX = gPlayer3Controller->rawStickX;
-    s16 stickY = gPlayer3Controller->rawStickY;
-    UNUSED s16 pitch = o->oMoveAnglePitch;
+    s16 stickX = gPlayer1Controller->rawStickX;
+    s16 stickY = gPlayer1Controller->rawStickY;
 
     if (stickX < 10 && stickX >= -9) {
         stickX = 0;
@@ -105,7 +103,7 @@ void hoot_carry_step(s32 speed, UNUSED f32 xPrev, UNUSED f32 zPrev) {
     o->oVelZ = coss(yaw) * hSpeed;
 
     o->oPosX += o->oVelX;
-    o->oPosY -= o->oVelY + coss((s32)(animFrame * 6553.6)) * 50.0f / 4;
+    o->oPosY -= o->oVelY + coss((s32)(animFrame * 6553.6f)) * 50.0f / 4;
     o->oPosZ += o->oVelZ;
 
     if (animFrame == 0) {
@@ -121,8 +119,8 @@ void hoot_surface_collision(f32 xPrev, UNUSED f32 yPrev, f32 zPrev) {
     hitbox.x = o->oPosX;
     hitbox.y = o->oPosY;
     hitbox.z = o->oPosZ;
-    hitbox.offsetY = 10.0;
-    hitbox.radius = 50.0;
+    hitbox.offsetY = 10.0f;
+    hitbox.radius = 50.0f;
 
     if (find_wall_collisions(&hitbox) != 0) {
         o->oPosX = hitbox.x;
@@ -187,7 +185,7 @@ void hoot_action_loop(void) {
             o->oMoveAnglePitch = 0x71C;
 
             if (o->oPosY < 2700.0f) {
-                set_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
+                gTimeStopState |= (TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);
 
                 if (cutscene_object_with_dialog(CUTSCENE_DIALOG, o, DIALOG_045) != 0) {
                     clear_time_stop_flags(TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS);

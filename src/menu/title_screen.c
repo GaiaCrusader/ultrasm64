@@ -49,6 +49,7 @@ s32 run_level_id_or_demo(s32 level) {
     gCurrDemoInput = NULL;
 
     if (level == LEVEL_NONE) {
+#ifndef DISABLE_DEMOS
         if (!gPlayer1Controller->buttonDown && !gPlayer1Controller->stickMag) {
             // start the demo. 800 frames has passed while
             // player is idle on PRESS START screen.
@@ -74,6 +75,9 @@ s32 run_level_id_or_demo(s32 level) {
         } else { // activity was detected, so reset the demo countdown.
             sDemoCountdown = 0;
         }
+#else
+            sDemoCountdown = 0;
+#endif
     }
     return level;
 }
@@ -146,6 +150,8 @@ s16 intro_level_select(void) {
     return 0;
 }
 
+extern void load_goddard(void);
+
 /**
  * Regular intro function that handles Mario's greeting voice and game start.
  */
@@ -158,7 +164,7 @@ s32 intro_regular(void) {
     // "press start to play" when it goes back to the title screen
     // (using SAVE AND QUIT)
     if (sPlayMarioGreeting == TRUE) {
-        if (gGlobalTimer < 129) {
+        if (gGlobalTimer < 135) {
             play_sound(SOUND_MARIO_HELLO, gGlobalSoundSource);
         } else {
             play_sound(SOUND_MARIO_PRESS_START_TO_PLAY, gGlobalSoundSource);
@@ -166,7 +172,6 @@ s32 intro_regular(void) {
         sPlayMarioGreeting = FALSE;
     }
 #endif
-    print_intro_text();
 
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);
@@ -197,8 +202,6 @@ s32 intro_game_over(void) {
         sPlayMarioGameOver = FALSE;
     }
 #endif
-
-    print_intro_text();
 
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {
         play_sound(SOUND_MENU_STAR_SOUND, gGlobalSoundSource);

@@ -6,10 +6,6 @@ ALIGNED8 static const Texture tornado_seg5_texture_05013128[] = {
 };
 
 // 0x05014128
-static const Lights1 tornado_seg5_lights_05014128 = gdSPDefLights1(
-    0x3b, 0x34, 0x23,
-    0xee, 0xd0, 0x8d, 0x28, 0x28, 0x28
-);
 
 // 0x05014140
 static const Vtx tornado_seg5_vertex_05014140[] = {
@@ -81,8 +77,8 @@ const Gfx tornado_seg5_dl_05014450[] = {
     gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, tornado_seg5_texture_05013128),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 64 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&tornado_seg5_lights_05014128.l, 1),
-    gsSPLight(&tornado_seg5_lights_05014128.a, 2),
+    gsSPLightColor(LIGHT_1, 0xeed08dff),
+    gsSPLightColor(LIGHT_2, 0x3b3423ff),
     gsSPVertex(tornado_seg5_vertex_05014140, 14, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  0,  4, 0x0),
     gsSP2Triangles( 0,  5,  6, 0x0,  0,  6,  1, 0x0),
@@ -112,7 +108,8 @@ const Gfx tornado_seg5_dl_05014450[] = {
 // 0x050145C0 - 0x05014630
 const Gfx tornado_seg5_dl_050145C0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA),
+    gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_PASS2),
+    gsDPSetPrimColor(0, 0, 255, 255, 255, 0xB4),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_IA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -121,8 +118,9 @@ const Gfx tornado_seg5_dl_050145C0[] = {
     gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (64 - 1) << G_TEXTURE_IMAGE_FRAC),
     gsSPDisplayList(tornado_seg5_dl_05014450),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
+    gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_CULL_BACK),
     gsSPEndDisplayList(),
 };

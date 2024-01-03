@@ -7,6 +7,10 @@
  * (maybe eventually) in SM64
  */
 
+#define UNLOCK_ALL
+#define PUPPYPRINT_DEBUG
+#define DISABLE_DEMOS 
+
 // Bug Fixes
 // --| Post-JP Version Nintendo Bug Fixes
 /// Fixes bug where obtaining over 999 coins sets the number of lives to 999 (or -25)
@@ -34,27 +38,25 @@
 #define EU_CUSTOM_CAKE_FIX 1
 
 // Support Rumble Pak
-#define ENABLE_RUMBLE (1 || VERSION_SH)
+#define ENABLE_RUMBLE (0 || VERSION_SH)
 
 // Clear RAM on boot
 #define CLEARRAM 1
 
 // Screen Size Defines
 #define SCREEN_WIDTH 320
+#define SCREEN_WIDTH_WIDE 424
 #define SCREEN_HEIGHT 240
 
-// Border Height Define for NTSC Versions
-#ifdef TARGET_N64
-#ifndef VERSION_EU
-#define BORDER_HEIGHT_CONSOLE 8
-#define BORDER_HEIGHT_EMULATOR 0
-#else
-#define BORDER_HEIGHT_CONSOLE 1
-#define BORDER_HEIGHT_EMULATOR 0
-#endif
-#else
-#define BORDER_HEIGHT_CONSOLE 0
-#define BORDER_HEIGHT_EMULATOR 0
-#endif
+#define THREAD1_STACK 0x100
+#define THREAD2_STACK 0x200
+#define THREAD3_STACK 0x200
+#define THREAD4_STACK 0xC00
+#define THREAD5_STACK 0x1800
+#define THREAD6_STACK 0x400
+#define THREAD9_STACK 0x1800
+
+#define DYNAMIC_SURFACE_POOL_SIZE 0x8000
+#define GODDARD_HEAP_SIZE 0xC8000
 
 #endif // CONFIG_H

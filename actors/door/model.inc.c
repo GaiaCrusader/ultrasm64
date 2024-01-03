@@ -1,16 +1,8 @@
 // Door
 
 // 0x03009CE0
-static const Lights1 door_seg3_lights_03009CE0 = gdSPDefLights1(
-    0x3f, 0x3f, 0x3f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x03009CF8
-static const Lights1 door_seg3_lights_03009CF8 = gdSPDefLights1(
-    0x3f, 0x3f, 0x00,
-    0xff, 0xff, 0x00, 0x28, 0x28, 0x28
-);
 
 // 0x03009D10
 ALIGNED8 static const Texture door_seg3_texture_03009D10[] = {
@@ -151,8 +143,8 @@ const Gfx door_seg3_dl_03013C10[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, door_seg3_texture_0300AD10),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 64 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&door_seg3_lights_03009CE0.l, 1),
-    gsSPLight(&door_seg3_lights_03009CE0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(door_seg3_vertex_03013910, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  7,  8,  9, 0x0),
@@ -169,8 +161,8 @@ const Gfx door_seg3_dl_03013C10[] = {
 
 // 0x03013CC8 - 0x03013D78
 const Gfx door_seg3_dl_03013CC8[] = {
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPVertex(door_seg3_vertex_03013A90, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  2,  3,  4, 0x0),
     gsSP2Triangles( 2,  1,  3, 0x0,  5,  2,  4, 0x0),
@@ -186,8 +178,8 @@ const Gfx door_seg3_dl_03013CC8[] = {
 
 // 0x03013D78 - 0x03013E28
 const Gfx door_seg3_dl_03013D78[] = {
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPVertex(door_seg3_vertex_03013B50, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSP2Triangles( 0,  3,  4, 0x0,  0,  5,  1, 0x0),
@@ -204,7 +196,7 @@ const Gfx door_seg3_dl_03013D78[] = {
 // 0x03013E28 - 0x03013EA8
 const Gfx door_seg3_dl_03013E28[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -214,7 +206,7 @@ const Gfx door_seg3_dl_03013E28[] = {
     gsSPDisplayList(door_seg3_dl_03013C10),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPDisplayList(door_seg3_dl_03013CC8),
     gsSPDisplayList(door_seg3_dl_03013D78),
@@ -224,7 +216,7 @@ const Gfx door_seg3_dl_03013E28[] = {
 // 0x03013EA8 - 0x03013F20
 const Gfx door_seg3_dl_03013EA8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -234,7 +226,7 @@ const Gfx door_seg3_dl_03013EA8[] = {
     gsSPDisplayList(door_seg3_dl_03013C10),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPDisplayList(door_seg3_dl_03013CC8),
     gsSPEndDisplayList(),
@@ -267,7 +259,7 @@ static const Vtx door_seg3_vertex_03013FA0[] = {
 // 0x03014020 - 0x03014100
 const Gfx door_seg3_dl_03014020[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -277,16 +269,16 @@ const Gfx door_seg3_dl_03014020[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, door_seg3_texture_03009D10),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 64 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&door_seg3_lights_03009CE0.l, 1),
-    gsSPLight(&door_seg3_lights_03009CE0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(door_seg3_vertex_03013F20, 8, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 4,  5,  6, 0x0,  4,  7,  5, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPVertex(door_seg3_vertex_03013FA0, 8, 0),
     gsSP2Triangles( 4,  5,  6, 0x0,  4,  7,  5, 0x0),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
@@ -327,15 +319,15 @@ static const Vtx door_seg3_vertex_03014180[] = {
 // 0x030141C0 - 0x03014218
 const Gfx door_seg3_dl_030141C0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
     gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
-    gsSPLight(&door_seg3_lights_03009CE0.l, 1),
-    gsSPLight(&door_seg3_lights_03009CE0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPEndDisplayList(),
 };
 
@@ -344,7 +336,7 @@ const Gfx door_seg3_dl_03014218[] = {
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };
@@ -436,7 +428,7 @@ static const Vtx door_seg3_vertex_030143F0[] = {
 // 0x03014470 - 0x030144E0
 const Gfx door_seg3_dl_03014470[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -446,8 +438,8 @@ const Gfx door_seg3_dl_03014470[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, door_seg3_texture_03013510),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 16 * 32 - 1, CALC_DXT(16, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&door_seg3_lights_03009CE0.l, 1),
-    gsSPLight(&door_seg3_lights_03009CE0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPEndDisplayList(),
 };
 
@@ -457,7 +449,7 @@ const Gfx door_seg3_dl_030144E0[] = {
     gsSP2Triangles( 4,  5,  6, 0x0,  4,  6,  7, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };
@@ -571,8 +563,8 @@ const Gfx door_seg3_dl_03014888[] = {
 
 // 0x030149C0 - 0x03014A20
 const Gfx door_seg3_dl_030149C0[] = {
-    gsSPLight(&door_seg3_lights_03009CE0.l, 1),
-    gsSPLight(&door_seg3_lights_03009CE0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(door_seg3_vertex_03014558, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  7,  8,  9, 0x0),
@@ -592,7 +584,7 @@ const Gfx door_seg3_dl_03014A20[] = {
 // 0x03014A50 - 0x03014A80
 const Gfx door_seg3_dl_03014A50[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -618,10 +610,10 @@ const Gfx door_seg3_dl_03014A80[] = {
     gsSPDisplayList(door_seg3_dl_03014A20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014888),
 };
 
@@ -644,10 +636,10 @@ const Gfx door_seg3_dl_03014B30[] = {
     gsSPDisplayList(door_seg3_dl_03014A20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014888),
 };
 
@@ -670,10 +662,10 @@ const Gfx door_seg3_dl_03014BE0[] = {
     gsSPDisplayList(door_seg3_dl_03014A20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014888),
 };
 
@@ -696,10 +688,10 @@ const Gfx door_seg3_dl_03014C90[] = {
     gsSPDisplayList(door_seg3_dl_03014A20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014888),
 };
 
@@ -722,10 +714,10 @@ const Gfx door_seg3_dl_03014D40[] = {
     gsSPDisplayList(door_seg3_dl_03014A20),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014888),
 };
 
@@ -755,8 +747,8 @@ static const Vtx door_seg3_vertex_03014E70[] = {
 
 // 0x03014EF0 - 0x03014F30
 const Gfx door_seg3_dl_03014EF0[] = {
-    gsSPLight(&door_seg3_lights_03009CE0.l, 1),
-    gsSPLight(&door_seg3_lights_03009CE0.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x3f3f3fff),
     gsSPVertex(door_seg3_vertex_03014DF0, 8, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 4,  5,  6, 0x0,  4,  7,  5, 0x0),
@@ -769,13 +761,14 @@ const Gfx door_seg3_dl_03014F30[] = {
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  1, 0x0),
     gsSP2Triangles( 4,  5,  6, 0x0,  4,  6,  7, 0x0),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
+    gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x03014F68 - 0x03014F98
 const Gfx door_seg3_dl_03014F68[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -794,9 +787,9 @@ const Gfx door_seg3_dl_03014F98[] = {
     gsSPDisplayList(door_seg3_dl_03014EF0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014F30),
 };
 
@@ -812,9 +805,9 @@ const Gfx door_seg3_dl_03015008[] = {
     gsSPDisplayList(door_seg3_dl_03014EF0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014F30),
 };
 
@@ -830,9 +823,9 @@ const Gfx door_seg3_dl_03015078[] = {
     gsSPDisplayList(door_seg3_dl_03014EF0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014F30),
 };
 
@@ -848,9 +841,9 @@ const Gfx door_seg3_dl_030150E8[] = {
     gsSPDisplayList(door_seg3_dl_03014EF0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014F30),
 };
 
@@ -866,8 +859,8 @@ const Gfx door_seg3_dl_03015158[] = {
     gsSPDisplayList(door_seg3_dl_03014EF0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
-    gsSPLight(&door_seg3_lights_03009CF8.l, 1),
-    gsSPLight(&door_seg3_lights_03009CF8.a, 2),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
+    gsSPLightColor(LIGHT_1, 0xffff00ff),
+    gsSPLightColor(LIGHT_2, 0x3f3f00ff),
     gsSPBranchList(door_seg3_dl_03014F30),
 };

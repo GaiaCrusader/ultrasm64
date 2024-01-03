@@ -1,10 +1,6 @@
 #include "game/paintings.h"
 
 // 0x070122F0 - 0x07012308
-static const Lights1 ttm_seg7_lights_070122F0 = gdSPDefLights1(
-    0x50, 0x50, 0x50,
-    0xff, 0xff, 0xff, 0x32, 0x32, 0x32
-);
 
 // 0x07012308 - 0x07012388
 static const Vtx ttm_seg7_vertex_07012308[] = {
@@ -34,9 +30,9 @@ const Gfx ttm_seg7_dl_070123A0[] = {
 const Gfx ttm_seg7_dl_070123B8[] = {
     gsDPPipeSync(),
     gsSPSetGeometryMode(G_LIGHTING | G_SHADING_SMOOTH),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
-    gsSPLight(&ttm_seg7_lights_070122F0.l, 1),
-    gsSPLight(&ttm_seg7_lights_070122F0.a, 2),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x505050ff),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsDPTileSync(),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 6, G_TX_NOLOD),
@@ -49,7 +45,7 @@ const Gfx ttm_seg7_dl_070123B8[] = {
 const Gfx ttm_seg7_dl_07012410[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 
@@ -524,8 +520,6 @@ static const PaintingData *const ttm_seg7_painting_texture_maps_07012E88[] = {
     ttm_seg7_painting_texture_map_bottom_07012450,
     ttm_seg7_painting_top_0701296C,
 };
-
-UNUSED static const u64 ttm_unused_0 = 0x0;
 
 
 // 0x07012E98 - 0x07012EF8

@@ -7,6 +7,8 @@
 #include "gd_types.h"
 #include "macros.h"
 
+#define gd_printf(x, ...) 
+
 // types
 /// Properties types used in [gd_setproperty](@ref gd_setproperty); most are stubbed out.
 enum GdProperty {
@@ -16,11 +18,6 @@ enum GdProperty {
     GD_PROP_DIFUSE_COLOUR = 13,
     GD_PROP_LIGHT_DIR     = 15,
     GD_PROP_CULLING       = 16,
-    GD_PROP_STUB17        = 17,
-    GD_PROP_STUB18        = 18,
-    GD_PROP_STUB19        = 19,
-    GD_PROP_STUB20        = 20,
-    GD_PROP_STUB21        = 21,
     GD_PROP_ZBUF_FN       = 22
 };
 
@@ -37,18 +34,6 @@ enum GdSceneId {
 extern s32 gGdFrameBufNum;
 
 // functions
-u32 get_alloc_mem_amt(void);
-s32 gd_get_ostime(void);
-f32 get_time_scale(void);
-f64 gd_sin_d(f64 x);
-f64 gd_cos_d(f64 x);
-f64 gd_sqrt_d(f64 x);
-
-#if defined(ISVPRINT) || defined(UNF)
-#define gd_printf osSyncPrintf
-#else
-void gd_printf(const char *format, ...);
-#endif
 void gd_exit(UNUSED s32 code) NORETURN;
 void gd_free(void *ptr);
 void *gd_allocblock(u32 size);
@@ -98,7 +83,6 @@ void set_Vtx_norm_buf_1(struct GdVec3f *norm);
 void set_Vtx_norm_buf_2(struct GdVec3f *norm);
 void set_gd_mtx_parameters(s32 params);
 void gd_set_one_cycle(void);
-void gddl_is_loading_stub_dl(UNUSED s32 dlLoad);
 void start_view_dl(struct ObjView *view);
 void border_active_view(void);
 void gd_shading(s32 model);
@@ -112,8 +96,6 @@ void gd_init_controllers(void);
 long defpup(UNUSED const char *menufmt, ...);
 void menu_cb_control_type(u32);
 void menu_cb_recalibrate_controller(u32);
-void func_801A4438(f32 x, f32 y, f32 z);
-void stub_draw_label_text(UNUSED char *s);
 void set_active_view(struct ObjView *v);
 void func_801A520C(void);
 void gd_init(void);

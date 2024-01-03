@@ -68,7 +68,6 @@ extern s16 sCurrPlayMode;
 extern u16 D_80339ECA;
 extern s16 sTransitionTimer;
 extern void (*sTransitionUpdate)(s16 *);
-extern u8 unused2[4];
 
 struct WarpDest {
     u8 type;
@@ -85,7 +84,6 @@ extern s16 sDelayedWarpOp;
 extern s16 sDelayedWarpTimer;
 extern s16 sSourceWarpNodeId;
 extern s32 sDelayedWarpArg;
-extern u8 unused3[2];
 extern s8 sTimerRunning;
 
 struct HudDisplay {
@@ -93,7 +91,6 @@ struct HudDisplay {
     /*0x02*/ s16 coins;
     /*0x04*/ s16 stars;
     /*0x06*/ s16 wedges;
-    /*0x08*/ s16 keys;
     /*0x0A*/ s16 flags;
     /*0x0C*/ u16 timer;
 };

@@ -127,7 +127,7 @@ void func_sh_802f4dcc(s32 audioResetStatus);
 void func_sh_802f4e50(struct PendingDmaAudioBank *audioBank, s32 audioResetStatus);
 void func_sh_802f50ec(struct PendingDmaAudioBank *arg0, size_t len);
 void func_sh_802f517c(uintptr_t devAddr, void *vAddr, size_t nbytes, s32 arg3);
-BAD_RETURN(s32) func_sh_802f5310(s32 bankId, struct AudioBank *mem, struct PatchStruct *patchInfo, s32 arg3);
+void func_sh_802f5310(s32 bankId, struct AudioBank *mem, struct PatchStruct *patchInfo, s32 arg3);
 s32 func_sh_802f573c(s32 audioResetStatus);
 void *func_sh_802f3564(s32 seqId);
 s32 func_sh_802f3ec4(s32 arg0, uintptr_t *arg1);
@@ -451,7 +451,7 @@ void func_sh_802f3288(s32 idx) {
     }
 }
 
-BAD_RETURN(s32) func_sh_802f3368(s32 bankId) {
+void func_sh_802f3368(s32 bankId) {
     struct SoundMultiPool *pool = &gBankLoadedPool;
     struct TemporaryPool *temporary = &pool->temporary;
     struct PersistentPool *persistent;
@@ -1027,17 +1027,6 @@ void audio_init() {
     gRefreshRate = 60;
     port_eu_init();
 
-#ifdef TARGET_N64
-    eu_stubbed_printf_3(
-        "Clear Workarea %x -%x size %x \n",
-        (uintptr_t) &gAudioGlobalsStartMarker,
-        (uintptr_t) &gAudioGlobalsEndMarker,
-        (uintptr_t) &gAudioGlobalsEndMarker - (uintptr_t) &gAudioGlobalsStartMarker
-    );
-#endif
-
-    eu_stubbed_printf_1("AudioHeap is %x\n", gAudioHeapSize);
-
     for (i = 0; i < NUMAIBUFFERS; i++) {
         gAiBufferLengths[i] = 0xa0;
     }
@@ -1070,11 +1059,6 @@ void audio_init() {
     gAudioResetPresetIdToLoad = 0;
     gAudioResetStatus = 1;
     audio_shut_down_and_reset_step();
-
-    // Not sure about these prints
-    eu_stubbed_printf_1("Heap reset.Synth Change %x \n", 0);
-    eu_stubbed_printf_3("Heap %x %x %x\n", 0, 0, 0);
-    eu_stubbed_printf_0("Main Heap Initialize.\n");
 
     // Load headers for sounds and sequences
     gSeqFileHeader = (ALSeqFile *) gShindouSequencesHeader;
@@ -1427,10 +1411,8 @@ void patch_sound(struct AudioBankSound *sound, struct AudioBank *memBase, struct
 #undef PATCH
 }
 
-BAD_RETURN(s32) func_sh_802f5310(s32 bankId, struct AudioBank *mem, struct PatchStruct *patchInfo, s32 arg3) {
-    UNUSED u32 pad[2];
+void func_sh_802f5310(s32 bankId, struct AudioBank *mem, struct PatchStruct *patchInfo, s32 arg3) {
     u8 *addr = NULL;
-    UNUSED u32 pad1[3];
     s32 sp4C;
     struct AudioBankSample *temp_s0;
     s32 i;

@@ -4,6 +4,8 @@
  * Implements behaviour and spawning for fish located in the Secret Aquarium and other levels.
  */
 
+extern const struct Animation *const cyan_fish_seg6_anims_0600E264[];
+
 /**
  * Spawns fish with settings chosen by oBehParams2ndByte.
  * These settings are animations, colour, and spawn quantity.
@@ -84,7 +86,7 @@ static void fish_vertical_roam(s32 speed) {
     // If the stage is Secret Aquarium, the fish can 
     // travel as far vertically as they wish.
     if (gCurrLevelNum == LEVEL_SA) {
-        if (500.0f < absf(o->oPosY - o->oFishGoalY)) {
+        if (500.0f < ABS(o->oPosY - o->oFishGoalY)) {
             speed = 10;
         }
         o->oPosY = approach_f32_symmetric(o->oPosY, o->oFishGoalY, speed);
@@ -155,7 +157,6 @@ static void fish_act_roam(void) {
  */
 static void fish_act_flee(void) {
     f32 fishY = o->oPosY - gMarioObject->oPosY;
-    UNUSED s32 distance;
 
     o->oFishGoalY = gMarioObject->oPosY + o->oFishHeightOffset;
 
@@ -164,14 +165,6 @@ static void fish_act_flee(void) {
         o->oFishActiveDistance = random_float() * 300.0f;
         o->oFishYawVel = random_float() * 1024.0f + 1024.0f;
         o->oFishGoalVel = random_float() * 4.0f + 8.0f + 5.0f;
-
-        if (o->oDistanceToMario < 600.0f) {
-            distance = 1;
-        } else {
-            distance = (s32)(1.0 / (o->oDistanceToMario / 600.0));
-        }
-
-        distance *= 127;
 
         cur_obj_play_sound_2(SOUND_GENERAL_MOVING_WATER);
     }
@@ -185,7 +178,7 @@ static void fish_act_flee(void) {
 
     // Accelerate over time.
     if (o->oForwardVel < o->oFishGoalVel) {
-        o->oForwardVel = o->oForwardVel + 0.5;
+        o->oForwardVel = o->oForwardVel + 0.5f;
     }
 
     o->oFishGoalY = gMarioObject->oPosY + o->oFishHeightOffset;
@@ -225,7 +218,7 @@ static void fish_act_init(void) {
     cur_obj_init_animation_with_accel_and_sound(0, 1.0f);
     o->header.gfx.animInfo.animFrame = (s16)(random_float() * 28.0f);
     o->oFishDepthDistance = random_float() * 300.0f;
-    cur_obj_scale(random_float() * 0.4 + 0.8);
+    cur_obj_scale(random_float() * 0.4f + 0.8f);
     o->oAction = FISH_ACT_ROAM;
 }
 
@@ -239,7 +232,6 @@ static void (*sFishActions[])(void) = {
  * Main loop for fish
  */
 void bhv_fish_loop(void) {
-    UNUSED u8 filler[16];
     cur_obj_scale(1.0f);
 
     // oFishWaterLevel tracks if a fish has roamed out of water.

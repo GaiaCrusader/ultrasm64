@@ -15,7 +15,6 @@ void play_penguin_walking_sound(s32 walk) {
 
 void tuxies_mother_act_2(void) {
     f32 sp24;
-    UNUSED u8 filler[4];
     struct Object *sp1C = cur_obj_find_nearest_object_with_behavior(bhvSmallPenguin, &sp24);
 
     if (cur_obj_find_nearby_held_actor(bhvUnused20E0, 1000.0f) != NULL) {
@@ -322,40 +321,4 @@ void bhv_small_penguin_loop(void) {
             cur_obj_get_dropped();
             break;
     }
-}
-
-/** Geo switch logic for Tuxie's mother's eyes. Cases 0-4. Interestingly, case
- * 4 is unused, and is the eye state seen in Shoshinkai 1995 footage.
- */
-Gfx *geo_switch_tuxie_mother_eyes(s32 run, struct GraphNode *node, UNUSED Mat4 *mtx) {
-    if (run == TRUE) {
-        struct Object *obj = (struct Object *) gCurGraphNodeObject;
-        struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
-        s32 timer;
-
-        switchCase->selectedCase = 0;
-
-        // timer logic for blinking. uses cases 0-2.
-        timer = gGlobalTimer % 50;
-        if (timer < 43) {
-            switchCase->selectedCase = 0;
-        } else if (timer < 45) {
-            switchCase->selectedCase = 1;
-        } else if (timer < 47) {
-            switchCase->selectedCase = 2;
-        } else {
-            switchCase->selectedCase = 1;
-        }
-
-        /** make Tuxie's Mother have angry eyes if Mario takes the correct baby
-         * after giving it back. The easiest way to check this is to see if she's
-         * moving, since she only does when she's chasing Mario.
-         */
-        if (obj->behavior == segmented_to_virtual(bhvTuxiesMother)) {
-            if (obj->oForwardVel > 5.0f) {
-                switchCase->selectedCase = 3;
-            }
-        }
-    }
-    return NULL;
 }

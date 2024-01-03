@@ -47,7 +47,6 @@ void heave_ho_act_1(void) {
 }
 
 void heave_ho_act_2(void) {
-    UNUSED u8 filler[4];
     s16 angleVel;
 
     if (cur_obj_lateral_dist_from_mario_to_home() > 1000.0f) {
@@ -56,7 +55,7 @@ void heave_ho_act_2(void) {
 
     if (o->oTimer > 150) {
         o->oHeaveHoUnkF4 = (302 - o->oTimer) / 152.0f;
-        if (o->oHeaveHoUnkF4 < 0.1) {
+        if (o->oHeaveHoUnkF4 < 0.1f) {
             o->oHeaveHoUnkF4 = 0.1f;
             o->oAction = 1;
         }

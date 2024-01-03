@@ -68,9 +68,6 @@ static const struct Animation spindrift_seg5_anim_050006AC = {
 };
 
 
-// False Bin ID?
-UNUSED static const u64 spindrift_unused_1 = 1;
-
 // 0x050006D0
 ALIGNED8 static const Texture spindrift_seg5_texture_050006D0[] = {
 #include "actors/spindrift/spindrift_face.rgba16.inc.c"
@@ -112,7 +109,7 @@ const Gfx spindrift_seg5_dl_05002710[] = {
 // 0x05002748 - 0x050027B8
 const Gfx spindrift_seg5_dl_05002748[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -122,7 +119,7 @@ const Gfx spindrift_seg5_dl_05002748[] = {
     gsSPDisplayList(spindrift_seg5_dl_05002710),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -148,7 +145,7 @@ const Gfx spindrift_seg5_dl_050027F8[] = {
 // 0x05002830 - 0x050028A0
 const Gfx spindrift_seg5_dl_05002830[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -158,7 +155,7 @@ const Gfx spindrift_seg5_dl_05002830[] = {
     gsSPDisplayList(spindrift_seg5_dl_050027F8),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -183,7 +180,7 @@ const Gfx spindrift_seg5_dl_050028D0[] = {
 // 0x05002900 - 0x05002970
 const Gfx spindrift_seg5_dl_05002900[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -193,16 +190,12 @@ const Gfx spindrift_seg5_dl_05002900[] = {
     gsSPDisplayList(spindrift_seg5_dl_050028D0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
 
 // 0x05002970
-static const Lights1 spindrift_seg5_lights_05002970 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05002988
 static const Vtx spindrift_seg5_vertex_05002988[] = {
@@ -218,8 +211,8 @@ const Gfx spindrift_seg5_dl_050029C8[] = {
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
     gsSPClearGeometryMode(G_CULL_BACK),
-    gsSPLight(&spindrift_seg5_lights_05002970.l, 1),
-    gsSPLight(&spindrift_seg5_lights_05002970.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(spindrift_seg5_vertex_05002988, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSPSetGeometryMode(G_CULL_BACK),
@@ -229,7 +222,7 @@ const Gfx spindrift_seg5_dl_050029C8[] = {
 // 0x05002A20 - 0x05002A80
 const Gfx spindrift_seg5_dl_05002A20[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -238,15 +231,11 @@ const Gfx spindrift_seg5_dl_05002A20[] = {
     gsSPDisplayList(spindrift_seg5_dl_050029C8),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 
 // 0x05002A80
-static const Lights1 spindrift_seg5_lights_05002A80 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05002A98
 static const Vtx spindrift_seg5_vertex_05002A98[] = {
@@ -262,8 +251,8 @@ const Gfx spindrift_seg5_dl_05002AD8[] = {
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
     gsSPClearGeometryMode(G_CULL_BACK),
-    gsSPLight(&spindrift_seg5_lights_05002A80.l, 1),
-    gsSPLight(&spindrift_seg5_lights_05002A80.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(spindrift_seg5_vertex_05002A98, 4, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  0,  2, 0x0),
     gsSPSetGeometryMode(G_CULL_BACK),
@@ -273,7 +262,7 @@ const Gfx spindrift_seg5_dl_05002AD8[] = {
 // 0x05002B30 - 0x05002B90
 const Gfx spindrift_seg5_dl_05002B30[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -282,15 +271,11 @@ const Gfx spindrift_seg5_dl_05002B30[] = {
     gsSPDisplayList(spindrift_seg5_dl_05002AD8),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 
 // 0x05002B90
-static const Lights1 spindrift_seg5_lights_05002B90 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x05002BA8
 static const Vtx spindrift_seg5_vertex_05002BA8[] = {
@@ -317,8 +302,8 @@ const Gfx spindrift_seg5_dl_05002C98[] = {
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
     gsSPClearGeometryMode(G_CULL_BACK),
-    gsSPLight(&spindrift_seg5_lights_05002B90.l, 1),
-    gsSPLight(&spindrift_seg5_lights_05002B90.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(spindrift_seg5_vertex_05002BA8, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  7,  8, 0x0,  9, 10, 11, 0x0),
@@ -330,7 +315,7 @@ const Gfx spindrift_seg5_dl_05002C98[] = {
 // 0x05002D08 - 0x05002D68
 const Gfx spindrift_seg5_dl_05002D08[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA),
+    gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -339,7 +324,7 @@ const Gfx spindrift_seg5_dl_05002D08[] = {
     gsSPDisplayList(spindrift_seg5_dl_05002C98),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };
 

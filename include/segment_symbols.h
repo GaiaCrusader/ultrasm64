@@ -1,19 +1,25 @@
 #ifndef SEGMENT_SYMBOLS_H
 #define SEGMENT_SYMBOLS_H
 
-#ifndef NO_SEGMENTED_MEMORY
 #define DECLARE_SEGMENT(name) \
     extern u8 _##name##SegmentRomStart[]; \
     extern u8 _##name##SegmentRomEnd[];
+    
+#define DECLARE_NOLOAD(name) \
+    extern u8 _##name##SegmentBssStart[]; \
+    extern u8 _##name##SegmentBssEnd[];
 
 #define DECLARE_ACTOR_SEGMENT(name) \
     DECLARE_SEGMENT(name##_mio0) \
     DECLARE_SEGMENT(name##_yay0) \
-    DECLARE_SEGMENT(name##_geo)
+    DECLARE_SEGMENT(name##_geo) \
+    DECLARE_NOLOAD(name##_geo)
 
 #define DECLARE_LEVEL_SEGMENT(name) \
     DECLARE_SEGMENT(name) \
+    DECLARE_NOLOAD(name) \
     DECLARE_SEGMENT(name##_segment_7)
+
 
 DECLARE_ACTOR_SEGMENT(common0)
 DECLARE_ACTOR_SEGMENT(common1)
@@ -133,8 +139,6 @@ DECLARE_SEGMENT(debug_level_select_mio0)
 DECLARE_SEGMENT(translation_de_mio0)
 DECLARE_SEGMENT(translation_en_mio0)
 DECLARE_SEGMENT(translation_fr_mio0)
-#endif
-
 #endif
 
 #endif // SEGMENT_SYMBOLS_H

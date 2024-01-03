@@ -1,10 +1,5 @@
 // Chair
 
-// Unreferenced light group
-UNUSED static const Lights1 chair_lights_unused = gdSPDefLights1(
-    0x19, 0x0d, 0x06,
-    0x64, 0x36, 0x1a, 0x28, 0x28, 0x28
-);
 
 // 0x05003060
 ALIGNED8 static const Texture chair_seg5_texture_05003060[] = {
@@ -21,17 +16,7 @@ ALIGNED8 static const Texture chair_seg5_texture_05004060[] = {
 #include "actors/chair/chair_bottom.rgba16.inc.c"
 };
 
-// unreferenced
-// 0x05004460
-UNUSED ALIGNED8 static const Texture chair_seg5_texture_05004460[] = {
-#include "actors/chair/chair_surface_unused.rgba16.inc.c"
-};
-
 // 0x05004C60
-static const Lights1 chair_seg5_lights_05004C60 = gdSPDefLights1(
-    0x47, 0x47, 0x47,
-    0xb2, 0xb2, 0xb2, 0x28, 0x28, 0x28
-);
 
 // 0x05004C78
 static const Vtx chair_seg5_vertex_05004C78[] = {
@@ -74,8 +59,8 @@ const Gfx chair_seg5_dl_05004E38[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, chair_seg5_texture_05003060),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&chair_seg5_lights_05004C60.l, 1),
-    gsSPLight(&chair_seg5_lights_05004C60.a, 2),
+    gsSPLightColor(LIGHT_1, 0xb2b2b2ff),
+    gsSPLightColor(LIGHT_2, 0x474747ff),
     gsSPVertex(chair_seg5_vertex_05004C78, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 4,  6,  5, 0x0,  7,  8,  9, 0x0),
@@ -91,7 +76,7 @@ const Gfx chair_seg5_dl_05004E38[] = {
 // 0x05004EE8 - 0x05004F58
 const Gfx chair_seg5_dl_05004EE8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -101,16 +86,12 @@ const Gfx chair_seg5_dl_05004EE8[] = {
     gsSPDisplayList(chair_seg5_dl_05004E38),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };
 
 // 0x05004F58
-static const Lights1 chair_seg5_lights_05004F58 = gdSPDefLights1(
-    0x47, 0x47, 0x47,
-    0xb2, 0xb2, 0xb2, 0x28, 0x28, 0x28
-);
 
 // 0x05004F70
 static const Vtx chair_seg5_vertex_05004F70[] = {
@@ -149,8 +130,8 @@ const Gfx chair_seg5_dl_050050F0[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, chair_seg5_texture_05004060),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 16 * 32 - 1, CALC_DXT(16, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&chair_seg5_lights_05004F58.l, 1),
-    gsSPLight(&chair_seg5_lights_05004F58.a, 2),
+    gsSPLightColor(LIGHT_1, 0xb2b2b2ff),
+    gsSPLightColor(LIGHT_2, 0x474747ff),
     gsSPVertex(chair_seg5_vertex_05004F70, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  6,  4, 0x0,  7,  8,  9, 0x0),
@@ -165,7 +146,7 @@ const Gfx chair_seg5_dl_050050F0[] = {
 // 0x05005190 - 0x05005200
 const Gfx chair_seg5_dl_05005190[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -175,16 +156,12 @@ const Gfx chair_seg5_dl_05005190[] = {
     gsSPDisplayList(chair_seg5_dl_050050F0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };
 
 // 0x05005200
-static const Lights1 chair_seg5_lights_05005200 = gdSPDefLights1(
-    0x47, 0x47, 0x47,
-    0xb2, 0xb2, 0xb2, 0x28, 0x28, 0x28
-);
 
 // 0x05005218
 static const Vtx chair_seg5_vertex_05005218[] = {
@@ -221,8 +198,8 @@ const Gfx chair_seg5_dl_05005378[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, chair_seg5_texture_05003860),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&chair_seg5_lights_05005200.l, 1),
-    gsSPLight(&chair_seg5_lights_05005200.a, 2),
+    gsSPLightColor(LIGHT_1, 0xb2b2b2ff),
+    gsSPLightColor(LIGHT_2, 0x474747ff),
     gsSPVertex(chair_seg5_vertex_05005218, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  6,  4, 0x0,  7,  8,  9, 0x0),
@@ -237,7 +214,7 @@ const Gfx chair_seg5_dl_05005378[] = {
 // 0x05005408 - 0x05005478
 const Gfx chair_seg5_dl_05005408[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -247,16 +224,12 @@ const Gfx chair_seg5_dl_05005408[] = {
     gsSPDisplayList(chair_seg5_dl_05005378),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };
 
 // 0x05005478
-static const Lights1 chair_seg5_lights_05005478 = gdSPDefLights1(
-    0x47, 0x47, 0x47,
-    0xb2, 0xb2, 0xb2, 0x28, 0x28, 0x28
-);
 
 // 0x05005490
 static const Vtx chair_seg5_vertex_05005490[] = {
@@ -293,8 +266,8 @@ const Gfx chair_seg5_dl_050055F0[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, chair_seg5_texture_05003860),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&chair_seg5_lights_05005478.l, 1),
-    gsSPLight(&chair_seg5_lights_05005478.a, 2),
+    gsSPLightColor(LIGHT_1, 0xb2b2b2ff),
+    gsSPLightColor(LIGHT_2, 0x474747ff),
     gsSPVertex(chair_seg5_vertex_05005490, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  6,  4, 0x0,  7,  8,  9, 0x0),
@@ -309,7 +282,7 @@ const Gfx chair_seg5_dl_050055F0[] = {
 // 0x05005680 - 0x050056F0
 const Gfx chair_seg5_dl_05005680[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_SHADING_SMOOTH),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -319,7 +292,7 @@ const Gfx chair_seg5_dl_05005680[] = {
     gsSPDisplayList(chair_seg5_dl_050055F0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_SHADING_SMOOTH),
     gsSPEndDisplayList(),
 };

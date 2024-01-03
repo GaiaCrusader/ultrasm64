@@ -5,6 +5,11 @@
 
 #include "types.h"
 
+struct SequenceQueueItem {
+    u8 seqId;
+    u8 priority;
+}; // size = 0x2
+
 // Sequence arguments, passed to seq_player_play_sequence. seqId may be bit-OR'ed with
 // SEQ_VARIATION; this will load the same sequence, but set a variation
 // bit which may be read by the sequence script.
@@ -60,10 +65,5 @@ void sound_reset(u8 presetId);
 void audio_set_sound_mode(u8 arg0);
 
 void audio_init(void); // in load.c
-
-#if defined(VERSION_EU) || defined(VERSION_SH)
-struct SPTask *unused_80321460();
-struct SPTask *unused_80321460(void);
-#endif
 
 #endif // AUDIO_EXTERNAL_H

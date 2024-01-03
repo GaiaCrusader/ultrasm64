@@ -5,7 +5,6 @@
 #include "behavior_actions.h"
 #include "behavior_data.h"
 #include "camera.h"
-#include "debug.h"
 #include "dialog_ids.h"
 #include "engine/behavior_script.h"
 #include "engine/geo_layout.h"
@@ -26,9 +25,10 @@
 #include "rendering_graph_node.h"
 #include "spawn_object.h"
 #include "spawn_sound.h"
+#include "string.h"
 
 static s8 sBbhStairJiggleOffsets[] = { -8, 8, -4, 4 };
-static s16 sPowersOfTwo[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+u8 sPowersOfTwo[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
 
 static s32 clear_move_flag(u32 *, s32);
@@ -36,15 +36,13 @@ static s32 clear_move_flag(u32 *, s32);
 #define o gCurrentObject
 
 Gfx *geo_update_projectile_pos_from_parent(s32 callContext, UNUSED struct GraphNode *node, Mat4 mtx) {
-    Mat4 sp20;
-    struct Object *sp1C;
+    struct Object *projObj ;
 
     if (callContext == GEO_CONTEXT_RENDER) {
-        sp1C = (struct Object *) gCurGraphNodeObject; // TODO: change global type to Object pointer
-        if (sp1C->prevObj) {
-            create_transformation_from_matrices(sp20, mtx, *gCurGraphNodeCamera->matrixPtr);
-            obj_update_pos_from_parent_transformation(sp20, sp1C->prevObj);
-            obj_set_gfx_pos_from_pos(sp1C->prevObj);
+        projObj  = (struct Object *) gCurGraphNodeObject; // TODO: change global type to Object pointer
+        if (projObj  && projObj ->prevObj) {
+            obj_update_pos_from_parent_transformation(mtx, projObj->prevObj);
+            obj_set_gfx_pos_from_pos(projObj ->prevObj);
         }
     }
     return NULL;
@@ -54,7 +52,6 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
     Gfx *dlStart, *dlHead;
     struct Object *objectGraphNode;
     struct GraphNodeGenerated *currentGraphNode;
-    UNUSED struct GraphNodeGenerated *sp2C;
     s32 objectOpacity;
 
     dlStart = NULL;
@@ -62,7 +59,6 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
     if (callContext == GEO_CONTEXT_RENDER) {
         objectGraphNode = (struct Object *) gCurGraphNodeObject; // TODO: change this to object pointer?
         currentGraphNode = (struct GraphNodeGenerated *) node;
-        sp2C = (struct GraphNodeGenerated *) node;
 
         if (gCurGraphNodeHeldObject != NULL) {
             objectGraphNode = gCurGraphNodeHeldObject->objNode;
@@ -75,36 +71,21 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
 
         if (objectOpacity == 0xFF) {
             if (currentGraphNode->parameter == 20) {
-                currentGraphNode->fnNode.node.flags =
-                0x600 | (currentGraphNode->fnNode.node.flags & 0xFF);
+                currentGraphNode->fnNode.node.flags = (LAYER_TRANSPARENT_DECAL << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
             } else {
-                currentGraphNode->fnNode.node.flags =
-                0x100 | (currentGraphNode->fnNode.node.flags & 0xFF);
+                currentGraphNode->fnNode.node.flags = (LAYER_OPAQUE << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
             }
 
             objectGraphNode->oAnimState = 0;
         } else {
             if (currentGraphNode->parameter == 20) {
-                currentGraphNode->fnNode.node.flags =
-                0x600 | (currentGraphNode->fnNode.node.flags & 0xFF);
+                currentGraphNode->fnNode.node.flags = (LAYER_TRANSPARENT_DECAL << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
             } else {
-                currentGraphNode->fnNode.node.flags =
-                0x500 | (currentGraphNode->fnNode.node.flags & 0xFF);
+                currentGraphNode->fnNode.node.flags = (LAYER_TRANSPARENT_ZSORT << 8) | (currentGraphNode->fnNode.node.flags & 0xFF);
             }
 
             objectGraphNode->oAnimState = 1;
 
-#ifdef VERSION_JP
-            if (currentGraphNode->parameter == 10) {
-                if (gDebugInfo[DEBUG_PAGE_ENEMYINFO][3]) {
-                    gDPSetAlphaCompare(dlHead++, G_AC_DITHER);
-                }
-            } else {
-                if (objectGraphNode->activeFlags & ACTIVE_FLAG_DITHERED_ALPHA) {
-                    gDPSetAlphaCompare(dlHead++, G_AC_DITHER);
-                }
-            }
-#else // gDebugInfo accesses were removed in all non-JP versions.
             if (objectOpacity == 0 && segmented_to_virtual(bhvBowser) == objectGraphNode->behavior) {
                 objectGraphNode->oAnimState = 2;
             }
@@ -116,7 +97,6 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
                     gDPSetAlphaCompare(dlHead++, G_AC_DITHER);
                 }
             }
-#endif
         }
 
         gDPSetEnvColor(dlHead++, 255, 255, 255, objectOpacity);
@@ -133,11 +113,7 @@ Gfx *geo_update_layer_transparency(s32 callContext, struct GraphNode *node, UNUS
  * declare it. This is undefined behavior, but harmless in practice due to the
  * o32 calling convention.
  */
-#ifdef AVOID_UB
 Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node, UNUSED void *context) {
-#else
-Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node) {
-#endif
     struct Object *obj;
     struct GraphNodeSwitchCase *switchCase;
 
@@ -165,16 +141,9 @@ Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node) {
     return NULL;
 }
 
-//! @bug Same issue as geo_switch_anim_state.
-#ifdef AVOID_UB
 Gfx *geo_switch_area(s32 callContext, struct GraphNode *node, UNUSED void *context) {
-#else
-Gfx *geo_switch_area(s32 callContext, struct GraphNode *node) {
-#endif
     s16 sp26;
     struct Surface *sp20;
-    UNUSED struct Object *sp1C =
-        (struct Object *) gCurGraphNodeObject; // TODO: change global type to Object pointer
     struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
 
     if (callContext == GEO_CONTEXT_RENDER) {
@@ -188,7 +157,6 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node) {
             if (sp20) {
                 gMarioCurrentRoom = sp20->room;
                 sp26 = sp20->room - 1;
-                print_debug_top_down_objectinfo("areainfo %d", sp20->room);
 
                 if (sp26 >= 0) {
                     switchCase->selectedCase = sp26;
@@ -197,6 +165,138 @@ Gfx *geo_switch_area(s32 callContext, struct GraphNode *node) {
         }
     } else {
         switchCase->selectedCase = 0;
+    }
+
+    return NULL;
+}
+
+#include "print.h"
+
+Gfx *geo_switch_BG(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    s16 sp26;
+    struct Surface *sp20;
+    struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+
+    #define BG_HIDE 0
+    #define BG_SHOW 1
+
+    // A return of 0 means draw BG, a return of 1 means don't draw BG.
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        switchCase->selectedCase = BG_SHOW;
+        if (gMarioObject == NULL) {
+            switchCase->selectedCase = BG_HIDE;
+        } else {
+            // If the camera is out of bounds, show the background anyway
+            if (gCamera->isFloor == FALSE) {
+                switchCase->selectedCase = BG_SHOW;
+                return NULL;
+            }
+            // Cheeky solution to doors showing off voids. Not like the extra perf is important here.
+            if (gMarioState->action == ACT_PULLING_DOOR || gMarioState->action == ACT_PUSHING_DOOR || gMarioState->action == ACT_ENTERING_STAR_DOOR ||
+                gMarioState->action == ACT_WARP_DOOR_SPAWN) {
+                return NULL;
+            }
+            // BBH is only visible when outdoors, so check if the room can be active from outdoors.
+            if (gCurrLevelNum == LEVEL_BBH) {
+                if (gMarioCurrentRoom != 13 && gMarioCurrentRoom != 21 && gMarioCurrentRoom != 32 && gMarioCurrentRoom != 28) {
+                    switchCase->selectedCase = BG_HIDE;
+                }
+                return NULL;
+            }
+            // BBH has some spots you can't see the BG, so it'd benefit from this too
+            if (gCurrLevelNum == LEVEL_HMC) {
+                if (gMarioCurrentRoom == 2) {
+                    if (gCamera->pitch < 0x4400 && gMarioState->pos[1] < 800) {
+                        switchCase->selectedCase = BG_HIDE;
+                    } else if (gCamera->pitch < 0x4000 && gMarioState->pos[1] < 1500) {
+                        switchCase->selectedCase = BG_HIDE;
+                    } else if (gCamera->pitch < 0x3800) {
+                        switchCase->selectedCase = BG_HIDE;
+                    }
+                } else if (gMarioCurrentRoom == 3 || gMarioCurrentRoom == 5 || gMarioCurrentRoom == 13) {
+                    switchCase->selectedCase = BG_HIDE;
+                }
+                return NULL;
+            }
+            // The castle can only see the void from doors, so that's handled above, otherwise unconditionally hide.
+            if (gCurrLevelNum == LEVEL_CASTLE) {
+                switchCase->selectedCase = BG_HIDE;
+                return NULL;
+            }
+            // If Mario isn't swimming, but is below -1000, then that means he's in the cove, where the sky is never visible.
+            if (gCurrLevelNum == LEVEL_JRB) {
+                if (gMarioState->pos[1] < -1000 && !(gMarioState->action & ACT_FLAG_SWIMMING)) {
+                    switchCase->selectedCase = BG_HIDE;
+                    return NULL;
+                }
+            }
+            // Most of the time you can't see the skybox unless you're looking up
+            if (gCurrLevelNum == LEVEL_WDW) {
+                if (gMarioState->action == ACT_CREDITS_CUTSCENE) {
+                    return NULL;
+                }
+                if (gCamera->pitch < 0x4000 && gMarioState->pos[1] < 500) {
+                    switchCase->selectedCase = BG_HIDE;
+                } else if (gCamera->pitch < 0x3400 && gMarioState->pos[1] < 800) {
+                    switchCase->selectedCase = BG_HIDE;
+                } else if (gCamera->pitch < 0x2800 && gMarioState->pos[1] < 2500) {
+                    switchCase->selectedCase = BG_HIDE;
+                }
+            }
+            // TTC, we want the opposite of the regular condition
+            if (gCurrLevelNum == LEVEL_TTC) {
+                s32 pitch;
+                if (gMarioState->pos[1] > -1000) {
+                    pitch = 0x1C00;
+                } else {
+                    pitch = 0x3000;
+                }
+                if (gCamera->pitch > 0x3000) {
+                    switchCase->selectedCase = BG_HIDE;
+                }
+                return NULL;
+            }
+            // It's possible in area 1 of DDD to look down enough, but still see the skybox, so add a height requirement too.
+            if (gCurrLevelNum == LEVEL_DDD && gCurrAreaIndex == 1) {
+                if (gMarioState->pos[1] < 0) {
+                    goto next;
+                }
+            } else {
+                next:
+                if (gCamera->pitch < 0x3000) {
+                    switchCase->selectedCase = BG_HIDE;
+                }
+            }
+        }
+    } else {
+        switchCase->selectedCase = BG_SHOW;
+    }
+
+    return NULL;
+}
+
+Gfx *geo_switch_BG_simple(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+    s16 sp26;
+    struct Surface *sp20;
+    struct GraphNodeSwitchCase *switchCase = (struct GraphNodeSwitchCase *) node;
+
+    #define BG_HIDE 0
+    #define BG_SHOW 1
+
+    // A return of 0 means draw BG, a return of 1 means don't draw BG.
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        switchCase->selectedCase = BG_SHOW;
+        if (gMarioObject == NULL) {
+            switchCase->selectedCase = BG_HIDE;
+        } else {
+            if (gCamera->isFloor == FALSE) {
+                switchCase->selectedCase = BG_SHOW;
+            }
+        }
+    } else {
+        switchCase->selectedCase = BG_SHOW;
     }
 
     return NULL;
@@ -393,7 +493,6 @@ s16 obj_angle_to_object(struct Object *obj1, struct Object *obj2) {
 
 s16 obj_turn_toward_object(struct Object *obj, struct Object *target, s16 angleIndex, s16 turnAmount) {
     f32 a, b, c, d;
-    UNUSED u8 filler[4];
     s16 startAngle;
     s16 targetAngle = 0;
 
@@ -455,7 +554,7 @@ struct Object *spawn_object_abs_with_rot(struct Object *parent, s16 uselessArg, 
                                          const BehaviorScript *behavior,
                                          s16 x, s16 y, s16 z, s16 pitch, s16 yaw, s16 roll) {
     // 'uselessArg' is unused in the function spawn_object_at_origin()
-    struct Object *newObj = spawn_object_at_origin(parent, uselessArg, model, behavior);
+    struct Object *newObj = spawn_object_at_origin(parent, 0, model, behavior);
     obj_set_pos(newObj, x, y, z);
     obj_set_angle(newObj, pitch, yaw, roll);
 
@@ -475,12 +574,6 @@ struct Object *spawn_object_rel_with_rot(struct Object *parent, u32 model, const
     obj_set_angle(newObj, pitch, yaw, zOff); // Nice typo you got there Nintendo.
 
     return newObj;
-}
-
-struct Object *spawn_obj_with_transform_flags(struct Object *sp20, s32 model, const BehaviorScript *sp28) {
-    struct Object *sp1C = spawn_object(sp20, model, sp28);
-    sp1C->oFlags |= OBJ_FLAG_0020 | OBJ_FLAG_SET_THROW_MATRIX_FROM_TRANSFORM;
-    return sp1C;
 }
 
 struct Object *spawn_water_droplet(struct Object *parent, struct WaterDropletParams *params) {
@@ -787,16 +880,6 @@ void cur_obj_enable_rendering_2(void) {
     cur_obj_enable_rendering();
 }
 
-void cur_obj_unused_init_on_floor(void) {
-    cur_obj_enable_rendering();
-
-    o->oPosY = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
-    if (o->oPosY < FLOOR_LOWER_LIMIT_MISC) {
-        cur_obj_set_pos_relative_to_parent(0, 0, -70);
-        o->oPosY = find_floor_height(o->oPosX, o->oPosY, o->oPosZ);
-    }
-}
-
 void obj_set_face_angle_to_move_angle(struct Object *obj) {
     obj->oFaceAnglePitch = obj->oMoveAnglePitch;
     obj->oFaceAngleYaw = obj->oMoveAngleYaw;
@@ -964,7 +1047,7 @@ BAD_RETURN(s16) cur_obj_reverse_animation(void) {
     }
 }
 
-BAD_RETURN(s32) cur_obj_extend_animation_if_at_end(void) {
+void cur_obj_extend_animation_if_at_end(void) {
     s32 sp4 = o->header.gfx.animInfo.animFrame;
     s32 sp0 = o->header.gfx.animInfo.curAnim->loopEnd - 2;
 
@@ -1208,9 +1291,6 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
     f32 intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
     f32 deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
 
-    UNUSED u8 filler[4];
-    UNUSED f32 ny;
-
     o->oMoveFlags &= ~OBJ_MOVE_HIT_EDGE;
 
     if (o->oRoom != -1 && intendedFloor != NULL) {
@@ -1219,6 +1299,10 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
             return FALSE;
         }
     }
+
+    
+    f32 normal[4];
+    get_surface_normal(normal, intendedFloor);
 
     if (intendedFloorHeight < FLOOR_LOWER_LIMIT_MISC) {
         // Don't move into OoB
@@ -1234,7 +1318,7 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
             // Don't walk off an edge
             o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
             return FALSE;
-        } else if (intendedFloor->normal.y > steepSlopeNormalY) {
+        } else if (normal[1] > steepSlopeNormalY) {
             // Allow movement onto a slope, provided it's not too steep
             o->oPosX = intendedX;
             o->oPosZ = intendedZ;
@@ -1244,7 +1328,7 @@ static s32 cur_obj_move_xz(f32 steepSlopeNormalY, s32 careAboutEdgesAndSteepSlop
             o->oMoveFlags |= OBJ_MOVE_HIT_EDGE;
             return FALSE;
         }
-    } else if ((ny = intendedFloor->normal.y) > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
+    } else if (normal[1] > steepSlopeNormalY || o->oPosY > intendedFloorHeight) {
         // Allow movement upward, provided either:
         // - The target floor is flat enough (e.g. walking up stairs)
         // - We are above the target floor (most likely in the air)
@@ -1378,9 +1462,6 @@ void cur_obj_move_y(f32 gravity, f32 bounciness, f32 buoyancy) {
     }
 }
 
-UNUSED static void stub_obj_helpers_1(void) {
-}
-
 static s32 clear_move_flag(u32 *bitSet, s32 flag) {
     if (*bitSet & flag) {
         *bitSet &= flag ^ 0xFFFFFFFF;
@@ -1388,26 +1469,6 @@ static s32 clear_move_flag(u32 *bitSet, s32 flag) {
     } else {
         return FALSE;
     }
-}
-
-void cur_obj_unused_resolve_wall_collisions(f32 offsetY, f32 radius) {
-    if (radius > 0.1L) {
-        f32_find_wall_collision(&o->oPosX, &o->oPosY, &o->oPosZ, offsetY, radius);
-    }
-}
-
-s16 abs_angle_diff(s16 x0, s16 x1) {
-    s16 diff = x1 - x0;
-
-    if (diff == -0x8000) {
-        diff = -0x7FFF;
-    }
-
-    if (diff < 0) {
-        diff = -diff;
-    }
-
-    return diff;
 }
 
 void cur_obj_move_xz_using_fvel_and_yaw(void) {
@@ -1568,13 +1629,6 @@ void cur_obj_start_cam_event(UNUSED struct Object *obj, s32 cameraEvent) {
     gSecondCameraFocus = o;
 }
 
-// unused, self explanatory, maybe oInteractStatus originally had TRUE/FALSE statements
-void set_mario_interact_true_if_in_range(UNUSED s32 arg0, UNUSED s32 arg1, f32 range) {
-    if (o->oDistanceToMario < range) {
-        gMarioObject->oInteractStatus = TRUE;
-    }
-}
-
 void obj_set_billboard(struct Object *obj) {
     obj->header.gfx.node.flags |= GRAPH_RENDER_BILLBOARD;
 }
@@ -1677,13 +1731,18 @@ static s32 cur_obj_detect_steep_floor(s16 steepAngleDegrees) {
         intendedZ = o->oPosZ + o->oVelZ;
         intendedFloorHeight = find_floor(intendedX, o->oPosY, intendedZ, &intendedFloor);
         deltaFloorHeight = intendedFloorHeight - o->oFloorHeight;
+        
+        f32 normal[4];
+        if (intendedFloor) {
+            get_surface_normal(normal, intendedFloor);
+        }
 
         if (intendedFloorHeight < FLOOR_LOWER_LIMIT_MISC) {
             o->oWallAngle = o->oMoveAngleYaw + 0x8000;
             return 2;
-        } else if (intendedFloor->normal.y < steepNormalY && deltaFloorHeight > 0
+        } else if (normal[1] < steepNormalY && deltaFloorHeight > 0
                    && intendedFloorHeight > o->oPosY) {
-            o->oWallAngle = atan2s(intendedFloor->normal.z, intendedFloor->normal.x);
+            o->oWallAngle = atan2s(normal[2], normal[0]);
             return 1;
         } else {
             return 0;
@@ -1701,7 +1760,7 @@ s32 cur_obj_resolve_wall_collisions(void) {
     f32 offsetY = 10.0f;
     f32 radius = o->oWallHitboxRadius;
 
-    if (radius > 0.1L) {
+    if (radius > 0.1f) {
         collisionData.offsetY = offsetY;
         collisionData.radius = radius;
         collisionData.x = (s16) o->oPosX;
@@ -1715,7 +1774,11 @@ s32 cur_obj_resolve_wall_collisions(void) {
             o->oPosZ = collisionData.z;
             wall = collisionData.walls[collisionData.numWalls - 1];
 
-            o->oWallAngle = atan2s(wall->normal.z, wall->normal.x);
+            
+            f32 normal[4];
+            get_surface_normal(normal, wall);
+
+            o->oWallAngle = atan2s(normal[2], normal[0]);
             if (abs_angle_diff(o->oWallAngle, o->oMoveAngleYaw) > 0x4000) {
                 return TRUE;
             } else {
@@ -1929,6 +1992,12 @@ void obj_set_throw_matrix_from_transform(struct Object *obj) {
     }
 
     obj->header.gfx.throwMatrix = &obj->transform;
+    if (gThrowMatIndex >= THROWMATSTACK)
+        return;
+
+    memcpy(&gThrowMatStack[gThrowMatSwap][gThrowMatIndex], &obj->transform, sizeof(Mat4));
+    obj->header.gfx.matrixID[gThrowMatSwap] = gThrowMatIndex;
+    gThrowMatIndex++;
 
     //! Sets scale of gCurrentObject instead of obj. Not exploitable since this
     //  function is only called with obj = gCurrentObject
@@ -1945,27 +2014,18 @@ void obj_build_transform_relative_to_parent(struct Object *obj) {
     obj->oPosX = obj->transform[3][0];
     obj->oPosY = obj->transform[3][1];
     obj->oPosZ = obj->transform[3][2];
-
     obj->header.gfx.throwMatrix = &obj->transform;
+
+    if (gThrowMatIndex >= THROWMATSTACK)
+        return;
+
+    memcpy(&gThrowMatStack[gThrowMatSwap][gThrowMatIndex], &obj->transform, sizeof(Mat4));
+    obj->header.gfx.matrixID[gThrowMatSwap] = gThrowMatIndex;
+    gThrowMatIndex++;
 
     //! Sets scale of gCurrentObject instead of obj. Not exploitable since this
     //  function is only called with obj = gCurrentObject
     cur_obj_scale(1.0f);
-}
-
-void obj_create_transform_from_self(struct Object *obj) {
-    obj->oFlags &= ~OBJ_FLAG_TRANSFORM_RELATIVE_TO_PARENT;
-    obj->oFlags |= OBJ_FLAG_SET_THROW_MATRIX_FROM_TRANSFORM;
-
-    obj->transform[3][0] = obj->oPosX;
-    obj->transform[3][1] = obj->oPosY;
-    obj->transform[3][2] = obj->oPosZ;
-}
-
-void cur_obj_rotate_move_angle_using_vel(void) {
-    o->oMoveAnglePitch += o->oAngleVelPitch;
-    o->oMoveAngleYaw += o->oAngleVelYaw;
-    o->oMoveAngleRoll += o->oAngleVelRoll;
 }
 
 void cur_obj_rotate_face_angle_using_vel(void) {
@@ -1974,18 +2034,11 @@ void cur_obj_rotate_face_angle_using_vel(void) {
     o->oFaceAngleRoll += o->oAngleVelRoll;
 }
 
-void cur_obj_set_face_angle_to_move_angle(void) {
-    o->oFaceAnglePitch = o->oMoveAnglePitch;
-    o->oFaceAngleYaw = o->oMoveAngleYaw;
-    o->oFaceAngleRoll = o->oMoveAngleRoll;
-}
-
 s32 cur_obj_follow_path(UNUSED s32 unusedArg) {
     struct Waypoint *startWaypoint;
     struct Waypoint *lastWaypoint;
     struct Waypoint *targetWaypoint;
     f32 prevToNextX, prevToNextY, prevToNextZ;
-    UNUSED u8 filler[4];
     f32 objToNextXZ;
     f32 objToNextX, objToNextY, objToNextZ;
 
@@ -2146,22 +2199,6 @@ s32 signum_positive(s32 x) {
     }
 }
 
-f32 absf(f32 x) {
-    if (x >= 0) {
-        return x;
-    } else {
-        return -x;
-    }
-}
-
-s32 absi(s32 x) {
-    if (x >= 0) {
-        return x;
-    } else {
-        return -x;
-    }
-}
-
 s32 cur_obj_wait_then_blink(s32 timeUntilBlinking, s32 numBlinks) {
     s32 done = FALSE;
     s32 timeBlinking;
@@ -2202,9 +2239,10 @@ void spawn_mist_particles_with_sound(u32 sp18) {
 void cur_obj_push_mario_away(f32 radius) {
     f32 marioRelX = gMarioObject->oPosX - o->oPosX;
     f32 marioRelZ = gMarioObject->oPosZ - o->oPosZ;
-    f32 marioDist = sqrtf(sqr(marioRelX) + sqr(marioRelZ));
+    f32 marioDist = sqr(marioRelX) + sqr(marioRelZ);
 
-    if (marioDist < radius) {
+    if (marioDist < radius * radius) {
+        marioDist = sqrtf(marioDist);
         //! If this function pushes Mario out of bounds, it will trigger Mario's
         //  oob failsafe
         gMarioStates[0].pos[0] += (radius - marioDist) / radius * marioRelX;
@@ -2236,9 +2274,6 @@ void bhv_dust_smoke_loop(void) {
     o->oSmokeTimer++;
 }
 
-UNUSED static void stub_obj_helpers_2(void) {
-}
-
 s32 cur_obj_set_direction_table(s8 *a0) {
     o->oToxBoxMovementPattern = a0;
     o->oToxBoxMovementStep = 0;
@@ -2247,7 +2282,7 @@ s32 cur_obj_set_direction_table(s8 *a0) {
 }
 
 s32 cur_obj_progress_direction_table(void) {
-    s8 spF;
+    s32 spF;
     s8 *sp8 = o->oToxBoxMovementPattern;
     s32 sp4 = o->oToxBoxMovementStep + 1;
 
@@ -2260,9 +2295,6 @@ s32 cur_obj_progress_direction_table(void) {
     }
 
     return spF;
-}
-
-void stub_obj_helpers_3(UNUSED s32 sp0, UNUSED s32 sp4) {
 }
 
 void cur_obj_scale_over_time(s32 a0, s32 a1, f32 sp10, f32 sp14) {
@@ -2283,10 +2315,10 @@ void cur_obj_scale_over_time(s32 a0, s32 a1, f32 sp10, f32 sp14) {
 }
 
 void cur_obj_set_pos_to_home_with_debug(void) {
-    o->oPosX = o->oHomeX + gDebugInfo[DEBUG_PAGE_ENEMYINFO][0];
-    o->oPosY = o->oHomeY + gDebugInfo[DEBUG_PAGE_ENEMYINFO][1];
-    o->oPosZ = o->oHomeZ + gDebugInfo[DEBUG_PAGE_ENEMYINFO][2];
-    cur_obj_scale(gDebugInfo[DEBUG_PAGE_ENEMYINFO][3] / 100.0f + 1.0l);
+    o->oPosX = o->oHomeX;
+    o->oPosY = o->oHomeY;
+    o->oPosZ = o->oHomeZ;
+    cur_obj_scale(1.0f);
 }
 
 void stub_obj_helpers_4(void) {
@@ -2328,32 +2360,13 @@ void cur_obj_call_action_function(void (*actionFunctions[])(void)) {
     actionFunction();
 }
 
-static struct Object *spawn_star_with_no_lvl_exit(s32 sp20, s32 sp24) {
-    struct Object *sp1C = spawn_object(o, MODEL_STAR, bhvSpawnedStarNoLevelExit);
-    sp1C->oSparkleSpawnUnk1B0 = sp24;
-    sp1C->oBehParams = o->oBehParams;
-    sp1C->oBehParams2ndByte = sp20;
-
-    return sp1C;
-}
-
-// old unused initializer for 2d star spawn behavior.
-// uses behavior parameters not used in the current sparkle code.
-void spawn_base_star_with_no_lvl_exit(void) {
-    spawn_star_with_no_lvl_exit(0, 0);
-}
-
-s32 bit_shift_left(s32 a0) {
-    return sPowersOfTwo[a0];
-}
-
 s32 cur_obj_mario_far_away(void) {
     f32 dx = o->oHomeX - gMarioObject->oPosX;
     f32 dy = o->oHomeY - gMarioObject->oPosY;
     f32 dz = o->oHomeZ - gMarioObject->oPosZ;
-    f32 marioDistToHome = sqrtf(dx * dx + dy * dy + dz * dz);
+    f32 marioDistToHome = dx * dx + dy * dy + dz * dz;
 
-    if (o->oDistanceToMario > 2000.0f && marioDistToHome > 2000.0f) {
+    if (o->oDistanceToMario > 2000.0f && marioDistToHome > sqr(2000.0f)) {
         return TRUE;
     } else {
         return FALSE;
@@ -2382,9 +2395,6 @@ s32 is_item_in_array(s8 item, s8 *array) {
     }
 
     return FALSE;
-}
-
-UNUSED static void stub_obj_helpers_5(void) {
 }
 
 void bhv_init_room(void) {
@@ -2486,36 +2496,13 @@ void cur_obj_if_hit_wall_bounce_away(void) {
 }
 
 s32 cur_obj_hide_if_mario_far_away_y(f32 distY) {
-    if (absf(o->oPosY - gMarioObject->oPosY) < distY) {
+    if (ABS(o->oPosY - gMarioObject->oPosY) < distY) {
         cur_obj_unhide();
         return FALSE;
     } else {
         cur_obj_hide();
         return TRUE;
     }
-}
-
-Gfx *geo_offset_klepto_held_object(s32 callContext, struct GraphNode *node, UNUSED Mat4 mtx) {
-    if (callContext == GEO_CONTEXT_RENDER) {
-        ((struct GraphNodeTranslationRotation *) node->next)->translation[0] = 300;
-        ((struct GraphNodeTranslationRotation *) node->next)->translation[1] = 300;
-        ((struct GraphNodeTranslationRotation *) node->next)->translation[2] = 0;
-    }
-
-    return NULL;
-}
-
-Gfx *geo_offset_klepto_debug(s32 callContext, struct GraphNode *node, UNUSED Mat4 mtx) {
-    if (callContext == GEO_CONTEXT_RENDER) {
-        ((struct GraphNodeTranslationRotation *) node->next)->translation[0] = gDebugInfo[DEBUG_PAGE_EFFECTINFO][0];
-        ((struct GraphNodeTranslationRotation *) node->next)->translation[1] = gDebugInfo[DEBUG_PAGE_EFFECTINFO][1];
-        ((struct GraphNodeTranslationRotation *) node->next)->translation[2] = gDebugInfo[DEBUG_PAGE_EFFECTINFO][2];
-        ((struct GraphNodeTranslationRotation *) node->next)->rotation[0]    = gDebugInfo[DEBUG_PAGE_EFFECTINFO][3];
-        ((struct GraphNodeTranslationRotation *) node->next)->rotation[1]    = gDebugInfo[DEBUG_PAGE_EFFECTINFO][4];
-        ((struct GraphNodeTranslationRotation *) node->next)->rotation[2]    = gDebugInfo[DEBUG_PAGE_EFFECTINFO][5];
-    }
-
-    return NULL;
 }
 
 s32 obj_is_hidden(struct Object *obj) {
@@ -2526,18 +2513,6 @@ s32 obj_is_hidden(struct Object *obj) {
     }
 }
 
-void enable_time_stop(void) {
-    gTimeStopState |= TIME_STOP_ENABLED;
-}
-
-void disable_time_stop(void) {
-    gTimeStopState &= ~TIME_STOP_ENABLED;
-}
-
-void set_time_stop_flags(s32 flags) {
-    gTimeStopState |= flags;
-}
-
 void clear_time_stop_flags(s32 flags) {
     gTimeStopState = gTimeStopState & (flags ^ 0xFFFFFFFF);
 }
@@ -2545,7 +2520,6 @@ void clear_time_stop_flags(s32 flags) {
 s32 cur_obj_can_mario_activate_textbox(f32 radius, f32 height, UNUSED s32 unused) {
     if (o->oDistanceToMario < 1500.0f) {
         f32 latDistToMario = lateral_dist_between_objects(o, gMarioObject);
-        UNUSED s16 angleFromMario = obj_angle_to_object(gMarioObject, o);
 
         if (latDistToMario < radius && o->oPosY < gMarioObject->oPosY + 160.0f
             && gMarioObject->oPosY < o->oPosY + height && !(gMarioStates[0].action & ACT_FLAG_AIR)
@@ -2559,7 +2533,7 @@ s32 cur_obj_can_mario_activate_textbox(f32 radius, f32 height, UNUSED s32 unused
 
 s32 cur_obj_can_mario_activate_textbox_2(f32 radius, f32 height) {
     // The last argument here is unused. When this function is called directly the argument is always set to 0x7FFF.
-    return cur_obj_can_mario_activate_textbox(radius, height, 0x1000);
+    return cur_obj_can_mario_activate_textbox(radius, height, 0);
 }
 
 static void cur_obj_end_dialog(s32 dialogFlags, s32 dialogResult) {
@@ -2573,7 +2547,6 @@ static void cur_obj_end_dialog(s32 dialogFlags, s32 dialogResult) {
 
 s32 cur_obj_update_dialog(s32 actionArg, s32 dialogFlags, s32 dialogID, UNUSED s32 unused) {
     s32 dialogResponse = DIALOG_RESPONSE_NONE;
-    UNUSED s32 doneTurning = TRUE;
 
     switch (o->oDialogState) {
 #if BUGFIX_DIALOG_TIME_STOP
@@ -2764,12 +2737,21 @@ void cur_obj_align_gfx_with_floor(void) {
 
     find_floor(position[0], position[1], position[2], &floor);
     if (floor != NULL) {
-        floorNormal[0] = floor->normal.x;
-        floorNormal[1] = floor->normal.y;
-        floorNormal[2] = floor->normal.z;
+        f32 normal[4];
+        get_surface_normal(floorNormal, floor);
+        floorNormal[0] = normal[0];
+        floorNormal[1] = normal[1];
+        floorNormal[2] = normal[2];
 
         mtxf_align_terrain_normal(o->transform, floorNormal, position, o->oFaceAngleYaw);
         o->header.gfx.throwMatrix = &o->transform;
+        
+        if (gThrowMatIndex >= THROWMATSTACK)
+            return;
+
+        memcpy(&gThrowMatStack[gThrowMatSwap][gThrowMatIndex], &o->transform, sizeof(Mat4));
+        o->header.gfx.matrixID[gThrowMatSwap] = gThrowMatIndex;
+        gThrowMatIndex++;
     }
 }
 
@@ -2874,12 +2856,6 @@ s32 player_performed_grab_escape_action(void) {
     return result;
 }
 
-void cur_obj_unused_play_footstep_sound(s32 animFrame1, s32 animFrame2, s32 sound) {
-    if (cur_obj_check_anim_frame(animFrame1) || cur_obj_check_anim_frame(animFrame2)) {
-        cur_obj_play_sound_2(sound);
-    }
-}
-
 void enable_time_stop_including_mario(void) {
     gTimeStopState |= TIME_STOP_ENABLED | TIME_STOP_MARIO_AND_DOORS;
     o->activeFlags |= ACTIVE_FLAG_INITIATED_TIME_STOP;
@@ -2909,7 +2885,7 @@ void cur_obj_spawn_loot_blue_coin(void) {
 #ifndef VERSION_JP
 void cur_obj_spawn_star_at_y_offset(f32 targetX, f32 targetY, f32 targetZ, f32 offsetY) {
     f32 objectPosY = o->oPosY;
-    o->oPosY += offsetY + gDebugInfo[DEBUG_PAGE_ENEMYINFO][0];
+    o->oPosY += offsetY;
     spawn_default_star(targetX, targetY, targetZ);
     o->oPosY = objectPosY;
 }

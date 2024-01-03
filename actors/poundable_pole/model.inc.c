@@ -1,10 +1,6 @@
 // Poundable Pole
 
 // 0x06001038
-static const Lights1 poundable_pole_seg6_lights_06001038 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x06001050
 ALIGNED8 static const Texture poundable_pole_seg6_texture_06001050[] = {
@@ -79,8 +75,8 @@ const Gfx poundable_pole_seg6_dl_060022F0[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, poundable_pole_seg6_texture_06001050),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&poundable_pole_seg6_lights_06001038.l, 1),
-    gsSPLight(&poundable_pole_seg6_lights_06001038.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(poundable_pole_seg6_vertex_06002050, 8, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  4, 0x0),
     gsSP2Triangles( 0,  2,  3, 0x0,  2,  1,  5, 0x0),
@@ -111,7 +107,7 @@ const Gfx poundable_pole_seg6_dl_06002358[] = {
 // 0x06002410 - 0x06002490
 const Gfx poundable_pole_seg6_dl_06002410[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -124,6 +120,6 @@ const Gfx poundable_pole_seg6_dl_06002410[] = {
     gsSPDisplayList(poundable_pole_seg6_dl_06002358),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPEndDisplayList(),
 };

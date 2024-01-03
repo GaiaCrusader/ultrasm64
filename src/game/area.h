@@ -41,14 +41,6 @@ struct SpawnInfo {
     /*0x1C*/ struct SpawnInfo *next;
 };
 
-struct UnusedArea28 {
-    /*0x00*/ s16 unk00;
-    /*0x02*/ s16 unk02;
-    /*0x04*/ s16 unk04;
-    /*0x06*/ s16 unk06;
-    /*0x08*/ s16 unk08;
-};
-
 struct Whirlpool {
     /*0x00*/ Vec3s pos;
     /*0x03*/ s16 strength;
@@ -67,7 +59,6 @@ struct Area {
     /*0x1C*/ struct InstantWarp *instantWarps;
     /*0x20*/ struct SpawnInfo *objectSpawnInfos;
     /*0x24*/ struct Camera *camera;
-    /*0x28*/ struct UnusedArea28 *unused; // Filled by level script 0x3A, but is unused.
     /*0x2C*/ struct Whirlpool *whirlpools[2];
     /*0x34*/ u8 dialog[2]; // Level start dialog number (set by level script cmd 0x30)
     /*0x36*/ u16 musicParam;
@@ -138,6 +129,7 @@ extern s16 gCurrAreaIndex;
 extern s16 gSavedCourseNum;
 extern s16 gMenuOptSelectIndex;
 extern s16 gSaveOptSelectIndex;
+extern u8 gDisableDraw;
 
 extern struct SpawnInfo *gMarioSpawnInfo;
 
@@ -146,6 +138,7 @@ extern struct Area *gCurrentArea;
 
 extern s16 gCurrSaveFileNum;
 extern s16 gCurrLevelNum;
+extern volatile u8 gSkipRender;
 
 
 void override_viewport_and_clip(Vp *a, Vp *b, u8 c, u8 d, u8 e);
@@ -163,5 +156,7 @@ void area_update_objects(void);
 void play_transition(s16 transType, s16 time, u8 red, u8 green, u8 blue);
 void play_transition_after_delay(s16 transType, s16 time, u8 red, u8 green, u8 blue, s16 delay);
 void render_game(void);
+void hud_logic(void);
+void set_warp_transition_rgb(u8 red, u8 green, u8 blue);
 
 #endif // AREA_H

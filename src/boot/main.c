@@ -26,11 +26,11 @@
 #define MESG_START_GFX_SPTASK 103
 #define MESG_NMI_REQUEST 104
 
-OSThread D_80339210; // unused?
 OSThread gIdleThread;
 OSThread gMainThread;
 OSThread gGameLoopThread;
 OSThread gSoundThread;
+OSThread gVideoLoopThread;
 
 OSIoMesg gDmaIoMesg;
 OSMesg gMainReceivedMesg;
@@ -65,34 +65,6 @@ s8 gDebugLevelSelect = FALSE;
 
 s8 gShowProfiler = FALSE;
 s8 gShowDebugText = FALSE;
-
-// unused
-void handle_debug_key_sequences(void) {
-    static u16 sProfilerKeySequence[] = {
-        U_JPAD, U_JPAD, D_JPAD, D_JPAD, L_JPAD, R_JPAD, L_JPAD, R_JPAD
-    };
-    static u16 sDebugTextKeySequence[] = { D_JPAD, D_JPAD, U_JPAD, U_JPAD,
-                                           L_JPAD, R_JPAD, L_JPAD, R_JPAD };
-    static s16 sProfilerKey = 0;
-    static s16 sDebugTextKey = 0;
-    if (gPlayer3Controller->buttonPressed != 0) {
-        if (sProfilerKeySequence[sProfilerKey++] == gPlayer3Controller->buttonPressed) {
-            if (sProfilerKey == ARRAY_COUNT(sProfilerKeySequence)) {
-                sProfilerKey = 0, gShowProfiler ^= 1;
-            }
-        } else {
-            sProfilerKey = 0;
-        }
-
-        if (sDebugTextKeySequence[sDebugTextKey++] == gPlayer3Controller->buttonPressed) {
-            if (sDebugTextKey == ARRAY_COUNT(sDebugTextKeySequence)) {
-                sDebugTextKey = 0, gShowDebugText ^= 1;
-            }
-        } else {
-            sDebugTextKey = 0;
-        }
-    }
-}
 
 void setup_mesg_queues(void) {
     osCreateMesgQueue(&gDmaMesgQueue, gDmaMesgBuf, ARRAY_COUNT(gDmaMesgBuf));
@@ -164,7 +136,6 @@ void receive_new_tasks(void) {
 }
 
 void start_sptask(s32 taskType) {
-    UNUSED u8 filler[4];
 
     if (taskType == M_AUDTASK) {
         gActiveSPTask = sCurrentAudioSPTask;
@@ -252,6 +223,15 @@ void handle_vblank(void) {
     }
 }
 
+typedef struct {
+    u16 vertexCount;
+    u16 triDrawCount;
+    u32 triRequestCount:18;
+    u32 rectCount:14;
+} F3DEX3PerfCounters;
+
+extern u32 sNumTris;
+
 void handle_sp_complete(void) {
     struct SPTask *curSPTask = gActiveSPTask;
 
@@ -305,11 +285,45 @@ void handle_dp_complete(void) {
     if (sCurrentDisplaySPTask->msgqueue != NULL) {
         osSendMesg(sCurrentDisplaySPTask->msgqueue, sCurrentDisplaySPTask->msg, OS_MESG_NOBLOCK);
     }
+#ifdef PUPPYPRINT_DEBUG
+    F3DEX3PerfCounters* counters = (F3DEX3PerfCounters*)( (u8*)gGfxSPTaskYieldBuffer + OS_YIELD_DATA_SIZE - 0x10);
+    osInvalDCache(counters, sizeof(F3DEX3PerfCounters));
+    sNumTris = counters->triDrawCount;
+#endif
     profiler_log_gfx_time(RDP_COMPLETE);
     sCurrentDisplaySPTask->state = SPTASK_STATE_FINISHED_DP;
     sCurrentDisplaySPTask = NULL;
 }
 extern void crash_screen_init(void);
+
+/**
+ * Increment the first and last values of the stack.
+ * If they're different, that means an error has occured, so trigger a crash.
+*/
+#ifdef PUPPYPRINT_DEBUG
+void check_stack_validity(void) {
+    gIdleThreadStack[0]++;
+    gIdleThreadStack[THREAD1_STACK - 1]++;
+    debug_assert(gIdleThreadStack[0] != gIdleThreadStack[THREAD1_STACK - 1], "Thread 1 stack overflow.");
+    gThread3Stack[0]++;
+    gThread3Stack[THREAD3_STACK - 1]++;
+    debug_assert(gThread3Stack[0] != gThread3Stack[THREAD3_STACK - 1], "Thread 3 stack overflow.");
+    gThread4Stack[0]++;
+    gThread4Stack[THREAD4_STACK - 1]++;
+    debug_assert(gThread4Stack[0] != gThread4Stack[THREAD4_STACK - 1], "Thread 4 stack overflow.");
+    gThread5Stack[0]++;
+    gThread5Stack[THREAD5_STACK - 1]++;
+    debug_assert(gThread5Stack[0] != gThread5Stack[THREAD5_STACK - 1], "Thread 5 stack overflow.");
+#if ENABLE_RUMBLE
+    gThread6Stack[0]++;
+    gThread6Stack[THREAD6_STACK - 1]++;
+    debug_assert(gThread6Stack[0] != gThread6Stack[THREAD6_STACK - 1], "Thread 6 stack overflow.");
+#endif
+    gThread9Stack[0]++;
+    gThread9Stack[THREAD9_STACK - 1]++;
+    debug_assert(gThread9Stack[0] != gThread9Stack[THREAD9_STACK - 1], "Thread 9 stack overflow.");
+}
+#endif
 
 void thread3_main(UNUSED void *arg) {
     setup_mesg_queues();
@@ -332,16 +346,38 @@ void thread3_main(UNUSED void *arg) {
     osSyncPrintf("Linker  : %s\n", __linker__);
 #endif
 
-    create_thread(&gSoundThread, 4, thread4_sound, NULL, gThread4Stack + 0x2000, 20);
+#ifdef PUPPYPRINT_DEBUG
+    gIdleThreadStack[0] = 0;
+    gIdleThreadStack[THREAD1_STACK - 1] = 0;
+    gThread3Stack[0] = 0;
+    gThread3Stack[THREAD3_STACK - 1] = 0;
+    gThread4Stack[0] = 0;
+    gThread4Stack[THREAD4_STACK - 1] = 0;
+    gThread5Stack[0] = 0;
+    gThread5Stack[THREAD5_STACK - 1] = 0;
+#if ENABLE_RUMBLE
+    gThread6Stack[0] = 0;
+    gThread6Stack[THREAD6_STACK - 1] = 0;
+#endif
+    gThread9Stack[0] = 0;
+    gThread9Stack[THREAD9_STACK - 1] = 0;
+#endif
+
+    create_thread(&gSoundThread, 4, thread4_sound, NULL, gThread4Stack + THREAD4_STACK, 20);
     osStartThread(&gSoundThread);
 
-    create_thread(&gGameLoopThread, 5, thread5_game_loop, NULL, gThread5Stack + 0x2000, 10);
+    create_thread(&gGameLoopThread, 5, thread5_game_loop, NULL, gThread5Stack + THREAD5_STACK, 10);
     osStartThread(&gGameLoopThread);
+
+    create_thread(&gVideoLoopThread, 9, thread9_graphics, NULL, gThread9Stack + THREAD9_STACK, 1);
 
     while (TRUE) {
         OSMesg msg;
 
         osRecvMesg(&gIntrMesgQueue, &msg, OS_MESG_BLOCK);
+#ifdef PUPPYPRINT_DEBUG
+        check_stack_validity();
+#endif
         switch ((uintptr_t) msg) {
             case MESG_VI_VBLANK:
                 handle_vblank();
@@ -416,7 +452,7 @@ void turn_off_audio(void) {
     }
 }
 
-void change_vi(OSViMode *mode, int width, int height){
+void change_vi(OSViMode *mode, int width, int height) {
 
     mode->comRegs.width = width;
     mode->comRegs.xScale = (width*512)/320;
@@ -451,20 +487,19 @@ void thread1_idle(UNUSED void *arg) {
 		break;
 	case OS_TV_MPAL:
 		// MPAL
-        VI = osViModeMpalLan1;
+        //VI = osViModeMpalLan1;
 		break;
 	case OS_TV_PAL:
 		// PAL
-        VI = osViModePalLan1;
+        //VI = osViModePalLan1;
 		break;
 	}
     change_vi(&VI, SCREEN_WIDTH, SCREEN_HEIGHT);
     osViSetMode(&VI);
     osViBlack(TRUE);
-    osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
     osViSetSpecialFeatures(OS_VI_GAMMA_OFF);
     osCreatePiManager(OS_PRIORITY_PIMGR, &gPIMesgQueue, gPIMesgBuf, ARRAY_COUNT(gPIMesgBuf));
-    create_thread(&gMainThread, 3, thread3_main, NULL, gThread3Stack + 0x2000, 100);
+    create_thread(&gMainThread, 3, thread3_main, NULL, gThread3Stack + THREAD3_STACK, 100);
     osStartThread(&gMainThread);
 
     osSetThreadPri(NULL, 0);
@@ -507,6 +542,6 @@ void main_func(void) {
     osInitialize_fakeisv();
 #endif
 
-    create_thread(&gIdleThread, 1, thread1_idle, NULL, gIdleThreadStack + 0x800, 100);
+    create_thread(&gIdleThread, 1, thread1_idle, NULL, gIdleThreadStack + THREAD1_STACK, 100);
     osStartThread(&gIdleThread);
 }

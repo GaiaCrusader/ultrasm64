@@ -1,16 +1,8 @@
 // Cannon Barrel
 
 // 0x08005878
-static const Lights1 cannon_barrel_seg8_lights_08005878 = gdSPDefLights1(
-    0x4c, 0x4c, 0x4c,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x08005890
-static const Lights1 cannon_barrel_seg8_lights_08005890 = gdSPDefLights1(
-    0x00, 0x00, 0x0f,
-    0x00, 0x00, 0x32, 0x28, 0x28, 0x28
-);
 
 // 0x080058A8
 ALIGNED8 static const Texture cannon_barrel_seg8_texture_080058A8[] = {
@@ -92,8 +84,8 @@ const Gfx cannon_barrel_seg8_dl_08006408[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, cannon_barrel_seg8_texture_080058A8),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&cannon_barrel_seg8_lights_08005878.l, 1),
-    gsSPLight(&cannon_barrel_seg8_lights_08005878.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x4c4c4cff),
     gsSPVertex(cannon_barrel_seg8_vertex_080060A8, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSP2Triangles( 2,  4,  5, 0x0,  2,  1,  4, 0x0),
@@ -108,8 +100,8 @@ const Gfx cannon_barrel_seg8_dl_08006408[] = {
 
 // 0x080064C0 - 0x08006660
 const Gfx cannon_barrel_seg8_dl_080064C0[] = {
-    gsSPLight(&cannon_barrel_seg8_lights_08005890.l, 1),
-    gsSPLight(&cannon_barrel_seg8_lights_08005890.a, 2),
+    gsSPLightColor(LIGHT_1, 0x32ff),
+    gsSPLightColor(LIGHT_2, 0xfff),
     gsSPVertex(cannon_barrel_seg8_vertex_080061A8, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 6,  7,  4, 0x0,  6,  4,  3, 0x0),
@@ -143,7 +135,7 @@ const Gfx cannon_barrel_seg8_dl_080064C0[] = {
 // 0x08006660 - 0x080066C8
 const Gfx cannon_barrel_seg8_dl_08006660[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -152,7 +144,6 @@ const Gfx cannon_barrel_seg8_dl_08006660[] = {
     gsSPDisplayList(cannon_barrel_seg8_dl_08006408),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
     gsSPDisplayList(cannon_barrel_seg8_dl_080064C0),
     gsSPEndDisplayList(),
 };

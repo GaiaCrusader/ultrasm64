@@ -114,6 +114,8 @@ struct AnimInfo {
     /*0x0A 0x42*/ u16 animTimer;
     /*0x0C 0x44*/ s32 animFrameAccelAssist;
     /*0x10 0x48*/ s32 animAccel;
+    Vec3s animRotStack[48];
+    u8 animPosStackNum;
 };
 
 struct GraphNodeObject {
@@ -128,6 +130,11 @@ struct GraphNodeObject {
     /*0x4C*/ struct SpawnInfo *unk4C;
     /*0x50*/ Mat4 *throwMatrix; // matrix ptr
     /*0x54*/ Vec3f cameraToObject;
+    Vec3f posLerp;
+    Vec3f scaleLerp;
+    Vec3s angleLerp;
+    u8 matrixID[2];
+    u8 bothMats;
 };
 
 struct ObjectNode {
@@ -138,6 +145,13 @@ struct ObjectNode {
 
 // NOTE: Since ObjectNode is the first member of Object, it is difficult to determine
 // whether some of these pointers point to ObjectNode or Object.
+
+struct ObjectShadow {
+    s16 floorHeight;
+    s16 floorPitch;
+    f32 floorHeightLerp;
+    u8 hasShadow;
+};
 
 struct Object {
     /*0x000*/ struct ObjectNode header;
@@ -152,9 +166,11 @@ struct Object {
         // Object fields. See object_fields.h.
         u32 asU32[0x50];
         s32 asS32[0x50];
+        s8  asS8[0x50][4];
+        u8  asU8[0x50][4];
         s16 asS16[0x50][2];
+        u16 asU16[0x50][2];
         f32 asF32[0x50];
-#if !IS_64_BIT
         s16 *asS16P[0x50];
         s32 *asS32P[0x50];
         struct Animation **asAnims[0x50];
@@ -164,22 +180,7 @@ struct Object {
         struct Surface *asSurface[0x50];
         void *asVoidPtr[0x50];
         const void *asConstVoidPtr[0x50];
-#endif
     } rawData;
-#if IS_64_BIT
-    union {
-        s16 *asS16P[0x50];
-        s32 *asS32P[0x50];
-        struct Animation **asAnims[0x50];
-        struct Waypoint *asWaypoint[0x50];
-        struct ChainSegment *asChainSegment[0x50];
-        struct Object *asObject[0x50];
-        struct Surface *asSurface[0x50];
-        void *asVoidPtr[0x50];
-        const void *asConstVoidPtr[0x50];
-    } ptrData;
-#endif
-    /*0x1C8*/ u32 unused1;
     /*0x1CC*/ const BehaviorScript *curBhvCommand;
     /*0x1D0*/ u32 bhvStackIndex;
     /*0x1D4*/ uintptr_t bhvStack[8];
@@ -191,11 +192,11 @@ struct Object {
     /*0x204*/ f32 hurtboxHeight;
     /*0x208*/ f32 hitboxDownOffset;
     /*0x20C*/ const BehaviorScript *behavior;
-    /*0x210*/ u32 unused2;
     /*0x214*/ struct Object *platform;
     /*0x218*/ void *collisionData;
     /*0x21C*/ Mat4 transform;
     /*0x25C*/ void *respawnInfo;
+    //struct ObjectShadow shadow;
 };
 
 struct ObjectHitbox {
@@ -225,12 +226,6 @@ struct Surface {
     /*0x0A*/ Vec3s vertex1;
     /*0x10*/ Vec3s vertex2;
     /*0x16*/ Vec3s vertex3;
-    /*0x1C*/ struct {
-        f32 x;
-        f32 y;
-        f32 z;
-    } normal;
-    /*0x28*/ f32 originOffset;
     /*0x2C*/ struct Object *object;
 };
 
@@ -246,11 +241,10 @@ struct MarioBodyState {
     /*0x0C*/ Vec3s torsoAngle;
     /*0x12*/ Vec3s headAngle;
     /*0x18*/ Vec3f heldObjLastPosition; /// also known as HOLP
-    u8 filler[4];
 };
 
 struct MarioState {
-    /*0x00*/ u16 unk00;
+    /*0xB6*/ u16 capTimer;
     /*0x02*/ u16 input;
     /*0x04*/ u32 flags;
     /*0x08*/ u32 particleFlags;
@@ -262,7 +256,8 @@ struct MarioState {
     /*0x1C*/ u32 actionArg;
     /*0x20*/ f32 intendedMag;
     /*0x24*/ s16 intendedYaw;
-    /*0x26*/ s16 invincTimer;
+    /*0x26*/ s8 invincTimer;
+    /*0xAD*/ s8 numLives;
     /*0x28*/ u8 framesSinceA;
     /*0x29*/ u8 framesSinceB;
     /*0x2A*/ u8 wallKickTimer;
@@ -297,19 +292,19 @@ struct MarioState {
     /*0xA4*/ u32 collidedObjInteractTypes;
     /*0xA8*/ s16 numCoins;
     /*0xAA*/ s16 numStars;
-    /*0xAC*/ s8 numKeys; // Unused key mechanic
-    /*0xAD*/ s8 numLives;
     /*0xAE*/ s16 health;
     /*0xB0*/ s16 unkB0;
     /*0xB2*/ u8 hurtCounter;
     /*0xB3*/ u8 healCounter;
     /*0xB4*/ u8 squishTimer;
     /*0xB5*/ u8 fadeWarpOpacity;
-    /*0xB6*/ u16 capTimer;
     /*0xB8*/ s16 prevNumStarsForDialog;
     /*0xBC*/ f32 peakHeight;
     /*0xC0*/ f32 quicksandDepth;
     /*0xC4*/ f32 unkC4;
+    f32 floorNormals[4];
+    f32 wallNormals[4];
+    f32 ceilNormals[4];
 };
 
 #endif // TYPES_H

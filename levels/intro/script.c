@@ -9,14 +9,17 @@
 #include "game/area.h"
 #include "game/level_update.h"
 #include "menu/title_screen.h"
+#include "menu/intro_geo.h"
 
 #include "levels/scripts.h"
 #include "levels/menu/header.h"
+#include "segment_symbols.h"
 
 #include "actors/common1.h"
 
 #include "make_const_nonconst.h"
 #include "levels/intro/header.h"
+#include "farcall.h"
 
 const LevelScript level_intro_splash_screen[] = {
     INIT_LEVEL(),
@@ -34,13 +37,18 @@ const LevelScript level_intro_splash_screen[] = {
     LOAD_AREA(/*area*/ 1),
 
     CALL(/*arg*/ LVL_INTRO_PLAY_ITS_A_ME_MARIO, /*func*/ lvl_intro_update),
-    SLEEP(/*frames*/ 75),
+    CALL_LOOP(0, intro_geo_logic),
+    //SLEEP(/*frames*/ 75),
     TRANSITION(/*transType*/ WARP_TRANSITION_FADE_INTO_COLOR, /*time*/ 16, /*color*/ 0x00, 0x00, 0x00),
     SLEEP(/*frames*/ 16),
     CMD2A(/*unk2*/ 1),
     CLEAR_LEVEL(),
     SLEEP(/*frames*/ 2),
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular),
+#ifndef BBPLAYER
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_mario_head_regular, _introSegmentBssStart, _introSegmentBssEnd),
+#else
+    EXIT_AND_EXECUTE(/*seg*/ 0x14, _menuSegmentRomStart, _menuSegmentRomEnd, level_main_menu_entry_1),
+#endif
 };
 
 const LevelScript level_intro_mario_head_regular[] = {
@@ -138,7 +146,7 @@ const LevelScript script_intro_L2[] = {
     SLEEP(/*frames*/ 16),
     CLEAR_LEVEL(),
     SLEEP(/*frames*/ 2),
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_entry_4),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_entry_4, _introSegmentBssStart, _introSegmentBssEnd),
 };
 
 const LevelScript script_intro_L3[] = {
@@ -164,5 +172,5 @@ const LevelScript script_intro_L5[] = {
     SLEEP(/*frames*/ 16),
     CLEAR_LEVEL(),
     SLEEP(/*frames*/ 2),
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_splash_screen),
+    EXIT_AND_EXECUTE_WITH_CODE(/*seg*/ 0x14, _introSegmentRomStart, _introSegmentRomEnd, level_intro_splash_screen, _introSegmentBssStart, _introSegmentBssEnd),
 };

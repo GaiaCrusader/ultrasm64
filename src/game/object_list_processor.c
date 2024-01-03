@@ -4,7 +4,6 @@
 #include "area.h"
 #include "behavior_data.h"
 #include "camera.h"
-#include "debug.h"
 #include "engine/behavior_script.h"
 #include "engine/graph_node.h"
 #include "engine/surface_collision.h"
@@ -19,6 +18,7 @@
 #include "platform_displacement.h"
 #include "profiler.h"
 #include "spawn_object.h"
+#include "rendering_graph_node.h"
 
 
 /**
@@ -31,13 +31,6 @@ s32 gDebugInfoFlags;
  * object, and therefore either returned a dynamic floor or NULL.
  */
 s32 gNumFindFloorMisses;
-
-UNUSED s32 unused_8033BEF8;
-
-/**
- * An unused debug counter with the label "WALL".
- */
-s32 gUnknownWallCount;
 
 /**
  * Roughly the number of objects that have been processed this frame so far.
@@ -470,9 +463,7 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
 
     while (spawnInfo != NULL) {
         struct Object *object;
-        UNUSED u8 filler[4];
         const BehaviorScript *script;
-        UNUSED s16 arg16 = (s16)(spawnInfo->behaviorArg & 0xFFFF);
 
         script = segmented_to_virtual(spawnInfo->behaviorScript);
 
@@ -489,7 +480,6 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
             object->oBehParams2ndByte = ((spawnInfo->behaviorArg) >> 16) & 0xFF;
 
             object->behavior = script;
-            object->unused1 = 0;
 
             // Record death/collection in the SpawnInfo
             object->respawnInfoType = RESPAWN_INFO_TYPE_32;
@@ -519,7 +509,28 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
     }
 }
 
-void stub_obj_list_processor_1(void) {
+void clear_dynamic_surface_references(void) {
+    s32 listIndex;
+    s32 i = 0;
+    struct Object *obj;
+    struct ObjectNode *objNode;
+    struct ObjectNode *objList;
+
+    while ((listIndex = sObjectListUpdateOrder[i]) != -1) {
+        objList = &gObjectLists[listIndex];
+        objNode = objList->next;
+
+        while (objList != objNode) {
+            obj = (struct Object *) objNode;
+            objNode = objNode->next;
+
+            if (obj->oFloor && obj->oFloor->flags & SURFACE_FLAG_DYNAMIC) {
+                obj->oFloor = NULL;
+            }
+        }
+
+        i++;
+    }
 }
 
 /**
@@ -538,13 +549,8 @@ void clear_objects(void) {
         gDoorAdjacentRooms[i][1] = 0;
     }
 
-    debug_unknown_level_select_check();
-
     init_free_object_list();
     clear_object_lists(gObjectListArray);
-
-    stub_behavior_script_2();
-    stub_obj_list_processor_1();
 
     for (i = 0; i < OBJECT_POOL_CAPACITY; i++) {
         gObjectPool[i].activeFlags = ACTIVE_FLAG_DEACTIVATED;
@@ -563,7 +569,7 @@ void clear_objects(void) {
 void update_terrain_objects(void) {
     gObjectCounter = update_objects_in_list(&gObjectLists[OBJ_LIST_SPAWNER]);
     //! This was meant to be +=
-    gObjectCounter = update_objects_in_list(&gObjectLists[OBJ_LIST_SURFACE]);
+    gObjectCounter += update_objects_in_list(&gObjectLists[OBJ_LIST_SURFACE]);
 }
 
 /**
@@ -571,7 +577,6 @@ void update_terrain_objects(void) {
  * the order specified by sObjectListUpdateOrder.
  */
 void update_non_terrain_objects(void) {
-    UNUSED u8 filler[4];
     s32 listIndex;
 
     s32 i = 2;
@@ -585,7 +590,6 @@ void update_non_terrain_objects(void) {
  * Unload deactivated objects in any object list.
  */
 void unload_deactivated_objects(void) {
-    UNUSED u8 filler[4];
     s32 listIndex;
 
     s32 i = 0;
@@ -600,33 +604,10 @@ void unload_deactivated_objects(void) {
 }
 
 /**
- * Unused profiling function.
- */
-UNUSED static u16 unused_get_elapsed_time(u64 *cycleCounts, s32 index) {
-    u16 time;
-    f64 cycles;
-
-    cycles = cycleCounts[index] - cycleCounts[index - 1];
-    if (cycles < 0) {
-        cycles = 0;
-    }
-
-    time = (u16)(((u64) cycles * 1000000 / osClockRate) / 16667.0 * 1000.0);
-    if (time > 999) {
-        time = 999;
-    }
-
-    return time;
-}
-
-/**
  * Update all objects. This includes script execution, object collision detection,
  * and object surface management.
  */
 void update_objects(UNUSED s32 unused) {
-    s64 cycleCounts[30];
-
-    cycleCounts[0] = get_current_clock();
 
     gTimeStopState &= ~TIME_STOP_MARIO_OPENED_DOOR;
 
@@ -634,17 +615,12 @@ void update_objects(UNUSED s32 unused) {
     gNumRoomedObjectsNotInMarioRoom = 0;
     gCheckingSurfaceCollisionsForCamera = FALSE;
 
-    reset_debug_objectinfo();
-    stub_debug_5();
-
     gObjectLists = gObjectListArray;
 
     // If time stop is not active, unload object surfaces
-    cycleCounts[1] = get_clock_difference(cycleCounts[0]);
     clear_dynamic_surfaces();
 
     // Update spawners and objects with surfaces
-    cycleCounts[2] = get_clock_difference(cycleCounts[0]);
     update_terrain_objects();
 
     // If Mario was touching a moving platform at the end of last frame, apply
@@ -654,25 +630,16 @@ void update_objects(UNUSED s32 unused) {
     apply_mario_platform_displacement();
 
     // Detect which objects are intersecting
-    cycleCounts[3] = get_clock_difference(cycleCounts[0]);
     detect_object_collisions();
 
     // Update all other objects that haven't been updated yet
-    cycleCounts[4] = get_clock_difference(cycleCounts[0]);
     update_non_terrain_objects();
 
     // Unload any objects that have been deactivated
-    cycleCounts[5] = get_clock_difference(cycleCounts[0]);
     unload_deactivated_objects();
 
     // Check if Mario is on a platform object and save this object
-    cycleCounts[6] = get_clock_difference(cycleCounts[0]);
     update_mario_platform();
-
-    cycleCounts[7] = get_clock_difference(cycleCounts[0]);
-
-    cycleCounts[0] = 0;
-    try_print_debug_mario_object_info();
 
     // If time stop was enabled this frame, activate it now so that it will
     // take effect next frame
@@ -680,6 +647,8 @@ void update_objects(UNUSED s32 unused) {
         gTimeStopState |= TIME_STOP_ACTIVE;
     } else {
         gTimeStopState &= ~TIME_STOP_ACTIVE;
+        gThrowMatIndex = 0;
+        gThrowMatSwap ^= 1;
     }
 
     gPrevFrameObjectCount = gObjectCounter;

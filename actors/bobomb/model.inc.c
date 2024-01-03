@@ -43,7 +43,7 @@ static const Vtx bobomb_seg8_vertex_08022A60[] = {
 // 0x08022AC0 - 0x08022B08
 const Gfx bobomb_seg8_dl_08022AC0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -60,7 +60,7 @@ const Gfx bobomb_seg8_dl_08022B08[] = {
     gsSP2Triangles( 0,  2,  4, 0x0,  3,  5,  1, 0x0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -134,7 +134,7 @@ const Gfx bobomb_seg8_dl_08022CA0[] = {
 // 0x08022D08 - 0x08022D78
 const Gfx bobomb_seg8_dl_08022D08[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -144,7 +144,7 @@ const Gfx bobomb_seg8_dl_08022D08[] = {
     gsSPDisplayList(bobomb_seg8_dl_08022C38),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -152,7 +152,7 @@ const Gfx bobomb_seg8_dl_08022D08[] = {
 // 0x08022D78 - 0x08022DE8
 const Gfx bobomb_seg8_dl_08022D78[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -162,28 +162,15 @@ const Gfx bobomb_seg8_dl_08022D78[] = {
     gsSPDisplayList(bobomb_seg8_dl_08022CA0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
 
 // 0x08022DE8
-static const Lights1 bobomb_seg8_lights_08022DE8 = gdSPDefLights1(
-    0x3f, 0x26, 0x04,
-    0xff, 0x99, 0x12, 0x28, 0x28, 0x28
-);
 
 // 0x08022E00
-static const Lights1 bobomb_seg8_lights_08022E00 = gdSPDefLights1(
-    0x2c, 0x2c, 0x2c,
-    0xb2, 0xb2, 0xb2, 0x28, 0x28, 0x28
-);
 
-// Unreferenced light group
-UNUSED static const Lights1 bobomb_lights_unused = gdSPDefLights1(
-    0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x28, 0x28, 0x28
-);
 
 // 0x08022E30
 static const Vtx bobomb_seg8_vertex_08022E30[] = {
@@ -279,8 +266,11 @@ static const Vtx bobomb_seg8_vertex_08023190[] = {
 
 // 0x08023270 - 0x08023378
 const Gfx bobomb_seg8_dl_08023270[] = {
-    gsSPLight(&bobomb_seg8_lights_08022DE8.l, 1),
-    gsSPLight(&bobomb_seg8_lights_08022DE8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xff9912ff),
+    gsSPLightColor(LIGHT_2, 0x3f2604ff),
+    gsSPSetGeometryMode(G_LIGHTING),
+    gsDPPipeSync(),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPVertex(bobomb_seg8_vertex_08022E30, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  7,  8,  9, 0x0),
@@ -302,8 +292,8 @@ const Gfx bobomb_seg8_dl_08023270[] = {
 
 // 0x08023378 - 0x08023480
 const Gfx bobomb_seg8_dl_08023378[] = {
-    gsSPLight(&bobomb_seg8_lights_08022DE8.l, 1),
-    gsSPLight(&bobomb_seg8_lights_08022DE8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xff9912ff),
+    gsSPLightColor(LIGHT_2, 0x3f2604ff),
     gsSPVertex(bobomb_seg8_vertex_08022F70, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  7,  8,  9, 0x0),
@@ -325,8 +315,8 @@ const Gfx bobomb_seg8_dl_08023378[] = {
 
 // 0x08023480 - 0x08023528
 const Gfx bobomb_seg8_dl_08023480[] = {
-    gsSPLight(&bobomb_seg8_lights_08022E00.l, 1),
-    gsSPLight(&bobomb_seg8_lights_08022E00.a, 2),
+    gsSPLightColor(LIGHT_1, 0xb2b2b2ff),
+    gsSPLightColor(LIGHT_2, 0x2c2c2cff),
     gsSPVertex(bobomb_seg8_vertex_080230B0, 14, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSP2Triangles( 4,  0,  3, 0x0,  4,  3,  5, 0x0),

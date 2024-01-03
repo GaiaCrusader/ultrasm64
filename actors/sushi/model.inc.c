@@ -1,10 +1,5 @@
 // Sushi (Shark)
 
-// Could be a duplicate binid of the previous actor, but i'm putting it here for
-// macro reasons so I don't have to clutter the macros.inc with a new macro for this
-// case.
-UNUSED static const u64 sushi_unused_1 = 1;
-
 // 0x05008ED0
 ALIGNED8 static const Texture sushi_seg5_texture_05008ED0[] = {
 #include "actors/sushi/sushi_snout.rgba16.inc.c"
@@ -78,7 +73,7 @@ const Gfx sushi_seg5_dl_05009CC0[] = {
 // 0x05009DD0 - 0x05009E40
 const Gfx sushi_seg5_dl_05009DD0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -88,7 +83,7 @@ const Gfx sushi_seg5_dl_05009DD0[] = {
     gsSPDisplayList(sushi_seg5_dl_05009CC0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -135,7 +130,7 @@ const Gfx sushi_seg5_dl_05009F30[] = {
 // 0x0500A008 - 0x0500A078
 const Gfx sushi_seg5_dl_0500A008[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -145,7 +140,7 @@ const Gfx sushi_seg5_dl_0500A008[] = {
     gsSPDisplayList(sushi_seg5_dl_05009F30),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -178,7 +173,7 @@ const Gfx sushi_seg5_dl_0500A0E8[] = {
 // 0x0500A160 - 0x0500A1D0
 const Gfx sushi_seg5_dl_0500A160[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -188,7 +183,7 @@ const Gfx sushi_seg5_dl_0500A160[] = {
     gsSPDisplayList(sushi_seg5_dl_0500A0E8),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -319,7 +314,7 @@ const Gfx sushi_seg5_dl_0500A748[] = {
 // 0x0500A768 - 0x0500A7E0
 const Gfx sushi_seg5_dl_0500A768[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -329,7 +324,7 @@ const Gfx sushi_seg5_dl_0500A768[] = {
     gsSPDisplayList(sushi_seg5_dl_0500A580),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(sushi_seg5_dl_0500A748),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
@@ -361,7 +356,7 @@ const Gfx sushi_seg5_dl_0500A860[] = {
 // 0x0500A8A8 - 0x0500A918
 const Gfx sushi_seg5_dl_0500A8A8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -371,7 +366,7 @@ const Gfx sushi_seg5_dl_0500A8A8[] = {
     gsSPDisplayList(sushi_seg5_dl_0500A860),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -397,7 +392,7 @@ const Gfx sushi_seg5_dl_0500A958[] = {
 // 0x0500A990 - 0x0500AA00
 const Gfx sushi_seg5_dl_0500A990[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA),
+    gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -407,7 +402,7 @@ const Gfx sushi_seg5_dl_0500A990[] = {
     gsSPDisplayList(sushi_seg5_dl_0500A958),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPEndDisplayList(),
 };

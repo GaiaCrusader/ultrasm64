@@ -56,7 +56,6 @@ void play_climbing_sounds(struct MarioState *m, s32 b) {
 }
 
 s32 set_pole_position(struct MarioState *m, f32 offsetY) {
-    UNUSED u8 filler[12];
     struct Surface *floor;
     struct Surface *ceil;
     f32 floorHeight;
@@ -280,7 +279,6 @@ s32 act_top_of_pole_transition(struct MarioState *m) {
 }
 
 s32 act_top_of_pole(struct MarioState *m) {
-    UNUSED struct Object *marioObj = m->marioObj;
 
     if (m->input & INPUT_A_PRESSED) {
         return set_mario_action(m, ACT_TOP_OF_POLE_JUMP, 0);
@@ -297,7 +295,6 @@ s32 act_top_of_pole(struct MarioState *m) {
 }
 
 s32 perform_hanging_step(struct MarioState *m, Vec3f nextPos) {
-    UNUSED u8 filler[4];
     struct Surface *ceil;
     struct Surface *floor;
     f32 ceilHeight;
@@ -361,8 +358,8 @@ s32 update_hang_moving(struct MarioState *m) {
     m->vel[1] = 0.0f;
     m->vel[2] = m->slideVelZ;
 
-    nextPos[0] = m->pos[0] - m->ceil->normal.y * m->vel[0];
-    nextPos[2] = m->pos[2] - m->ceil->normal.y * m->vel[2];
+    nextPos[0] = m->pos[0] - m->ceilNormals[1] * m->vel[0];
+    nextPos[2] = m->pos[2] - m->ceilNormals[1] * m->vel[2];
     nextPos[1] = m->pos[1];
 
     stepResult = perform_hanging_step(m, nextPos);
@@ -549,7 +546,7 @@ s32 act_ledge_grab(struct MarioState *m) {
         m->actionTimer++;
     }
 
-    if (m->floor->normal.y < 0.9063078f) {
+    if (m->floorNormals[1] < 0.9063078f) {
         return let_go_of_ledge(m);
     }
 

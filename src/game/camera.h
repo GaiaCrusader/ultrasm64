@@ -303,7 +303,6 @@ struct PlayerCameraState {
     /*0x04*/ Vec3f pos;
     /*0x10*/ Vec3s faceAngle;
     /*0x16*/ Vec3s headRotation;
-    /*0x1C*/ s16 unused;
     /**
      * Set to nonzero when an event, such as entering a door, starting the credits, or throwing bowser,
      * has happened on this frame.
@@ -325,7 +324,6 @@ struct TransitionInfo {
     /*0x0C*/ f32 focDist;
     /*0x10*/ s32 framesLeft;
     /*0x14*/ Vec3f marioPos;
-    /*0x20*/ u8 unused; // for the structs to align, there has to be an extra unused variable here. type is unknown.
 };
 
 /**
@@ -334,7 +332,6 @@ struct TransitionInfo {
  */
 struct HandheldShakePoint {
     /*0x00*/ s8 index; // only set to -1
-    /*0x04 (aligned)*/ u32 unused;
     /*0x08*/ Vec3s point;
 }; // size = 0x10
 
@@ -343,7 +340,7 @@ struct HandheldShakePoint {
  * A function that is called by CameraTriggers and cutscene shots.
  * These are concurrent: multiple CameraEvents can occur on the same frame.
  */
-typedef BAD_RETURN(s32) (*CameraEvent)(struct Camera *c);
+typedef void (*CameraEvent)(struct Camera *c);
 /**
  * The same type as a CameraEvent, but because these are generally longer, and happen in sequential
  * order, they're are called "shots," a term taken from cinematography.
@@ -399,13 +396,12 @@ struct CameraFOVStatus {
     /*0x00*/ u8 fovFunc;
     /// The current field of view in degrees
     /*0x04*/ f32 fov;
+            f32 fovLerp;
 
     // Fields used by shake_camera_fov()
 
     /// The amount to change the current fov by in the fov shake effect.
     /*0x08*/ f32 fovOffset;
-    /// A bool set in fov_default() but unused otherwise
-    /*0x0C*/ u32 unusedIsSleeping;
     /// The range in degrees to shake fov
     /*0x10*/ f32 shakeAmplitude;
     /// Used to calculate fovOffset, the phase through the shake's period.
@@ -446,8 +442,6 @@ struct PlayerGeometry {
     /*0x24*/ struct Surface *prevCeil;
     /*0x28*/ f32 prevCeilHeight;
     /*0x2C*/ s16 prevCeilType;
-    /// Unused, but recalculated every frame
-    /*0x30*/ f32 waterHeight;
 };
 
 /**
@@ -503,13 +497,8 @@ struct CameraStoredInfo {
  * See the sCutsceneVars[] array in camera.c for more details.
  */
 struct CutsceneVariable {
-    /// Perhaps an index
-    s32 unused1;
     Vec3f point;
-    Vec3f unusedPoint;
     Vec3s angle;
-    /// Perhaps a boolean or an extra angle
-    s16 unused2;
 };
 
 /**
@@ -529,9 +518,9 @@ struct Camera {
      *          vec3f_get_dist_and_angle() if you need the camera's yaw.
      */
     /*0x02*/ s16 yaw;
+            s16 pitch;
     /*0x04*/ Vec3f focus;
     /*0x10*/ Vec3f pos;
-    /*0x1C*/ Vec3f unusedVec1;
     /// The x coordinate of the "center" of the area. The camera will rotate around this point.
     /// For example, this is what makes the camera rotate around the hill in BoB
     /*0x28*/ f32 areaCenX;
@@ -539,13 +528,12 @@ struct Camera {
     /// For example, this is what makes the camera rotate around the hill in BoB
     /*0x2C*/ f32 areaCenZ;
     /*0x30*/ u8 cutscene;
-    /*0x31*/ u8 filler1[8];
     /*0x3A*/ s16 nextYaw;
-    /*0x3C*/ u8 filler2[40];
     /*0x64*/ u8 doorStatus;
     /// The y coordinate of the "center" of the area. Unlike areaCenX and areaCenZ, this is only used
     /// when paused. See zoom_out_if_paused_and_outside
     /*0x68*/ f32 areaCenY;
+    u8 isFloor;
 };
 
 /**
@@ -576,19 +564,10 @@ struct LakituState {
      */
     /*0x24*/ Vec3f goalPos;
 
-    /*0x30*/ u8 filler1[12]; // extra unused Vec3f?
-
     /// Copy of the active camera mode
     /*0x3C*/ u8 mode;
     /// Copy of the default camera mode
     /*0x3D*/ u8 defMode;
-
-    /*0x3E*/ u8 filler2[10];
-
-    /*0x48*/ f32 focusDistance; // unused
-    /*0x4C*/ s16 oldPitch; // unused
-    /*0x4E*/ s16 oldYaw;   // unused
-    /*0x50*/ s16 oldRoll;  // unused
 
     /// The angular offsets added to lakitu's pitch, yaw, and roll
     /*0x52*/ Vec3s shakeMagnitude;
@@ -599,10 +578,6 @@ struct LakituState {
     /*0x58*/ s16 shakePitchPhase;
     /*0x5A*/ s16 shakePitchVel;
     /*0x5C*/ s16 shakePitchDecay;
-
-    /*0x60*/ Vec3f unusedVec1;
-    /*0x6C*/ Vec3s unusedVec2;
-    /*0x72*/ u8 filler3[8];
 
     /// Used to rotate the screen when rendering.
     /*0x7A*/ s16 roll;
@@ -638,7 +613,6 @@ struct LakituState {
     /*0xB4*/ s16 keyDanceRoll;
     /// Mario's action from the previous frame. Only used to determine if Mario just finished a dive.
     /*0xB8*/ u32 lastFrameAction;
-    /*0xBC*/ s16 unused;
 };
 
 // bss order hack to not affect BSS order. if possible, remove me, but it will be hard to match otherwise
@@ -657,6 +631,7 @@ extern struct Camera *gCamera;
 extern struct Object *gCutsceneFocus;
 extern struct Object *gSecondCameraFocus;
 extern u8 gRecentCutscene;
+extern struct GraphNodeCamera *gTargetCam;
 
 // TODO: sort all of this extremely messy shit out after the split
 
@@ -747,6 +722,9 @@ void play_cutscene(struct Camera *c);
 s32 cutscene_event(CameraEvent event, struct Camera * c, s16 start, s16 end);
 s32 cutscene_spawn_obj(u32 obj, s16 frame);
 void set_fov_shake(s16 amplitude, s16 decay, s16 shakeSpeed);
+void fov_logic(void);
+s32 camera_approach_s16_symmetric(s16 current, s16 target, s16 increment);
+void zoom_out_if_paused_and_outside(struct GraphNodeCamera *camera);
 
 void set_fov_function(u8 func);
 void cutscene_set_fov_shake_preset(u8 preset);

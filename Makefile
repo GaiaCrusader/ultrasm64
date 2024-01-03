@@ -47,7 +47,7 @@ $(eval $(call validate-option,COMPILER,gcc clang))
 #   trap - GCC default behavior, uses teq instructions which some emulators don't like
 #   divbreak - this is similar to IDO behavior, and is default.
 #   nocheck - never checks for dividing by 0. Technically fastest, but also UB so not recommended
-LIBGCCDIR ?= divbreak
+LIBGCCDIR ?= nocheck
 $(eval $(call validate-option,LIBGCCDIR,trap divbreak nocheck))
 
 
@@ -115,12 +115,12 @@ endif
 ifeq ($(COMPILER),gcc)
   NON_MATCHING := 1
   MIPSISET     := -mips3
-  OPT_FLAGS    := -O2
+  OPT_FLAGS    := -Ofast -fno-peel-loops --param case-values-threshold=20
 else ifeq ($(COMPILER),clang)
   NON_MATCHING := 1
   # clang doesn't support ABI 'o32' for 'mips3'
   MIPSISET     := -mips2
-  OPT_FLAGS    := -O2
+  OPT_FLAGS    := -Ofast
 endif
 
 
@@ -185,7 +185,7 @@ BUILD_DIR_BASE := build
 # BUILD_DIR is the location where all build artifacts are placed
 BUILD_DIR      := $(BUILD_DIR_BASE)/$(VERSION)_$(CONSOLE)
 
-COMPRESS ?= rnc1
+COMPRESS ?= gzip
 $(eval $(call validate-option,COMPRESS,mio0 yay0 gzip rnc1 rnc2 uncomp))
 ifeq ($(COMPRESS),gzip)
   DEFINES += GZIP=1
@@ -203,13 +203,13 @@ else ifeq ($(COMPRESS),uncomp)
   DEFINES += UNCOMPRESSED=1
 endif
 
-GZIPVER ?= std
+GZIPVER ?= libdef
 $(eval $(call validate-option,GZIPVER,std libdef))
 
 # GODDARD - whether to use libgoddard (Mario Head)
 #   1 - includes code in ROM
 #   0 - does not 
-GODDARD ?= 0
+GODDARD ?= 1
 $(eval $(call validate-option,GODDARD,0 1))
 ifeq ($(GODDARD),1)
   GODDARDRULE := $(BUILD_DIR)/libgoddard.a
@@ -347,6 +347,8 @@ export LD_LIBRARY_PATH=./tools
 AS        := $(CROSS)as
 ifeq ($(COMPILER),gcc)
   CC      := $(CROSS)gcc
+  $(BUILD_DIR)/actors/%.o:           OPT_FLAGS := -Ofast -mlong-calls -ffast-math
+  $(BUILD_DIR)/levels/%.o:           OPT_FLAGS := -Ofast -mlong-calls -ffast-math
 else ifeq ($(COMPILER),clang)
   CC      := clang
 endif
@@ -381,7 +383,7 @@ DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 # C compiler options
 CFLAGS = -G 0 $(OPT_FLAGS) $(TARGET_CFLAGS) $(MIPSISET) $(DEF_INC_CFLAGS)
 ifeq ($(COMPILER),gcc)
-  CFLAGS += -mno-shared -march=vr4300 -mfix4300 -mabi=32 -mhard-float -mdivide-breaks -fno-stack-protector -fno-common -fno-zero-initialized-in-bss -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv -Wall -Wextra
+  CFLAGS += -mno-shared -march=vr4300 -mfix4300 -mabi=32 -mhard-float -ffast-math -mdivide-breaks -fno-stack-protector -fno-common -fno-zero-initialized-in-bss -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv -Wall -Wextra -fsingle-precision-constant -Werror=implicit-function-declaration -w
 else ifeq ($(COMPILER),clang)
   CFLAGS += -target mips -mabi=32 -G 0 -mhard-float -fomit-frame-pointer -fno-stack-protector -fno-common -I include -I src/ -I $(BUILD_DIR)/include -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv -Wall -Wextra
 else
@@ -494,7 +496,7 @@ endif
 $(CRASH_TEXTURE_C_FILES): TEXTURE_ENCODING := u32
 
 ifeq ($(COMPILER),gcc)
-$(BUILD_DIR)/src/libz/%.o: OPT_FLAGS := -Os
+$(BUILD_DIR)/src/libz/%.o: OPT_FLAGS := -Ofast
 endif
 
 ifeq ($(VERSION),eu)
@@ -524,6 +526,27 @@ $(BUILD_DIR)/src/usb/usb.o: OPT_FLAGS := -O0
 $(BUILD_DIR)/src/usb/usb.o: CFLAGS += -Wno-unused-variable -Wno-sign-compare -Wno-unused-function
 $(BUILD_DIR)/src/usb/debug.o: OPT_FLAGS := -O0
 $(BUILD_DIR)/src/usb/debug.o: CFLAGS += -Wno-unused-parameter -Wno-maybe-uninitialized
+
+$(BUILD_DIR)/src/game/rendering_graph_node.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/engine/math_util.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/engine/collision_load.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/engine/surface_collision.o: OPT_FLAGS := -Os -ffast-math
+$(BUILD_DIR)/src/engine/surface_load.o: OPT_FLAGS := -Os -ffast-math
+
+$(BUILD_DIR)/src/goddard/debug_utils.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/draw_objects.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/dynlist_proc.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/gd_main.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/gd_math.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/gd_memory.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/joints.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/objects.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/particles.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/renderer.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/sfx.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/shape_helper.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/skin.o: OPT_FLAGS := -Ofast -ffast-math
+$(BUILD_DIR)/src/goddard/skin_movement.o: OPT_FLAGS := -Ofast -ffast-math
 
 ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS) $(GODDARD_SRC_DIRS) $(LIBZ_SRC_DIRS) $(ULTRA_BIN_DIRS) $(BIN_DIRS) $(TEXTURE_DIRS) $(TEXT_DIRS) $(SOUND_SAMPLE_DIRS) $(addprefix levels/,$(LEVEL_DIRS)) rsp include) $(YAY0_DIR) $(addprefix $(YAY0_DIR)/,$(VERSION)) $(SOUND_BIN_DIR) $(SOUND_BIN_DIR)/sequences/$(VERSION)
 
@@ -738,7 +761,7 @@ $(ELF): $(O_FILES) $(YAY0_OBJ_FILES) $(SEG_FILES) $(BUILD_DIR)/$(LD_SCRIPT) unde
 $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
 ifeq      ($(CONSOLE),n64)
-	$(V)$(OBJCOPY) --pad-to=0x800000 --gap-fill=0xFF $< $@ -O binary
+	$(V)$(OBJCOPY) --pad-to=0x101000 --gap-fill=0xFF $< $@ -O binary
 else ifeq ($(CONSOLE),bb)
 	$(V)$(OBJCOPY) --gap-fill=0x00 $< $@ -O binary
 	$(V)dd if=$@ of=tmp bs=16K conv=sync status=none

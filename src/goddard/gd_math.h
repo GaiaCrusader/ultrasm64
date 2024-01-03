@@ -28,8 +28,8 @@ f32 gd_3x3_det(f32 r0c0, f32 r0c1, f32 r0c2,
                f32 r2c0, f32 r2c1, f32 r2c2);
 f32 gd_2x2_det(f32 a, f32 b, f32 c, f32 d);
 
-void gd_mat4f_lookat(Mat4f *mtx, f32 xFrom, f32 yFrom, f32 zFrom, f32 xTo, f32 yTo, f32 zTo,
-                     f32 zColY, f32 yColY, f32 xColY);
+void gd_mat4f_lookat(Mat4f *mtx, f32 xFrom, f32 yFrom, f32 zFrom, f32 xTo, f32 yTo, f32 zTo, f32 zColY, f32 yColY, f32 xColY);
+f32 gd_vec3f_magnitude_sqrtf(struct GdVec3f *vec);
 void gd_scale_mat4f_by_vec3f(Mat4f *mtx, struct GdVec3f *vec);
 void gd_rot_mat_about_vec(Mat4f *mtx, struct GdVec3f *vec);
 void gd_add_vec3f_to_mat4f_offset(Mat4f *mtx, struct GdVec3f *vec);
@@ -49,8 +49,6 @@ void gd_copy_mat4f(const Mat4f *src, Mat4f *dst);
 void gd_rotate_and_translate_vec3f(struct GdVec3f *vec, const Mat4f *mtx);
 void gd_mat4f_mult_vec3f(struct GdVec3f *vec, const Mat4f *mtx);
 void gd_mult_mat4f(const Mat4f *mA, const Mat4f *mB, Mat4f *dst);
-void gd_print_vec(UNUSED const char *prefix, const struct GdVec3f *vec);
-void gd_print_bounding_box(UNUSED const char *prefix, const struct GdBoundingBox *p);
 void gd_print_mtx(UNUSED const char *prefix, const Mat4f *mtx);
 
 #endif // GD_MATH_H

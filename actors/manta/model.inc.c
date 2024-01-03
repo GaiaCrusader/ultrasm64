@@ -1,22 +1,9 @@
 // Manta Ray
 
 // 0x05001758
-static const Lights1 manta_seg5_lights_05001758 = gdSPDefLights1(
-    0x31, 0x3b, 0x3b,
-    0xc6, 0xee, 0xed, 0x28, 0x28, 0x28
-);
 
 // 0x05001770
-static const Lights1 manta_seg5_lights_05001770 = gdSPDefLights1(
-    0x00, 0x16, 0x18,
-    0x03, 0x5b, 0x63, 0x28, 0x28, 0x28
-);
 
-// Unreferenced light group
-UNUSED static const Lights1 manta_lights_unused = gdSPDefLights1(
-    0x3f, 0x3f, 0x35,
-    0xff, 0xff, 0xd7, 0x28, 0x28, 0x28
-);
 
 // 0x050017A0
 ALIGNED8 static const Texture manta_seg5_texture_050017A0[] = {
@@ -107,7 +94,7 @@ const Gfx manta_seg5_dl_050049C8[] = {
 // 0x05004A70 - 0x05004AE8
 const Gfx manta_seg5_dl_05004A70[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -118,7 +105,7 @@ const Gfx manta_seg5_dl_05004A70[] = {
     gsSPDisplayList(manta_seg5_dl_050049C8),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -192,7 +179,7 @@ const Gfx manta_seg5_dl_05004D10[] = {
 // 0x05004DB8 - 0x05004E30
 const Gfx manta_seg5_dl_05004DB8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -203,7 +190,7 @@ const Gfx manta_seg5_dl_05004DB8[] = {
     gsSPDisplayList(manta_seg5_dl_05004D10),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -228,7 +215,7 @@ const Gfx manta_seg5_dl_05004E60[] = {
 // 0x05004E90 - 0x05004F00
 const Gfx manta_seg5_dl_05004E90[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -238,7 +225,7 @@ const Gfx manta_seg5_dl_05004E90[] = {
     gsSPDisplayList(manta_seg5_dl_05004E60),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING | G_CULL_BACK),
     gsSPEndDisplayList(),
 };
@@ -276,7 +263,7 @@ const Gfx manta_seg5_dl_05004FA0[] = {
 // 0x05005038 - 0x050050A8
 const Gfx manta_seg5_dl_05005038[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -286,7 +273,7 @@ const Gfx manta_seg5_dl_05005038[] = {
     gsSPDisplayList(manta_seg5_dl_05004FA0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -368,7 +355,7 @@ const Gfx manta_seg5_dl_05005308[] = {
 // 0x05005358 - 0x050053F0
 const Gfx manta_seg5_dl_05005358[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -382,7 +369,7 @@ const Gfx manta_seg5_dl_05005358[] = {
     gsSPDisplayList(manta_seg5_dl_05005288),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(manta_seg5_dl_05005308),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
@@ -438,7 +425,7 @@ const Gfx manta_seg5_dl_05005558[] = {
 // 0x050055A8 - 0x05005620
 const Gfx manta_seg5_dl_050055A8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -448,7 +435,7 @@ const Gfx manta_seg5_dl_050055A8[] = {
     gsSPDisplayList(manta_seg5_dl_050054F0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(manta_seg5_dl_05005558),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
@@ -498,7 +485,7 @@ const Gfx manta_seg5_dl_05005730[] = {
 // 0x05005768 - 0x050057E0
 const Gfx manta_seg5_dl_05005768[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -508,7 +495,7 @@ const Gfx manta_seg5_dl_05005768[] = {
     gsSPDisplayList(manta_seg5_dl_050056E0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(manta_seg5_dl_05005730),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
@@ -547,7 +534,7 @@ const Gfx manta_seg5_dl_05005880[] = {
 // 0x05005918 - 0x05005988
 const Gfx manta_seg5_dl_05005918[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -557,7 +544,7 @@ const Gfx manta_seg5_dl_05005918[] = {
     gsSPDisplayList(manta_seg5_dl_05005880),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
 };
@@ -639,7 +626,7 @@ const Gfx manta_seg5_dl_05005BE8[] = {
 // 0x05005C38 - 0x05005CD0
 const Gfx manta_seg5_dl_05005C38[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -653,7 +640,7 @@ const Gfx manta_seg5_dl_05005C38[] = {
     gsSPDisplayList(manta_seg5_dl_05005B68),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(manta_seg5_dl_05005BE8),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
@@ -709,7 +696,7 @@ const Gfx manta_seg5_dl_05005E38[] = {
 // 0x05005E88 - 0x05005F00
 const Gfx manta_seg5_dl_05005E88[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -719,7 +706,7 @@ const Gfx manta_seg5_dl_05005E88[] = {
     gsSPDisplayList(manta_seg5_dl_05005DD0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(manta_seg5_dl_05005E38),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
@@ -769,7 +756,7 @@ const Gfx manta_seg5_dl_05006010[] = {
 // 0x05006048 - 0x050060C0
 const Gfx manta_seg5_dl_05006048[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_MODULATERGB),
+    gsDPSetCombineMode(G_CC_MODULATERGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -779,7 +766,7 @@ const Gfx manta_seg5_dl_05006048[] = {
     gsSPDisplayList(manta_seg5_dl_05005FC0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(manta_seg5_dl_05006010),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
@@ -939,7 +926,7 @@ const Gfx manta_seg5_dl_050066D0[] = {
 // 0x05006750 - 0x05006808
 const Gfx manta_seg5_dl_05006750[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_DECALRGB),
+    gsDPSetCombineMode(G_CC_DECALRGB, G_CC_PASS2),
     gsSPClearGeometryMode(G_LIGHTING),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
@@ -957,7 +944,7 @@ const Gfx manta_seg5_dl_05006750[] = {
     gsSPDisplayList(manta_seg5_dl_050065F0),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsSPDisplayList(manta_seg5_dl_050066D0),
     gsSPSetGeometryMode(G_LIGHTING),
     gsSPEndDisplayList(),
@@ -1037,13 +1024,13 @@ static const Vtx manta_seg5_vertex_05006A88[] = {
 
 // 0x05006B08 - 0x05006B70
 const Gfx manta_seg5_dl_05006B08[] = {
-    gsSPLight(&manta_seg5_lights_05001770.l, 1),
-    gsSPLight(&manta_seg5_lights_05001770.a, 2),
+    gsSPLightColor(LIGHT_1, 0x35b63ff),
+    gsSPLightColor(LIGHT_2, 0x1618ff),
     gsSPVertex(manta_seg5_vertex_05006808, 6, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  1, 0x0),
     gsSP2Triangles( 1,  4,  2, 0x0,  1,  0,  5, 0x0),
-    gsSPLight(&manta_seg5_lights_05001758.l, 1),
-    gsSPLight(&manta_seg5_lights_05001758.a, 2),
+    gsSPLightColor(LIGHT_1, 0xc6eeedff),
+    gsSPLightColor(LIGHT_2, 0x313b3bff),
     gsSPVertex(manta_seg5_vertex_05006868, 6, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSPEndDisplayList(),
@@ -1051,15 +1038,15 @@ const Gfx manta_seg5_dl_05006B08[] = {
 
 // 0x05006B70 - 0x05006C08
 const Gfx manta_seg5_dl_05006B70[] = {
-    gsSPLight(&manta_seg5_lights_05001770.l, 1),
-    gsSPLight(&manta_seg5_lights_05001770.a, 2),
+    gsSPLightColor(LIGHT_1, 0x35b63ff),
+    gsSPLightColor(LIGHT_2, 0x1618ff),
     gsSPVertex(manta_seg5_vertex_050068C8, 8, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 5,  4,  6, 0x0,  1,  7,  2, 0x0),
     gsSP2Triangles( 5,  1,  0, 0x0,  5,  0,  3, 0x0),
     gsSP2Triangles( 6,  7,  1, 0x0,  6,  1,  5, 0x0),
-    gsSPLight(&manta_seg5_lights_05001758.l, 1),
-    gsSPLight(&manta_seg5_lights_05001758.a, 2),
+    gsSPLightColor(LIGHT_1, 0xc6eeedff),
+    gsSPLightColor(LIGHT_2, 0x313b3bff),
     gsSPVertex(manta_seg5_vertex_05006948, 8, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 5,  6,  7, 0x0,  5,  7,  3, 0x0),
@@ -1068,15 +1055,15 @@ const Gfx manta_seg5_dl_05006B70[] = {
 
 // 0x05006C08 - 0x05006CA0
 const Gfx manta_seg5_dl_05006C08[] = {
-    gsSPLight(&manta_seg5_lights_05001770.l, 1),
-    gsSPLight(&manta_seg5_lights_05001770.a, 2),
+    gsSPLightColor(LIGHT_1, 0x35b63ff),
+    gsSPLightColor(LIGHT_2, 0x1618ff),
     gsSPVertex(manta_seg5_vertex_050069C8, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 5,  4,  6, 0x0,  1,  7,  2, 0x0),
     gsSP2Triangles( 5,  8,  9, 0x0,  5,  9,  3, 0x0),
     gsSP2Triangles( 6, 10, 11, 0x0,  6, 11,  5, 0x0),
-    gsSPLight(&manta_seg5_lights_05001758.l, 1),
-    gsSPLight(&manta_seg5_lights_05001758.a, 2),
+    gsSPLightColor(LIGHT_1, 0xc6eeedff),
+    gsSPLightColor(LIGHT_2, 0x313b3bff),
     gsSPVertex(manta_seg5_vertex_05006A88, 8, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 5,  6,  7, 0x0,  5,  7,  3, 0x0),

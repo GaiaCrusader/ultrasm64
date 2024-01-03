@@ -1,10 +1,6 @@
 // Toad
 
 // 0x06005908
-static const Lights1 toad_seg6_lights_06005908 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x06005920
 ALIGNED8 static const Texture toad_seg6_texture_06005920[] = {
@@ -223,8 +219,8 @@ const Gfx toad_seg6_dl_06007300[] = {
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, toad_seg6_texture_06005920),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
-    gsSPLight(&toad_seg6_lights_06005908.l, 1),
-    gsSPLight(&toad_seg6_lights_06005908.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(toad_seg6_vertex_06006920, 15, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  0,  4, 0x0),
     gsSP2Triangles( 2,  4,  0, 0x0,  0,  5,  6, 0x0),
@@ -311,7 +307,7 @@ const Gfx toad_seg6_dl_060076C0[] = {
 // 0x06007710 - 0x06007788
 const Gfx toad_seg6_dl_06007710[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
@@ -321,7 +317,7 @@ const Gfx toad_seg6_dl_06007710[] = {
     gsSPDisplayList(toad_seg6_dl_06007498),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(toad_seg6_dl_060076C0),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -331,9 +327,8 @@ const Gfx toad_seg6_dl_06007710[] = {
 // 0x06007788 - 0x06007808
 const Gfx toad_seg6_us_dl_06007788[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
+    gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_PASS2),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, G_TX_NOMASK, G_TX_NOLOD),
-    gsDPSetRenderMode(G_RM_CUSTOM_AA_ZB_XLU_SURF, G_RM_NOOP2),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON),
     gsDPTileSync(),
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
@@ -342,7 +337,7 @@ const Gfx toad_seg6_us_dl_06007788[] = {
     gsSPDisplayList(toad_seg6_dl_06007498),
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(toad_seg6_dl_060076C0),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -350,10 +345,6 @@ const Gfx toad_seg6_us_dl_06007788[] = {
 #endif
 
 // 0x06007788
-static const Lights1 toad_seg6_lights_06007788 = gdSPDefLights1(
-    0x21, 0x13, 0x5a,
-    0x42, 0x27, 0xb5, 0x28, 0x28, 0x28
-);
 
 // 0x060077A0
 static const Vtx toad_seg6_vertex_060077A0[] = {
@@ -393,8 +384,8 @@ static const Vtx toad_seg6_vertex_060078A0[] = {
 
 // 0x06007960 - 0x06007A48
 const Gfx toad_seg6_dl_06007960[] = {
-    gsSPLight(&toad_seg6_lights_06007788.l, 1),
-    gsSPLight(&toad_seg6_lights_06007788.a, 2),
+    gsSPLightColor(LIGHT_1, 0x4227b5ff),
+    gsSPLightColor(LIGHT_2, 0x21135aff),
     gsSPVertex(toad_seg6_vertex_060077A0, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 4,  6,  7, 0x0,  4,  7,  8, 0x0),
@@ -415,7 +406,7 @@ const Gfx toad_seg6_dl_06007960[] = {
 // 0x06007A48 - 0x06007A80
 const Gfx toad_seg6_dl_06007A48[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPClearGeometryMode(G_CULL_BACK),
     gsSPDisplayList(toad_seg6_dl_06007960),
     gsDPPipeSync(),
@@ -427,7 +418,7 @@ const Gfx toad_seg6_dl_06007A48[] = {
 // 0x06007B00 - 0x06007B28
 const Gfx toad_seg6_us_dl_06007B00[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(toad_seg6_dl_06007960),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
@@ -435,16 +426,8 @@ const Gfx toad_seg6_us_dl_06007B00[] = {
 #endif
 
 // 0x06007A80
-static const Lights1 toad_seg6_lights_06007A80 = gdSPDefLights1(
-    0x7f, 0x7f, 0x7f,
-    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
-);
 
 // 0x06007A98
-static const Lights1 toad_seg6_lights_06007A98 = gdSPDefLights1(
-    0x7f, 0x6a, 0x50,
-    0xfe, 0xd5, 0xa1, 0x28, 0x28, 0x28
-);
 
 // 0x06007AB0
 static const Vtx toad_seg6_vertex_06007AB0[] = {
@@ -498,8 +481,8 @@ static const Vtx toad_seg6_vertex_06007C50[] = {
 
 // 0x06007D10 - 0x06007EB0
 const Gfx toad_seg6_dl_06007D10[] = {
-    gsSPLight(&toad_seg6_lights_06007A80.l, 1),
-    gsSPLight(&toad_seg6_lights_06007A80.a, 2),
+    gsSPLightColor(LIGHT_1, 0xffffffff),
+    gsSPLightColor(LIGHT_2, 0x7f7f7fff),
     gsSPVertex(toad_seg6_vertex_06007AB0, 14, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  5, 0x0),
     gsSP2Triangles( 3,  5,  6, 0x0,  3,  6,  7, 0x0),
@@ -518,8 +501,8 @@ const Gfx toad_seg6_dl_06007D10[] = {
     gsSP2Triangles( 5,  9,  0, 0x0,  0,  9,  1, 0x0),
     gsSP2Triangles(11,  6,  0, 0x0, 11,  0,  2, 0x0),
     gsSP1Triangle( 0,  6,  5, 0x0),
-    gsSPLight(&toad_seg6_lights_06007A98.l, 1),
-    gsSPLight(&toad_seg6_lights_06007A98.a, 2),
+    gsSPLightColor(LIGHT_1, 0xfed5a1ff),
+    gsSPLightColor(LIGHT_2, 0x7f6a50ff),
     gsSPVertex(toad_seg6_vertex_06007C50, 12, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  2,  3,  0, 0x0),
     gsSP2Triangles( 4,  2,  1, 0x0,  4,  1,  5, 0x0),
@@ -534,17 +517,13 @@ const Gfx toad_seg6_dl_06007D10[] = {
 // 0x06007EB0 - 0x06007ED8
 const Gfx toad_seg6_dl_06007EB0[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(toad_seg6_dl_06007D10),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x06007ED8
-static const Lights1 toad_seg6_lights_06007ED8 = gdSPDefLights1(
-    0x7f, 0x6a, 0x50,
-    0xfe, 0xd5, 0xa1, 0x28, 0x28, 0x28
-);
 
 // 0x06007EF0
 static const Vtx toad_seg6_vertex_06007EF0[] = {
@@ -585,8 +564,8 @@ static const Vtx toad_seg6_vertex_06007FF0[] = {
 
 // 0x060080C0 - 0x060081F8
 const Gfx toad_seg6_dl_060080C0[] = {
-    gsSPLight(&toad_seg6_lights_06007ED8.l, 1),
-    gsSPLight(&toad_seg6_lights_06007ED8.a, 2),
+    gsSPLightColor(LIGHT_1, 0xfed5a1ff),
+    gsSPLightColor(LIGHT_2, 0x7f6a50ff),
     gsSPVertex(toad_seg6_vertex_06007EF0, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  1,  0,  3, 0x0),
     gsSP2Triangles( 0,  2,  4, 0x0,  4,  3,  0, 0x0),
@@ -612,17 +591,13 @@ const Gfx toad_seg6_dl_060080C0[] = {
 // 0x060081F8 - 0x06008220
 const Gfx toad_seg6_dl_060081F8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(toad_seg6_dl_060080C0),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x06008220
-static const Lights1 toad_seg6_lights_06008220 = gdSPDefLights1(
-    0x7f, 0x6a, 0x50,
-    0xfe, 0xd5, 0xa1, 0x28, 0x28, 0x28
-);
 
 // 0x06008238
 static const Vtx toad_seg6_vertex_06008238[] = {
@@ -661,8 +636,8 @@ static const Vtx toad_seg6_vertex_06008338[] = {
 
 // 0x060083E8 - 0x06008520
 const Gfx toad_seg6_dl_060083E8[] = {
-    gsSPLight(&toad_seg6_lights_06008220.l, 1),
-    gsSPLight(&toad_seg6_lights_06008220.a, 2),
+    gsSPLightColor(LIGHT_1, 0xfed5a1ff),
+    gsSPLightColor(LIGHT_2, 0x7f6a50ff),
     gsSPVertex(toad_seg6_vertex_06008238, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  3,  4,  0, 0x0),
     gsSP2Triangles( 5,  1,  0, 0x0,  0,  4,  6, 0x0),
@@ -688,10 +663,10 @@ const Gfx toad_seg6_dl_060083E8[] = {
 // 0x06008520 - 0x06008560
 const Gfx toad_seg6_dl_06008520[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(toad_seg6_dl_060083E8),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsDPSetAlphaCompare(G_AC_NONE),
     gsDPSetEnvColor(255, 255, 255, 255),
     gsSPEndDisplayList(),
@@ -702,22 +677,17 @@ const Gfx toad_seg6_dl_06008520[] = {
 // 0x06008608 - 0x06008650
 const Gfx toad_seg6_us_dl_06008608[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(toad_seg6_dl_060083E8),
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_PASS2),
     gsDPSetAlphaCompare(G_AC_NONE),
     gsDPSetEnvColor(255, 255, 255, 255),
-    gsDPSetRenderMode(G_RM_AA_ZB_XLU_SURF, G_RM_NOOP2),
     gsSPEndDisplayList(),
 };
 #endif
 
 // 0x06008560
-static const Lights1 toad_seg6_lights_06008560 = gdSPDefLights1(
-    0x34, 0x20, 0x0d,
-    0x68, 0x40, 0x1b, 0x28, 0x28, 0x28
-);
 
 // 0x06008578
 static const Vtx toad_seg6_vertex_06008578[] = {
@@ -758,8 +728,8 @@ static const Vtx toad_seg6_vertex_06008678[] = {
 
 // 0x06008748 - 0x06008890
 const Gfx toad_seg6_dl_06008748[] = {
-    gsSPLight(&toad_seg6_lights_06008560.l, 1),
-    gsSPLight(&toad_seg6_lights_06008560.a, 2),
+    gsSPLightColor(LIGHT_1, 0x68401bff),
+    gsSPLightColor(LIGHT_2, 0x34200dff),
     gsSPVertex(toad_seg6_vertex_06008578, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  2,  3, 0x0),
     gsSP2Triangles( 2,  4,  5, 0x0,  2,  5,  6, 0x0),
@@ -787,17 +757,13 @@ const Gfx toad_seg6_dl_06008748[] = {
 // 0x06008890 - 0x060088B8
 const Gfx toad_seg6_dl_06008890[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(toad_seg6_dl_06008748),
     gsDPPipeSync(),
     gsSPEndDisplayList(),
 };
 
 // 0x060088B8
-static const Lights1 toad_seg6_lights_060088B8 = gdSPDefLights1(
-    0x34, 0x20, 0x0d,
-    0x68, 0x40, 0x1b, 0x28, 0x28, 0x28
-);
 
 // 0x060088D0
 static const Vtx toad_seg6_vertex_060088D0[] = {
@@ -837,8 +803,8 @@ static const Vtx toad_seg6_vertex_060089D0[] = {
 
 // 0x06008A90 - 0x06008BD8
 const Gfx toad_seg6_dl_06008A90[] = {
-    gsSPLight(&toad_seg6_lights_060088B8.l, 1),
-    gsSPLight(&toad_seg6_lights_060088B8.a, 2),
+    gsSPLightColor(LIGHT_1, 0x68401bff),
+    gsSPLightColor(LIGHT_2, 0x34200dff),
     gsSPVertex(toad_seg6_vertex_060088D0, 16, 0),
     gsSP2Triangles( 0,  1,  2, 0x0,  0,  3,  4, 0x0),
     gsSP2Triangles( 0,  4,  1, 0x0,  0,  2,  5, 0x0),
@@ -865,7 +831,7 @@ const Gfx toad_seg6_dl_06008A90[] = {
 // 0x06008BD8 - 0x06008C00
 const Gfx toad_seg6_dl_06008BD8[] = {
     gsDPPipeSync(),
-    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_SHADEFADEA),
+    gsDPSetCombineMode(G_CC_SHADEFADEA, G_CC_PASS2),
     gsSPDisplayList(toad_seg6_dl_06008A90),
     gsDPPipeSync(),
     gsSPEndDisplayList(),

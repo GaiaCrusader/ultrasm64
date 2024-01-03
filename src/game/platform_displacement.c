@@ -11,8 +11,6 @@
 
 u16 D_8032FEC0 = 0;
 
-u32 unused_8032FEC4[4] = { 0 };
-
 struct Object *gMarioPlatform = NULL;
 
 /**
@@ -21,7 +19,6 @@ struct Object *gMarioPlatform = NULL;
  */
 void update_mario_platform(void) {
     struct Surface *floor;
-    UNUSED u8 filler[4];
     f32 marioX;
     f32 marioY;
     f32 marioZ;
@@ -42,7 +39,7 @@ void update_mario_platform(void) {
     marioZ = gMarioObject->oPosZ;
     floorHeight = find_floor(marioX, marioY, marioZ, &floor);
 
-    if (absf(marioY - floorHeight) < 4.0f) {
+    if (ABS(marioY - floorHeight) < 4.0f) {
         awayFromFloor = 0;
     } else {
         awayFromFloor = 1;
@@ -58,8 +55,12 @@ void update_mario_platform(void) {
             if (floor != NULL && floor->object != NULL) {
                 gMarioPlatform = floor->object;
                 gMarioObject->platform = floor->object;
+                gMarioObject->platform->header.gfx.node.flags |= GRAPH_RENDER_PRIORITY;
             } else {
                 gMarioPlatform = NULL;
+                if (gMarioObject->platform) {
+                    gMarioObject->platform->header.gfx.node.flags &= ~GRAPH_RENDER_PRIORITY;
+                }
                 gMarioObject->platform = NULL;
             }
             break;
@@ -99,9 +100,6 @@ void apply_platform_displacement(u32 isMario, struct Object *platform) {
     Vec3f relativeOffset;
     Vec3f newObjectOffset;
     Vec3s rotation;
-    UNUSED s16 unusedPitch;
-    UNUSED s16 unusedRoll;
-    UNUSED s16 unusedYaw;
     f32 displaceMatrix[4][4];
 
     rotation[0] = platform->oAngleVelPitch;
@@ -121,9 +119,6 @@ void apply_platform_displacement(u32 isMario, struct Object *platform) {
     z += platform->oVelZ;
 
     if (rotation[0] != 0 || rotation[1] != 0 || rotation[2] != 0) {
-        unusedPitch = rotation[0];
-        unusedRoll  = rotation[2];
-        unusedYaw   = platform->oFaceAngleYaw;
 
         if (isMario) {
             gMarioStates[0].faceAngle[1] += rotation[1];

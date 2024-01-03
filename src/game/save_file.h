@@ -56,16 +56,11 @@ struct MainMenuSaveData {
     // on the high score screen.
     u32 coinScoreAges[NUM_SAVE_FILES];
     u8 soundMode: 2;
-
-#ifdef VERSION_EU
     u8 language: 2;
-#define SUBTRAHEND 8
-#else
-#define SUBTRAHEND 6
-#endif
-
-    // Pad to match the EEPROM size of 0x200 (10 bytes on JP/US, 8 bytes on EU)
-    //u8 filler[EEPROM_SIZE / 2 - SUBTRAHEND - NUM_SAVE_FILES * (4 + sizeof(struct SaveFile))];
+    s8 antiAliasing : 2;
+    u8 screenMode : 3;
+    u8 dedither : 1;
+    u8 frameCap : 1;
 
     struct SaveBlockSignature signature;
 };
@@ -81,7 +76,6 @@ STATIC_ASSERT(sizeof(struct SaveBuffer) <= EEPROM_SIZE, "ERROR: Save struct too 
 
 extern u8 gLastCompletedCourseNum;
 extern u8 gLastCompletedStarNum;
-extern s8 sUnusedGotGlobalCoinHiScore;
 extern u8 gGotFileCoinHiScore;
 extern u8 gCurrCourseStarFlags;
 extern u8 gSpecialTripleJump;
@@ -136,7 +130,7 @@ extern s8 gSaveFileModified;
 
 void save_file_do_save(s32 fileIndex);
 void save_file_erase(s32 fileIndex);
-BAD_RETURN(s32) save_file_copy(s32 srcFileIndex, s32 destFileIndex);
+void save_file_copy(s32 srcFileIndex, s32 destFileIndex);
 void save_file_load_all(void);
 void save_file_reload(void);
 void save_file_collect_star_or_key(s16 coinScore, s16 starIndex);
@@ -155,8 +149,10 @@ void save_file_set_cannon_unlocked(void);
 void save_file_set_cap_pos(s16 x, s16 y, s16 z);
 s32 save_file_get_cap_pos(Vec3s capPos);
 void save_file_set_sound_mode(u16 mode);
-u16 save_file_get_sound_mode(void);
+u32 save_file_get_sound_mode(void);
 void save_file_move_cap_to_default_location(void);
+void save_file_get_config(void);
+void save_file_set_config(void);
 
 void disable_warp_checkpoint(void);
 void check_if_should_set_warp_checkpoint(struct WarpNode *warpNode);
