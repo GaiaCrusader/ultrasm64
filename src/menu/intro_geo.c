@@ -28,7 +28,7 @@ struct GraphNodeMore {
 };
 
 // intro geo bss
-#ifdef VERSION_SH
+#ifdef ENABLE_RUMBLE
 static u16 *sFramebuffers[3];
 #endif
 static s32 sGameOverFrameCounter;
@@ -284,7 +284,7 @@ Gfx *geo_intro_gameover_backdrop(s32 state, struct GraphNode *node, UNUSED void 
     return dl;
 }
 
-#ifdef VERSION_SH
+#ifdef ENABLE_RUMBLE
 
 extern Gfx title_screen_bg_dl_0A0065E8[];
 extern Gfx title_screen_bg_dl_0A006618[];

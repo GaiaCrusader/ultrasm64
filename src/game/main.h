@@ -28,7 +28,7 @@ extern OSThread gGameLoopThread;
 extern OSThread gSoundThread;
 extern OSThread hvqmThread;
 extern OSThread gVideoLoopThread;
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
 extern OSThread gRumblePakThread;
 
 extern OSPfs gRumblePakPfs;
@@ -37,7 +37,7 @@ extern OSPfs gRumblePakPfs;
 extern OSMesgQueue gPIMesgQueue;
 extern OSMesgQueue gIntrMesgQueue;
 extern OSMesgQueue gSPTaskMesgQueue;
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
 extern OSMesgQueue gRumblePakSchedulerMesgQueue;
 extern OSMesgQueue gRumbleThreadVIMesgQueue;
 #endif
@@ -50,7 +50,7 @@ extern OSIoMesg gDmaIoMesg;
 extern OSMesg gMainReceivedMesg;
 extern OSMesgQueue gDmaMesgQueue;
 extern OSMesgQueue gSIEventMesgQueue;
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
 extern OSMesg gRumblePakSchedulerMesgBuf[1];
 extern OSMesg gRumbleThreadVIMesgBuf[1];
 

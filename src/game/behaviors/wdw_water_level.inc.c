@@ -53,7 +53,7 @@ void bhv_water_level_diamond_loop(void) {
                         }
                     }
                     o->oAngleVelYaw = 0x800;
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
                     reset_rumble_timers_2(2);
 #endif
                 }

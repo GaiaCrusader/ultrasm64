@@ -667,7 +667,7 @@ u32 take_damage_from_interact_object(struct MarioState *m) {
 
     m->hurtCounter += 4 * damage;
 
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
     queue_rumble_data(5, 80);
 #endif
     set_camera_shake_from_hit(shake);
@@ -718,7 +718,7 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
         && m->numCoins >= 100) {
         bhv_spawn_star_no_level_exit(6);
     }
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
     if (o->oDamageOrCoinValue >= 2) {
         queue_rumble_data(5, 80);
     }
@@ -741,7 +741,7 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
 
     if (m->health >= 0x100) {
         mario_stop_riding_and_holding(m);
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(5, 80);
 #endif
 
@@ -844,7 +844,7 @@ u32 interact_warp(struct MarioState *m, UNUSED u32 interactType, struct Object *
             m->interactObj = o;
             m->usedObj = o;
 
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
             if (o->collisionData == segmented_to_virtual(warp_pipe_seg3_collision_03009AC8)) {
                 play_sound(SOUND_MENU_ENTER_PIPE, m->marioObj->header.gfx.cameraToObject);
                 queue_rumble_data(15, 80);
@@ -1076,7 +1076,7 @@ u32 interact_tornado(struct MarioState *m, UNUSED u32 interactType, struct Objec
         marioObj->oMarioTornadoPosY = m->pos[1] - o->oPosY;
 
         play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(30, 60);
 #endif
         return set_mario_action(m, ACT_TORNADO_TWIRLING, m->action == ACT_TWIRLING);
@@ -1099,7 +1099,7 @@ u32 interact_whirlpool(struct MarioState *m, UNUSED u32 interactType, struct Obj
         marioObj->oMarioWhirlpoolPosY = m->pos[1] - o->oPosY;
 
         play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(30, 60);
 #endif
         return set_mario_action(m, ACT_CAUGHT_IN_WHIRLPOOL, 0);
@@ -1134,7 +1134,7 @@ u32 interact_flame(struct MarioState *m, UNUSED u32 interactType, struct Object 
 
     if (!sInvulnerable && !(m->flags & MARIO_METAL_CAP) && !(m->flags & MARIO_VANISH_CAP)
         && !(o->oInteractionSubtype & INT_SUBTYPE_DELAY_INVINCIBILITY)) {
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(5, 80);
 #endif
         o->oInteractStatus = INT_STATUS_INTERACTED;
@@ -1212,7 +1212,7 @@ u32 interact_bully(struct MarioState *m, UNUSED u32 interactType, struct Object 
     m->interactObj = o;
 
     if (interaction & INT_ATTACK_NOT_FROM_BELOW) {
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(5, 80);
 #endif
         push_mario_out_of_object(m, o, 5.0f);
@@ -1237,7 +1237,7 @@ u32 interact_bully(struct MarioState *m, UNUSED u32 interactType, struct Object 
 
         push_mario_out_of_object(m, o, 5.0f);
         drop_and_set_mario_action(m, bully_knock_back_mario(m), 0);
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(5, 80);
 #endif
         return TRUE;
@@ -1256,7 +1256,7 @@ u32 interact_shock(struct MarioState *m, UNUSED u32 interactType, struct Object 
 
         take_damage_from_interact_object(m);
         play_sound(SOUND_MARIO_ATTACKED, m->marioObj->header.gfx.cameraToObject);
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(70, 60);
 #endif
 
@@ -1297,7 +1297,7 @@ u32 interact_hit_from_below(struct MarioState *m, UNUSED u32 interactType, struc
     }
 
     if (interaction & INT_ANY_ATTACK) {
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(5, 80);
 #endif
         attack_object(o, interaction);
@@ -1339,7 +1339,7 @@ u32 interact_bounce_top(struct MarioState *m, UNUSED u32 interactType, struct Ob
     }
 
     if (interaction & INT_ATTACK_NOT_FROM_BELOW) {
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(5, 80);
 #endif
         attack_object(o, interaction);
@@ -1462,7 +1462,7 @@ u32 check_object_grab_mario(struct MarioState *m, UNUSED u32 interactType, struc
 
             update_mario_sound_and_camera(m);
             play_sound(SOUND_MARIO_OOOF, m->marioObj->header.gfx.cameraToObject);
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
             queue_rumble_data(5, 80);
 #endif
             return set_mario_action(m, ACT_GRABBED, 0);
@@ -1513,7 +1513,7 @@ u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, struct Object *
             marioObj->oMarioPoleYawVel = (s32)(m->forwardVel * 0x100 + 0x1000);
 #endif
             reset_mario_pitch(m);
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
             queue_rumble_data(5, 80);
 #endif
             return set_mario_action(m, ACT_GRAB_POLE_FAST, 0);
@@ -1536,7 +1536,7 @@ u32 interact_hoot(struct MarioState *m, UNUSED u32 interactType, struct Object *
         m->interactObj = o;
         m->usedObj = o;
 
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
         queue_rumble_data(5, 80);
 #endif
         update_mario_sound_and_camera(m);

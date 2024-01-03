@@ -6,7 +6,7 @@
 #include "rumble_init.h"
 #include "config.h"
 
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
 
 OSThread gRumblePakThread;
 
@@ -283,7 +283,7 @@ void cancel_rumble(void) {
 
 void create_thread_6(void) {
     osCreateMesgQueue(&gRumbleThreadVIMesgQueue, gRumbleThreadVIMesgBuf, 1);
-    osCreateThread(&gRumblePakThread, 6, thread6_rumble_loop, NULL, gThread6Stack + THREAD6_STACK, 30);
+    osCreateThread(&gRumblePakThread, 6, thread6_rumble_loop, NULL, (gThread6Stack + THREAD6_STACK), 30);
     osStartThread(&gRumblePakThread);
 }
 

@@ -207,7 +207,7 @@ void handle_vblank(void) {
             start_sptask(M_GFXTASK);
         }
     }
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
     rumble_thread_update_vi();
 #endif
 
@@ -314,7 +314,7 @@ void check_stack_validity(void) {
     gThread5Stack[0]++;
     gThread5Stack[THREAD5_STACK - 1]++;
     debug_assert(gThread5Stack[0] != gThread5Stack[THREAD5_STACK - 1], "Thread 5 stack overflow.");
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
     gThread6Stack[0]++;
     gThread6Stack[THREAD6_STACK - 1]++;
     debug_assert(gThread6Stack[0] != gThread6Stack[THREAD6_STACK - 1], "Thread 6 stack overflow.");
@@ -355,7 +355,7 @@ void thread3_main(UNUSED void *arg) {
     gThread4Stack[THREAD4_STACK - 1] = 0;
     gThread5Stack[0] = 0;
     gThread5Stack[THREAD5_STACK - 1] = 0;
-#if ENABLE_RUMBLE
+#ifdef ENABLE_RUMBLE
     gThread6Stack[0] = 0;
     gThread6Stack[THREAD6_STACK - 1] = 0;
 #endif

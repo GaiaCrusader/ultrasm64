@@ -128,7 +128,7 @@ const Texture *const game_over_texture_table[] = {
     title_texture_0A0033C0, title_texture_0A004040, title_texture_0A004CC0, title_texture_0A005940,
 };
 
-#ifdef VERSION_SH
+#ifdef ENABLE_RUMBLE
 const Gfx title_screen_bg_dl_0A0065E8[] = {
     gsDPPipeSync(),
     gsDPSetCycleType(G_CYC_COPY),
