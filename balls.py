@@ -165,7 +165,8 @@ def convert_tris(image_path):
                             vertBufferLinesToDestroy.append(vertLine)
                             if vLineS.find("};") != -1:
                                 vertBufferLinesToDestroy.append(vertLine + 1)
-                                #vertBufferLinesToDestroy.append(vertLine + 2)
+                                if (lines[vertLine + 1] == '\n'):
+                                    vertBufferLinesToDestroy.append(vertLine + 2)
                                 vertLineSnap = False
                                 addrsNuked += 1
                             else:
@@ -193,7 +194,7 @@ def convert_tris(image_path):
     print("Finished " + image_path + "!")
 
 def job():
-    folder_path = "./levels/rr/areas/1/15"
+    folder_path = "./actors/goomba"
     folder_whitelist = ["./actors", "./levels", "./bin"]
     for root, dirs, files in os.walk(folder_path):
         if any(folder in root for folder in folder_whitelist):
