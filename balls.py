@@ -111,7 +111,7 @@ def convert_tris(image_path):
                                 if (minVert - vertsIn < 0):
                                     triOffset = minVert - vertsIn
                                     #print(triOffset)
-                                    allGood = False
+                                    #allGood = False
                                 else:
                                     triOffset = 0
                                 i -= 3
@@ -169,16 +169,15 @@ def convert_tris(image_path):
             newFile.close()
 
 def job():
-    folder_path = "./"
-    folder_blacklist = ["./actors", "./levels", "./bin"]
+    folder_path = "./actors/goomba"
+    folder_whitelist = ["./actors", "./levels", "./bin"]
     for root, dirs, files in os.walk(folder_path):
-        if any(folder in root for folder in folder_blacklist):
+        if any(folder in root for folder in folder_whitelist):
             for filename in files:
                 if (filename.endswith(".c")):
                     image_path = os.path.join(root, filename)
                     tempThread = threading.Thread(target=convert_tris, args=(image_path,))
                     tempThread.start()
-                    #tempThread.join()
 
 print("Running!")
 job()
