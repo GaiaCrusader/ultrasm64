@@ -6,6 +6,7 @@ import getopt
 
 def convert_tris(image_path, vert_buffer_size):
     file = open(image_path, mode = 'r')
+    print("Opening " + image_path + ".")
     lines = file.readlines()
     file.close()
     triIndices = []
@@ -16,6 +17,7 @@ def convert_tris(image_path, vert_buffer_size):
     linesToDestroy = []
     vBuff = -1
     prevVBuff = 0
+    write = False
     addrFound = False
     # Read all the lines in the file
     for line in lines:
@@ -69,6 +71,7 @@ def convert_tris(image_path, vert_buffer_size):
                 minVert = 999
                 maxVert = 0
                 vertOffset = 0
+                write = True
 
                 while (len(triIndices) > 0 or len(curIndices) > 0):
                     if (len(curIndices) == 0):
@@ -78,8 +81,8 @@ def convert_tris(image_path, vert_buffer_size):
                                 curIndices.append(triIndices[1])
                                 curIndices.append(triIndices[2])
                                 minVert = min(triIndices[0], triIndices[1], triIndices[2], minVert)
-                                if (minVert - vertsIn < 0):
-                                    vertOffset = minVert - vertsIn
+                                #if (minVert - vertsIn < 0):
+                                #    vertOffset = minVert - vertsIn
                                 del triIndices[:3]
                             else:
                                 #print(minVert - vertsIn)
@@ -151,15 +154,16 @@ def convert_tris(image_path, vert_buffer_size):
             addrMerge.clear()
             addrFound = False
         lineNum += 1
-    newFile = open(image_path, mode = 'w')
-    newFile.writelines(lines)
-    newFile.close()
+    if (write == True):
+        newFile = open(image_path, mode = 'w')
+        newFile.writelines(lines)
+        newFile.close()
     print("Processed " + image_path + ".")
 
 def job(vert_buffer_size):
-    folder_path = "./actors"
+    folder_path = "./levels/ssl/areas/2/1"
     folder_whitelist = ["./actors", "./levels", "./bin"]
-    folder_blacklist = ["anims", "geo", "script", "collision"]
+    folder_blacklist = ["anims", "geo", "script", "collision", "texture"]
     for root, dirs, files in os.walk(folder_path):
         if any(folder in root for folder in folder_whitelist):
             for filename in files:
