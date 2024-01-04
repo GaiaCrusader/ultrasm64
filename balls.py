@@ -1,10 +1,10 @@
 import os
 import re
 import threading
+import sys
+import getopt
 
-vert_buffer_size = 56
-
-def convert_tris(image_path):
+def convert_tris(image_path, vert_buffer_size):
     file = open(image_path, mode = 'r')
     print("Processing " + image_path + ".")
     lines = file.readlines()
@@ -14,7 +14,6 @@ def convert_tris(image_path):
     addrMerge = []
     vertAddr = ""
     lineNum = 0
-    allGood = True
     linesToDestroy = []
     vBuff = -1
     prevVBuff = 0
@@ -94,7 +93,6 @@ def convert_tris(image_path):
                                 if (minVert - vertsIn < 0):
                                     triOffset = minVert - vertsIn
                                     #print(triOffset)
-                                    #allGood = False
                                 else:
                                     triOffset = 0
                                 i -= 3
@@ -134,10 +132,9 @@ def convert_tris(image_path):
                             if (totalTri >= triLen):
                                 break
                     #print(newLine)
-                    if (allGood == True):
-                        while (len(linesToDestroy) > 0):
-                            lines[linesToDestroy[0]] = ""
-                            del linesToDestroy[:1]
+                    while (len(linesToDestroy) > 0):
+                        lines[linesToDestroy[0]] = ""
+                        del linesToDestroy[:1]
                     lines.insert(lineNum, newLine)
                 # Find and merge necessary vertex lists.
                 newVertLine = ""
@@ -187,13 +184,12 @@ def convert_tris(image_path):
             addrMerge.clear()
             addrFound = False
         lineNum += 1
-        if (allGood == True):
-            newFile = open(image_path, mode = 'w')
-            newFile.writelines(lines)
-            newFile.close()
-    print("Finished " + image_path + "!")
+        newFile = open(image_path, mode = 'w')
+        newFile.writelines(lines)
+        newFile.close()
+    #print("Finished " + image_path + "!")
 
-def job():
+def job(vert_buffer_size):
     folder_path = "./levels/rr"
     folder_whitelist = ["./actors", "./levels", "./bin"]
     for root, dirs, files in os.walk(folder_path):
@@ -201,8 +197,28 @@ def job():
             for filename in files:
                 if (filename.endswith(".c")):
                     image_path = os.path.join(root, filename)
-                    tempThread = threading.Thread(target=convert_tris, args=(image_path,))
+                    tempThread = threading.Thread(target=convert_tris, args=(image_path, vert_buffer_size))
                     tempThread.start()
 
-print("Running!")
-job()
+
+def main(argv):
+    vert_buffer_size = 56
+    opts, args = getopt.getopt(argv,"v:")
+    for opt, arg in opts:
+        if opt == '-v':
+            vert_buffer_size = arg
+    ucodeString = ""
+    if (int(vert_buffer_size) > 56):
+        print("ERROR: Vertex Buffer size too high.")
+        sys.exit()
+    elif (int(vert_buffer_size) > 32):
+        ucodeString = "F3DEX3"
+    elif (int(vert_buffer_size) > 16):
+        ucodeString = "F3DEX or F3DEX2"
+    else:
+        ucodeString = "F3D, F3DEX, F3DEX2 or F3DEX3"
+    print("Running Vertex merge!\nVertex Buffer size: " + str(vert_buffer_size) + ".\nWorks with " + ucodeString + ".")
+    job(int(vert_buffer_size))
+
+if __name__ == "__main__":
+   main(sys.argv[1:])
