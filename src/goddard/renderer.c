@@ -1937,6 +1937,7 @@ s32 gd_getproperty(s32 prop, UNUSED void *arg1) {
 /* 251E18 -> 2522B0 */
 void gd_setproperty(enum GdProperty prop, f32 f1, f32 f2, f32 f3) {
     s32 parm;
+    f32 magnitude;
 
     switch (prop) {
         case GD_PROP_LIGHTING:
@@ -1956,7 +1957,7 @@ void gd_setproperty(enum GdProperty prop, f32 f1, f32 f2, f32 f3) {
             sAmbScaleColour.b = f3;
             break;
         case GD_PROP_LIGHT_DIR:
-            f32 magnitude = 1.0f / sqrtf(f1 * f1 + f2 * f2 + f3 * f3);
+            magnitude = 1.0f / sqrtf(f1 * f1 + f2 * f2 + f3 * f3);
         
             f1 *= magnitude;
             f2 *= magnitude;
